@@ -1,0 +1,19 @@
+INSERT INTO vote (
+    reglement_id,
+    joueur_id,
+    choix,
+    date_vote
+)
+VALUES
+(
+    1,
+    1,
+    'oui',
+    CURDATE()
+),
+(
+    2,
+    1,
+    'non',
+    CURDATE()
+);

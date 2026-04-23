@@ -1,0 +1,22 @@
+INSERT INTO recompense (
+    joueur_id,
+    type,
+    periode,
+    total_points,
+    date_attribution
+)
+VALUES
+(
+    1,
+    'mois',
+    '2026-04',
+    8,
+    CURDATE()
+),
+(
+    1,
+    'annee',
+    '2026',
+    120,
+    CURDATE()
+);

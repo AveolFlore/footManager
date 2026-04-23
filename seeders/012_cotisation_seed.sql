@@ -1,0 +1,25 @@
+INSERT INTO cotisation (
+    joueur_id,
+    montant,
+    mois,
+    annee,
+    statut,
+    date_paiement
+)
+VALUES
+(
+    1,
+    5000,
+    'Avril',
+    2026,
+    'paye',
+    CURDATE()
+),
+(
+    2,
+    5000,
+    'Avril',
+    2026,
+    'non_paye',
+    NULL
+);

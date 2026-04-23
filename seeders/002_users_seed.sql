@@ -1,0 +1,46 @@
+INSERT INTO users (
+    nom,
+    prenom,
+    email,
+    mot_de_passe,
+    telephone,
+    date_naissance,
+    poste,
+    pied_dominant,
+    numero_maillot,
+    role,
+    equipe_id,
+    statut,
+    date_inscription
+)
+VALUES
+(
+    'Dupont',
+    'Jean',
+    'jean@example.com',
+    '$2y$10$hashedpassword',
+    '97000000',
+    '2000-05-10',
+    'att',
+    'droit',
+    9,
+    'joueur',
+    1,
+    'valide',
+    CURDATE()
+),
+(
+    'Martin',
+    'Paul',
+    'paul@example.com',
+    '$2y$10$hashedpassword',
+    '96000000',
+    '1998-08-15',
+    'mil',
+    'gauche',
+    8,
+    'entraineur',
+    1,
+    'valide',
+    CURDATE()
+);
