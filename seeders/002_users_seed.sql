@@ -17,7 +17,7 @@ VALUES
 (
     'Dupont',
     'Jean',
-    'jean@example.com',
+    'jean1@example.com',
     '$2y$10$hashedpassword',
     '97000000',
     '2000-05-10',
@@ -32,7 +32,7 @@ VALUES
 (
     'Martin',
     'Paul',
-    'paul@example.com',
+    'paul1@example.com',
     '$2y$10$hashedpassword',
     '96000000',
     '1998-08-15',

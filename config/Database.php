@@ -1,19 +1,23 @@
 <?php
+namespace Config;
+class Database{
+private $host = "localhost";
+private $dbname = "footmanager";
+private $user = "root";
+private $password = "";
+public $conn ;
 
-$host = "localhost";
-$dbname = "footmanager";
-$user = "root";
-$password = "";
-
+public function connect():\PDO{
+    $this->conn = null;
 try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname",
-        $user,
-        $password
-    );
-
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-} catch (PDOException $e) {
+    $this->conn = new \PDO("mysql:host=".$this->host ."; dbname=". $this->dbname, $this->user,$this->password);
+   
+    $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    echo "connection ok";
+} catch (\PDOException $e) {
     die("Erreur : " . $e->getMessage());
+}
+return $this->conn;
+}
+
 }

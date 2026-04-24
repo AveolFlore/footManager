@@ -1,7 +1,5 @@
 <?php
 
-require 'config/database.php';
-
 $files = glob("migrations/*.sql");
 
 foreach ($files as $file) {
