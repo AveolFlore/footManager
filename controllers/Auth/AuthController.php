@@ -3,7 +3,7 @@
 namespace Controllers\Auth;
 
 use Config\Database;
-use Models\User;
+use Models\Utilisateur\User;
 use PDO;
 
 class AuthController
@@ -55,7 +55,8 @@ class AuthController
         }
 
         // email sanitize
-        $email = htmlspecialchars(trim($data['email']));
+        // $email = htmlspecialchars(trim($data['email']));
+        $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
 
         // vérification email existant
         if ($this->userModel->findByEmail($email)) {
@@ -105,8 +106,8 @@ class AuthController
             exit;
         }
 
-        $email = $_POST['email'] ?? '';
-        $mdp   = $_POST['mdp'] ?? '';
+        $email = trim($_POST['email']) ?? '';
+        $mdp   = trim($_POST['mot_de_passe']) ?? '';
 
         $user = $this->userModel->findByEmail($email);
 
@@ -115,7 +116,7 @@ class AuthController
             exit;
         }
 
-        if (password_verify($mdp, $user['mot_de_passe'])) {
+        if ($user && password_verify($mdp, $user['mot_de_passe'])) {
 
             $_SESSION['user'] = [
                 'id' => $user['id'],
@@ -140,8 +141,20 @@ class AuthController
     public function logout()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
+        
+        // Détruire le cookie de session sur le navigateur
+        if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+        }
+
+        // Détruire la session sur le serveur
         session_destroy();
-        header("Location:/page-login");
+
+        header("Location:/page-login?msg=Deconnexion avec success");
         exit;
     }
 }

@@ -1,5 +1,9 @@
 <?php
+require_once 'Config/Database.php'; 
 
+use Config\Database;        
+$db = new Database();
+$pdo = $db->connect(); 
 $files = glob("migrations/*.sql");
 
 foreach ($files as $file) {

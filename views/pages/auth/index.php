@@ -6,67 +6,102 @@ $msg = $_GET['msg'] ?? null;
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription Joueur</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
 
-<div class="auth-container">
-    <div class="auth-box fade-in">
+<body class="bg-gradient-to-br from-green-700 to-green-900 min-h-screen">
 
-        <h2>Inscription Joueur</h2>
+<?php include_once __DIR__ . '/../../partials/header.php'; ?>
 
-        <?php if ($msg): ?>
-            <p class="msg"><?= htmlspecialchars($msg) ?></p>
-        <?php endif; ?>
+<div class="flex justify-center items-center min-h-[90vh] px-4">
 
-        <form action="#" method="POST" enctype="multipart/form-data">
+    <div class="w-full max-w-lg bg-white rounded-xl shadow-lg overflow-hidden">
 
-            <!-- IDENTITÉ -->
-            <input type="text" name="nom" placeholder="Nom" required>
-            <input type="text" name="prenom" placeholder="Prénom" required>
+        <!-- HEADER -->
+        <div class="bg-green-600 text-white text-center px-6 py-8">
+            <h1 class="text-lg font-semibold">FC Green Lions</h1>
+            <p class="text-sm opacity-90 mt-1">Rejoignez le club</p>
+        </div>
 
-            <!-- CONTACT -->
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="text" name="telephone" placeholder="Téléphone">
+        <!-- BODY -->
+        <div class="p-6">
+            <h2 class="text-center text-lg font-medium mb-5">Inscription</h2>
 
-            <!-- DATE NAISSANCE -->
-            <input type="date" name="date_naissance" required>
+            <?php if ($msg): ?>
+                <p class="bg-yellow-100 text-yellow-800 text-sm text-center p-2 rounded mb-4">
+                    <?= htmlspecialchars($msg) ?>
+                </p>
+            <?php endif; ?>
 
-            <!-- SPORT -->
-            <select name="poste" required>
-                <option value="">-- Poste --</option>
-                <option value="gard">Gardien</option>
-                <option value="def">Défenseur</option>
-                <option value="mil">Milieu</option>
-                <option value="att">Attaquant</option>
-            </select>
+            <form action="auth-signup" method="POST" enctype="multipart/form-data" class="space-y-3">
 
-            <select name="pied_dominant">
-                <option value="">-- Pied dominant --</option>
-                <option value="droit">Droit</option>
-                <option value="gauche">Gauche</option>
-                <option value="2">Les deux</option>
-            </select>
+                <input type="text" name="nom" placeholder="Nom" required
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
-            <input type="number" name="numero_maillot" placeholder="Numéro maillot (optionnel)">
+                <input type="text" name="prenom" placeholder="Prénom" required
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
-            <!-- PHOTO PROFIL -->
-            <label>Photo de profil</label>
-            <input type="file" name="photo_profil" accept="image/*">
+                <input type="email" name="email" placeholder="Email" required
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
-            <!-- MOT DE PASSE -->
-            <input type="password" name="mot_de_passe" placeholder="Mot de passe" required minlength="6">
-            <input type="password" name="confirm_mot_de_passe" placeholder="Confirmer mot de passe" required minlength="6">
+                <input type="text" name="telephone" placeholder="Téléphone"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
-            <input type="submit" value="S'inscrire">
+                <input type="date" name="date_naissance" required
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
-        </form>
+                <select name="poste" required
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                    <option value="">-- Poste --</option>
+                    <option value="gard">Gardien</option>
+                    <option value="def">Défenseur</option>
+                    <option value="mil">Milieu</option>
+                    <option value="att">Attaquant</option>
+                </select>
 
-        <a href="/page-login">Déjà un compte ? Se connecter</a>
+                <select name="pied_dominant"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                    <option value="">-- Pied dominant --</option>
+                    <option value="droit">Droit</option>
+                    <option value="gauche">Gauche</option>
+                    <option value="2">Les deux</option>
+                </select>
+
+                <input type="number" name="numero_maillot" placeholder="Numéro maillot (optionnel)"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+
+                <div>
+                    <label class="text-sm mb-1 block">Photo de profil</label>
+                    <input type="file" name="photo_profil" accept="image/*"
+                        class="w-full text-sm">
+                </div>
+
+                <input type="password" name="mot_de_passe" placeholder="Mot de passe" required minlength="6"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+
+                <input type="password" name="confirm_mot_de_passe" placeholder="Confirmer mot de passe" required minlength="6"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+
+                <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+                    S'inscrire
+                </button>
+
+            </form>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="text-center p-4 text-sm">
+            <a href="/page-login" class="text-green-600 hover:underline">
+                Déjà un compte ? Se connecter
+            </a>
+        </div>
 
     </div>
+
 </div>
 
 </body>
