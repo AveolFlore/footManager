@@ -87,7 +87,7 @@ class AuthController
         $result = $this->userModel->create($userData, $file['photo_profil'] ?? null);
 
         if ($result) {
-            header("Location:/page-login?msg=Inscription réussie");
+            header("Location:/page-redirect?msg=Inscription réussie, attente validation.");
         } else {
             header("Location:/page-register-joueur?msg=Erreur lors de l'inscription");
         }
@@ -115,8 +115,13 @@ class AuthController
             header("Location:/page-login?msg=Utilisateur non trouvé");
             exit;
         }
-
+        
         if ($user && password_verify($mdp, $user['mot_de_passe'])) {
+            
+            if ($user['statut'] == 'en_attente') {
+                header("Location:/page-redirect?msg=Votre compte est en cours de traitement..");
+                exit;
+            }
 
             $_SESSION['user'] = [
                 'id' => $user['id'],
@@ -124,6 +129,7 @@ class AuthController
                 'prenom' => $user['prenom'],
                 'email' => $user['email'],
                 'role' => $user['role'],
+                'statut' => $user['statut'],
                 'photo' => $user['photo_profil']
             ];
 
@@ -157,4 +163,65 @@ class AuthController
         header("Location:/page-login?msg=Deconnexion avec success");
         exit;
     }
+
+    // =========================================================
+    // ADMIN CREATE USER
+    // =========================================================
+    public function createUserByAdmin(array $data)
+{
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    require_once __DIR__ . '/../../middleware/Role.php';
+
+    requireRole('president');
+
+    if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+        header("Location:/page-admincreateuser");
+        exit;
+    }
+
+    if (
+        empty($data['nom']) ||
+        empty($data['prenom']) ||
+        empty($data['email']) ||
+        empty($data['mot_de_passe']) ||
+        empty($data['role'])
+    ) {
+        header("Location:/page-admincreateuser?msg=Champs requis");
+        exit;
+    }
+
+    $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
+
+    if ($this->userModel->findByEmail($email)) {
+        header("Location:/page-admincreateuser?msg=Email déjà utilisé");
+        exit;
+    }
+
+    $userData = [
+        'nom' => htmlspecialchars(trim($data['nom'])),
+        'prenom' => htmlspecialchars(trim($data['prenom'])),
+        'email' => $email,
+        'telephone' => $data['telephone'] ?? null,
+        'date_naissance' => $data['date_naissance'] ?? null,
+        'poste' => $data['poste'] ?? null,
+        'pied_dominant' => $data['pied_dominant'] ?? null,
+        'numero_maillot' => $data['numero_maillot'] ?? null,
+
+        'role' => $data['role'],
+        'statut' => 'valide',
+        'equipe_id' => null,
+
+        'mot_de_passe' => $data['mot_de_passe'] // brut → hash dans model
+    ];
+
+    $result = $this->userModel->create($userData);
+
+    if ($result) {
+        header("Location:/page-admin?msg=Utilisateur créé");
+    } else {
+        header("Location:/page-admincreateuser?msg=Erreur");
+    }
+
+    exit;
+}
 }

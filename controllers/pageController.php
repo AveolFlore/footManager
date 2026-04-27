@@ -7,6 +7,9 @@ namespace Controllers;
         public function homePage(){
             require_once "../views/pages/default/home.php";
         }
+        public function redirectPage(){
+            require_once "../views/pages/default/redirect.php";
+        }
         public function teamPage(){
             require_once "../views/pages/historique_equipe/index.php";
         }
@@ -28,11 +31,14 @@ namespace Controllers;
         public function classementPage(){
             require_once "../views/pages/classement/index.php";
         }
+        public function adminCreateUserPage(){
+            require_once "../views/pages/admin/create-user.php";
+        }
         public function adminPage(){
             require_once "../views/pages/admin/index.php";
         }
         public function registerPage(){
-            require_once "../views/pages/auth/index.php";
+            require_once "../views/pages/auth/register.php";
         }
         public function loginPage(){
             require_once "../views/pages/auth/login.php";

@@ -57,6 +57,9 @@ if(isset($action)){
         case 'home':
             $controllerInstance->homePage();
         break;
+        case 'redirect':
+            $controllerInstance->redirectPage();
+        break;
         case 'team':
             $controllerInstance->teamPage();
         break;
@@ -77,6 +80,12 @@ if(isset($action)){
         break;
         case 'classement':
             $controllerInstance->classementPage();
+        break;
+        case 'admincreateuser':
+            $controllerInstance->adminCreateUserPage();
+        break;
+        case 'adminstoreuser':
+            $controllerInstance->createUserByAdmin($_POST);
         break;
         case 'admin':
             $controllerInstance->adminPage();

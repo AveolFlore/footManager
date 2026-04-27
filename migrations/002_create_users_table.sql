@@ -19,9 +19,11 @@ CREATE TABLE users (
     numero_maillot INT UNIQUE NULL,
 
     role ENUM(
-        'joueur',
+        'admin',
         'president',
+        'joueur',
         'censeur',
+        'medecin',
         'organisateur',
         'entraineur'
     ) NOT NULL,
