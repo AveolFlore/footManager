@@ -115,6 +115,10 @@ if (isset($action)) {
             case 'register':
                 $controllerInstance->registerPage();
                 break;
+                // route des convocations
+            case 'convocation':
+                $controllerInstance->convocationPage();
+                break;
 
             default:
                 echo "Actions non existant !";

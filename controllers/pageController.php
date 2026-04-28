@@ -43,8 +43,11 @@ namespace Controllers;
         public function loginPage(){
             require_once "../views/pages/auth/login.php";
         }
+        // redirection vers  la page de convocation
+        public function convocationPage(){
+            require_once "../views/pages/convocation/index.php";
+        }
     }
-
 
 
 ?>
