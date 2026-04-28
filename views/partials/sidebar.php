@@ -20,8 +20,7 @@ function isActive($route, $currentPage)
 
 <!-- SIDEBAR -->
 <aside id="sidebar"
-class="fixed md:static top-0 left-0 z-50 w-64 h-full bg-green-900 text-white
-transform -translate-x-full md:translate-x-0 transition duration-300 flex flex-col">
+class="fixed md:static top-0 left-0 z-50 w-64 min-h-screen bg-green-900 text-white">
 
     <!-- HEADER -->
     <div class="px-6 py-5 border-b border-green-800">
