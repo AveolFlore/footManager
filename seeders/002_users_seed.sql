@@ -43,4 +43,19 @@ VALUES
     1,
     'valide',
     CURDATE()
+),
+(
+    'Dupont',
+    'Jean',
+    'president@example.com',
+    '123456',
+    '97000001',
+    '2000-05-10',
+    'att',
+    'droit',
+    9,
+    'president',
+    1,
+    'valide',
+    CURDATE()
 );
