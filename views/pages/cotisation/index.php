@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../../../middleware/Role.php';
+
+    requireLogin();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

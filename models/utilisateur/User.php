@@ -226,4 +226,53 @@ class User
 
         return $targetPath;
     }
+
+        // =========================================================
+    // NOMBRE DE DEMANDE DE VALIDATION
+    // =========================================================
+    public function countPending()
+{
+    $sql = "SELECT COUNT(*) as total FROM users WHERE statut = 'en_attente'";
+    $stmt = $this->conn->query($sql);
+    return $stmt->fetch()['total'];
+}
+
+    // =========================================================
+    // OBTENIR LES UTILISATEURS AVEC LE STATUT EN ATTENTE
+    // =========================================================
+public function getPendingUsers()
+{
+    $sql = "SELECT * FROM users WHERE statut = 'en_attente' ORDER BY id DESC";
+    $stmt = $this->conn->query($sql);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+// valider + assigner équipe
+public function validateAndAssignTeam($userId, $equipeId)
+{
+    $sql = "UPDATE users 
+            SET statut = 'valide', equipe_id = :equipe_id 
+            WHERE id = :id";
+
+    $stmt = $this->conn->prepare($sql);
+
+    return $stmt->execute([
+        'id' => $userId,
+        'equipe_id' => $equipeId
+    ]);
+}
+
+// refuser
+public function refuseUser($userId)
+{
+    $sql = "UPDATE users SET statut = 'refuse' WHERE id = :id";
+    $stmt = $this->conn->prepare($sql);
+
+    return $stmt->execute(['id' => $userId]);
+}
+
+
+
+
 }

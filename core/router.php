@@ -1,5 +1,6 @@
 <?php
 
+use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
 use Controllers\PageController;
 
@@ -11,7 +12,7 @@ $route = $_SERVER['REQUEST_URI'];
 $route = explode('?', $route)[0];
 
 // supprimer les slashes de début
-if(strlen($route) > 1 ) {
+if (strlen($route) > 1) {
     $route = substr($route, 1);
 }
 
@@ -26,84 +27,100 @@ $id = $_GET['id'] ?? null;
 // var_dump($route);
 
 // Determiner le controller a appelé
-if(isset($controllerName)){
+if (isset($controllerName)) {
     try {
-        switch($controllerName){
+        switch ($controllerName) {
 
-        case '/':
-            $controllerInstance = new PageController();
-            break;
+            case '/':
+                $controllerInstance = new PageController();
+                break;
 
-        case 'page':
-            $controllerInstance = new PageController();
-            break;
-        case 'auth':
-            $controllerInstance = new AuthController();
-            break;
+            case 'page':
+                $controllerInstance = new PageController();
+                break;
+            case 'auth':
+                $controllerInstance = new AuthController();
+                break;
+            case 'admin':
+                $controllerInstance = new AdminController();
+                break;
 
-        default:
-        echo "Controller non existant !";
-        break;
-    }
+            default:
+                echo "Controller non existant !";
+                break;
+        }
     } catch (Exception $e) {
         echo "erreur..." . $e->getMessage();
     }
 }
 
 // Determiner l'action a appelé
-if(isset($action)){
+if (isset($action)) {
     try {
-        switch($action){
-        case 'home':
-            $controllerInstance->homePage();
-        break;
-        case 'team':
-            $controllerInstance->teamPage();
-        break;
-        case 'match':
-            $controllerInstance->matchPage();
-        break;
-        case 'traning':
-            $controllerInstance->traningPage();
-        break;
-        case 'rule':
-            $controllerInstance->rulePage();
-        break;
-        case 'finance':
-            $controllerInstance->cotisationPage();
-        break;
-        case 'galery':
-            $controllerInstance->galeryPage();
-        break;
-        case 'classement':
-            $controllerInstance->classementPage();
-        break;
-        case 'admin':
-            $controllerInstance->adminPage();
-        break;
-        case 'signup':
-            $controllerInstance->registerJoueur($_POST, $_POST);
-        break;
-        case 'signin':
-            $controllerInstance->login();
-        break;
-        case 'logout':
-            $controllerInstance->logout();
-        break;
-        case 'login':
-            $controllerInstance->loginPage();
-        break;
-        case 'register':
-            $controllerInstance->registerPage();
-        break;
+        switch ($action) {
+            case 'home':
+                $controllerInstance->homePage();
+                break;
+            case 'redirect':
+                $controllerInstance->redirectPage();
+                break;
+            case 'team':
+                $controllerInstance->teamPage();
+                break;
+            case 'match':
+                $controllerInstance->matchPage();
+                break;
+            case 'traning':
+                $controllerInstance->traningPage();
+                break;
+            case 'rule':
+                $controllerInstance->rulePage();
+                break;
+            case 'finance':
+                $controllerInstance->cotisationPage();
+                break;
+            case 'galery':
+                $controllerInstance->galeryPage();
+                break;
+            case 'classement':
+                $controllerInstance->classementPage();
+                break;
+            case 'admin':
+                $controllerInstance->adminPage();
+                break;
+            case 'admincreateuser':
+                $controllerInstance->adminCreateUserPage();
+                break;
+            case 'adminstoreuser':
+                $controllerInstance->createUserByAdmin($_POST);
+                break;
+            case 'validateuser':
+                $controllerInstance->validateUser();
+                break;
+            case 'rejetuser':
+                $controllerInstance->refuseUser();
+                break;
+            case 'signup':
+                $controllerInstance->registerJoueur($_POST, $_POST);
+                break;
+            case 'signin':
+                $controllerInstance->login();
+                break;
+            case 'logout':
+                $controllerInstance->logout();
+                break;
+            case 'login':
+                $controllerInstance->loginPage();
+                break;
+            case 'register':
+                $controllerInstance->registerPage();
+                break;
 
-        default:
-        echo "Actions non existant !";
-        break;
-    }
+            default:
+                echo "Actions non existant !";
+                break;
+        }
     } catch (Exception $e) {
         echo "erreur..." . $e->getMessage();
     }
 }
-
-?>
