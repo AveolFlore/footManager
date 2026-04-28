@@ -43,4 +43,19 @@ VALUES
     1,
     'valide',
     CURDATE()
+),
+(
+    'Martin',
+    'Paul',
+    'president@example.com',
+    '$2y$10$lRKbyjInJO/vRxSSX9F9juoJ15JKUkdSbLiiXSJvlccsJgTL.Q95e',
+    '96000001',
+    '1998-08-15',
+    'mil',
+    'gauche',
+    10,
+    'president',
+    1,
+    'valide',
+    CURDATE()
 );
