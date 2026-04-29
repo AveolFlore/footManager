@@ -3,7 +3,7 @@ namespace Controllers;
 
     class PageController{
         // Constructor
-
+    
         public function homePage(){
             require_once "../views/pages/default/home.php";
         }

@@ -3,6 +3,9 @@
 use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
 use Controllers\PageController;
+use Controllers\Reglement\ReglementController; // Assure-toi que le namespace correspond
+use Controllers\Vote\VoteController;
+
 
 
 // on recupère la route demandée par l'utilisateur
@@ -43,6 +46,11 @@ if (isset($controllerName)) {
                 break;
             case 'admin':
                 $controllerInstance = new AdminController();
+                break;
+
+            case 'reglement':
+                // On passe la connexion $db au constructeur
+                $controllerInstance = new \Controllers\Reglement\ReglementController($db);
                 break;
 
             default:
@@ -114,6 +122,10 @@ if (isset($action)) {
                 break;
             case 'register':
                 $controllerInstance->registerPage();
+                break;
+            case 'storerule':
+                // On passe $_POST à la méthode storeRule
+                $controllerInstance->storeRule($_POST);
                 break;
 
             default:
