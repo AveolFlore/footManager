@@ -78,6 +78,11 @@ class="fixed md:static top-0 left-0 z-50 w-64 min-h-screen bg-green-900 text-whi
            <?= isActive('page-classement', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
             Classement
         </a>
+        <a href="/page-performance"
+           class="block px-4 py-2 rounded-lg transition 
+           <?= isActive('page-performance', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
+            Performance
+        </a>
 
         <?php if ($_SESSION['user']['role'] === 'president') : ?>
             <a href="/page-admin"

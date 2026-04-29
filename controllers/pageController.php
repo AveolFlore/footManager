@@ -43,6 +43,9 @@ namespace Controllers;
         public function loginPage(){
             require_once "../views/pages/auth/login.php";
         }
+        public function performancePage(){
+            require_once "../views/pages/performance/index.php";
+        }
     }
 
 

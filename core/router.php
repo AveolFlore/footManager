@@ -115,6 +115,9 @@ if (isset($action)) {
             case 'register':
                 $controllerInstance->registerPage();
                 break;
+            case 'performance':
+                $controllerInstance->performancePage();
+                break;
 
             default:
                 echo "Actions non existant !";
