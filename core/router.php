@@ -2,7 +2,10 @@
 
 use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
+use Controllers\ConvocationController;
+use Controllers\MatchSeanceController;
 use Controllers\PageController;
+use Controllers\ResultatMatchController;
 
 
 // on recupère la route demandée par l'utilisateur
@@ -24,6 +27,7 @@ $controllerName = $part[0] ?? '/';
 $action = $part[1] ?? 'home';
 $id = $_GET['id'] ?? null;
 
+$controllerInstance = null;
 // var_dump($route);
 
 // Determiner le controller a appelé
@@ -43,6 +47,18 @@ if (isset($controllerName)) {
                 break;
             case 'admin':
                 $controllerInstance = new AdminController();
+                break;
+            // instanciation du controlleur match_seance
+            case 'matchSeance':
+                $controllerInstance = new MatchSeanceController();
+                break;
+            // instanciation du controlleur convocation
+            case 'convocation':
+                $controllerInstance = new ConvocationController();
+                break;
+            // instanciation du controlleur resultat_match
+            case 'resultatMatch':
+                $controllerInstance = new ResultatMatchController();
                 break;
 
             default:
@@ -114,6 +130,76 @@ if (isset($action)) {
                 break;
             case 'register':
                 $controllerInstance->registerPage();
+                break;
+
+            //  les actions pour afficher les vues de la rubrique match
+
+            case 'matchlist':
+                $controllerInstance->matchListPage();
+                break;
+            case 'matchcreate':
+                $controllerInstance->matchCreatePage();
+                break;
+            case 'matchedit':
+                $controllerInstance->matchEditPage();
+                break;
+            case 'matchdetail':
+                $controllerInstance->matchDetailPage();
+                break;
+            case 'matchconvocations':
+                $controllerInstance->matchConvocationsPage();
+                break;
+
+            // les actions du controller match_seance
+            case 'list':
+                $controllerInstance->index();
+                break;
+            case 'show':
+                $controllerInstance->read_one((int) $id);
+                break;
+            case 'create':
+                $controllerInstance->store($_POST);
+                break;
+            case 'edit':
+                $controllerInstance->edit((int) $id);
+                break;
+            case 'update':
+                $controllerInstance->update($_POST);
+                break;
+            case 'publish':
+                $controllerInstance->publier((int) $id);
+                break;
+            case 'close':
+                $controllerInstance->terminer((int) $id);
+                break;
+            case 'delete':
+                $controllerInstance->destroy((int) $id);
+                break;
+
+            // actions du controller convocation
+            case 'convoclist':
+                $controllerInstance->index((int) $id);
+                break;
+            case 'suggest':
+                $controllerInstance->get_suggestion();
+                break;
+            case 'convocsave':
+                $controllerInstance->store($_POST);
+                break;
+            case 'convocdelete':
+                $controllerInstance->destroy((int) $id);
+                break;
+
+
+            // actions du controller resultat_match
+            case 'resultatshow':
+                $controllerInstance->index((int) $id);
+                break;
+            case 'resultatsave':
+                $controllerInstance->store($_POST);
+                break;
+            case 'resultatupdate':
+                $controllerInstance->update($_POST);
                 break;
 
             default:
