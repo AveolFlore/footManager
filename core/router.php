@@ -135,7 +135,7 @@ if (isset($action)) {
             //  les actions pour afficher les vues de la rubrique match
 
             case 'matchlist':
-                $controllerInstance->matchListPage();
+                $controllerInstance->matchPage();
                 break;
             case 'matchcreate':
                 $controllerInstance->matchCreatePage();
