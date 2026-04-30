@@ -1,6 +1,6 @@
 <?php
+
 namespace Controllers;
-session_start();
 
 use Models\Convocation;
 use Models\MatchSeance;
@@ -50,27 +50,28 @@ class ConvocationController
             if (!empty($data['joueurs'])) {
 
                 foreach ($data['joueurs'] as $joueur_id => $info) {
-                    $this->convocationModel->create([
-                        'match_id'       => $match_id,
-                        'joueur_id'      => (int) $joueur_id,
-                        'equipe_match'   => $this->sanitize($info['equipe']),
-                        'est_capitaine'  => isset($info['capitaine']) ? 1 : 0,
-                        'numero_maillot' => (int) $info['maillot']
-                    ]);
+                    // enregistrer uniquement si checkbox cochée
+                    if (isset($info['selectionne']) && $info['selectionne'] == '1') {
+                        $this->convocationModel->create([
+                            'match_id'       => $match_id,
+                            'joueur_id'      => (int) $joueur_id,
+                            'equipe_match'   => $this->sanitize($info['equipe']),
+                            'est_capitaine'  => isset($info['capitaine']) ? 1 : 0,
+                            'numero_maillot' => (int) $info['maillot']
+                        ]);
+                    }
                 }
 
                 $this->matchSeanceModel->publier($match_id);
 
-                header('Location: matches/detail.php?id=' . $match_id . '&msg=Convocations enregistrées');
+                header('Location: /page-matchdetail?id=' . $match_id . '&msg=Convocations enregistrées');
                 exit;
-
             } else {
-                header('Location: matches/convocations.php?id=' . $match_id . '&msg=Sélectionnez au moins un joueur');
+                header('Location: /page-matchconvocations?id=' . $match_id . '&msg=Sélectionnez au moins un joueur');
                 exit;
             }
-
         } else {
-            header('Location: matches/list.php?msg=Méthode non autorisée');
+            header('Location: /page-match?msg=Méthode non autorisée');
             exit;
         }
     }
@@ -81,10 +82,10 @@ class ConvocationController
         $result = $this->convocationModel->delete_one($id);
 
         if ($result) {
-            header('Location: matches/convocations.php?delete=success');
+            header('Location: /page-matchconvocations?msg=Joueur retiré');
             exit;
         } else {
-            header('Location: matches/convocations.php?delete=error');
+            header('Location: /page-matchconvocations?msg=Erreur lors de la suppression');
             exit;
         }
     }

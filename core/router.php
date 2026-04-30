@@ -48,6 +48,8 @@ if (isset($controllerName)) {
             case 'admin':
                 $controllerInstance = new AdminController();
                 break;
+
+            // debut des controlleurs ajoutées par renaud  
             // instanciation du controlleur match_seance
             case 'matchSeance':
                 $controllerInstance = new MatchSeanceController();
@@ -60,6 +62,7 @@ if (isset($controllerName)) {
             case 'resultatMatch':
                 $controllerInstance = new ResultatMatchController();
                 break;
+            // fin des controlleurs    
 
             default:
                 echo "Controller non existant !";
@@ -132,6 +135,8 @@ if (isset($action)) {
                 $controllerInstance->registerPage();
                 break;
 
+            // les actions ajoutées par renaud   
+
             //  les actions pour afficher les vues de la rubrique match
 
             case 'matchlist':
@@ -176,7 +181,7 @@ if (isset($action)) {
                 $controllerInstance->destroy((int) $id);
                 break;
 
-            // actions du controller convocation
+            // actions du controller convocation par renaud
             case 'convoclist':
                 $controllerInstance->index((int) $id);
                 break;
@@ -201,6 +206,8 @@ if (isset($action)) {
             case 'resultatupdate':
                 $controllerInstance->update($_POST);
                 break;
+            
+            // fin des actions de renaud    
 
             default:
                 echo "Actions non existant !";

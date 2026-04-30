@@ -1,7 +1,5 @@
 <?php
 namespace Controllers;
-session_start();
-
 use Models\ResultatMatch;
 use Models\MatchSeance;
 use Config\Database;
@@ -17,7 +15,7 @@ class ResultatMatchController
         $this->db = new Database();
         $pdo = $this->db->connect();
         $this->resultatMatchModel = new ResultatMatch($pdo);
-        $this->matchSeanceModel    = new MatchSeance($pdo);
+        $this->matchSeanceModel   = new MatchSeance($pdo);
     }
 
     private function sanitize(string $data)
@@ -43,7 +41,7 @@ class ResultatMatchController
                 'match_id'      => (int) $data['match_id'],
                 'buts_equipe_a' => (int) $this->sanitize($data['buts_equipe_a']),
                 'buts_equipe_b' => (int) $this->sanitize($data['buts_equipe_b']),
-                'saisie_par'    => (int) $_SESSION['user_id']
+                'saisie_par'    => (int) $_SESSION['user']['id']
             ];
 
             if (isset($data['buts_equipe_a']) && isset($data['buts_equipe_b'])) {
@@ -53,21 +51,21 @@ class ResultatMatchController
 
                     if ($result) {
                         $this->matchSeanceModel->terminer($validate['match_id']);
-                        header('Location: matches/detail.php?id=' . $validate['match_id'] . '&msg=Résultat enregistré');
+                        header('Location: /page-matchdetail?id=' . $validate['match_id'] . '&msg=Résultat enregistré');
                         exit;
                     } else {
-                        header('Location: matches/detail.php?id=' . $validate['match_id'] . '&msg=Erreur lors de la saisie');
+                        header('Location: /page-matchdetail?id=' . $validate['match_id'] . '&msg=Erreur lors de la saisie');
                         exit;
                     }
                 }
 
             } else {
-                header('Location: matches/detail.php?id=' . $data['match_id'] . '&msg=Les scores sont requis');
+                header('Location: /page-matchdetail?id=' . $data['match_id'] . '&msg=Les scores sont requis');
                 exit;
             }
 
         } else {
-            header('Location: matches/list.php?msg=Méthode non autorisée');
+            header('Location: /page-match?msg=Méthode non autorisée');
             exit;
         }
     }
@@ -90,21 +88,21 @@ class ResultatMatchController
                     $result = $this->resultatMatchModel->update($match_id, $validate);
 
                     if ($result) {
-                        header('Location: matches/detail.php?id=' . $match_id . '&msg=Résultat corrigé');
+                        header('Location: /page-matchdetail?id=' . $match_id . '&msg=Résultat corrigé');
                         exit;
                     } else {
-                        header('Location: matches/detail.php?id=' . $match_id . '&msg=Erreur lors de la correction');
+                        header('Location: /page-matchdetail?id=' . $match_id . '&msg=Erreur lors de la correction');
                         exit;
                     }
                 }
 
             } else {
-                header('Location: matches/detail.php?id=' . $match_id . '&msg=Les scores sont requis');
+                header('Location: /page-matchdetail?id=' . $match_id . '&msg=Les scores sont requis');
                 exit;
             }
 
         } else {
-            header('Location: matches/list.php?msg=Méthode non autorisée');
+            header('Location: /page-match?msg=Méthode non autorisée');
             exit;
         }
     }
