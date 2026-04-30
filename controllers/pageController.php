@@ -43,6 +43,19 @@ namespace Controllers;
         public function loginPage(){
             require_once "../views/pages/auth/login.php";
         }
+        public function kanbanPage(){
+            require_once "../views/pages/tache/kanban.php";
+        }
+        public function tachePage(){
+            require_once "../views/pages/tache/index.php";
+        }
+        public function mestachesPage(){
+            require_once "../views/pages/tache/mes_taches.php";
+        }
+        // public function createPage(){
+        //     require_once "../views/pages/tache/create.php";
+
+        // }
     }
 
 

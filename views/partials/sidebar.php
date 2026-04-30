@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../middleware/Role.php';
+
 requireLogin();
 
 // récupérer la route actuelle
@@ -78,7 +79,12 @@ class="fixed md:static top-0 left-0 z-50 w-64 min-h-screen bg-green-900 text-whi
            <?= isActive('page-classement', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
             Classement
         </a>
-
+        <a href="/page-tache"
+           class="block px-4 py-2 rounded-lg transition 
+           <?= isActive('page-tache', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
+            Tâches
+        </a>
+<!-- Ajout des tâches dans le sidebar par Florence pour pouvoir afficher son travail -->
         <?php if ($_SESSION['user']['role'] === 'president') : ?>
             <a href="/page-admin"
                class="block px-4 py-2 rounded-lg transition 

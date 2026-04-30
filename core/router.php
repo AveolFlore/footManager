@@ -3,6 +3,8 @@
 use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
 use Controllers\PageController;
+//import du controller des tâches
+use Controllers\Tache\TacheController;
 
 
 // on recupère la route demandée par l'utilisateur
@@ -43,6 +45,10 @@ if (isset($controllerName)) {
                 break;
             case 'admin':
                 $controllerInstance = new AdminController();
+                break;
+                //route de Florence pour la gestion des tâches
+            case 'tache':
+                $controllerInstance = new TacheController();
                 break;
 
             default:
@@ -115,6 +121,53 @@ if (isset($action)) {
             case 'register':
                 $controllerInstance->registerPage();
                 break;
+             //les actions pour les tâches gérer par Florence
+             case 'tache':
+                $controllerInstance->tachePage();
+                break;
+             case 'index':
+                $controllerInstance->tachePage();
+                break;
+             case 'index1':
+                $controllerInstance->index();
+                break;
+            case 'mesTaches':
+                $controllerInstance->mestachesPage();
+                break;
+            case 'detail':
+                $controllerInstance->detail();
+                break;
+            case 'create':
+                $controllerInstance->createPage();
+                break;
+            case 'store':
+                $controllerInstance->store();
+                break;
+            case 'edit':
+                $controllerInstance->edit();
+                break;
+            case 'update':
+                $controllerInstance->update();
+                break;
+            case 'cloturer':
+                $controllerInstance->cloturer();
+                break;
+            case 'commenter':
+                $controllerInstance->commenter();
+                break;
+            case 'kanban':
+                $controllerInstance->kanbanPage();
+                break;
+            case 'stats':
+                $controllerInstance->stats();
+                break;
+            case 'supprimer':
+                $controllerInstance->supprimer();
+                break;
+            case 'api':
+                $controllerInstance->api();
+                break;
+//fin des actions des tâches générer par Florence
 
             default:
                 echo "Actions non existant !";
