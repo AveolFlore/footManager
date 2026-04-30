@@ -84,6 +84,12 @@ class="fixed md:static top-0 left-0 z-50 w-64 min-h-screen bg-green-900 text-whi
             Performance
         </a>
 
+        <a href="/performance-index"
+           class="block px-4 py-2 rounded-lg transition 
+           <?= isActive('performance-index', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
+            Performances
+        </a>
+
         <?php if ($_SESSION['user']['role'] === 'president') : ?>
             <a href="/page-admin"
                class="block px-4 py-2 rounded-lg transition 

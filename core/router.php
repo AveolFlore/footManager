@@ -3,6 +3,7 @@
 use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
 use Controllers\PageController;
+use Controllers\Performance\PerformanceController;
 
 
 // on recupère la route demandée par l'utilisateur
@@ -43,6 +44,9 @@ if (isset($controllerName)) {
                 break;
             case 'admin':
                 $controllerInstance = new AdminController();
+                break;
+            case 'performance':
+                $controllerInstance = new PerformanceController();
                 break;
 
             default:
@@ -115,8 +119,8 @@ if (isset($action)) {
             case 'register':
                 $controllerInstance->registerPage();
                 break;
-            case 'performance':
-                $controllerInstance->performancePage();
+            case 'index':
+                $controllerInstance->index();
                 break;
 
             default:
