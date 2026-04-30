@@ -18,3 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_vote'])) {
     }
     exit();
 }
+
+if (!$voteModel->aDejaVote($reglement_id, $joueur_id)) {
+    $voteModel->voter($reglement_id, $joueur_id, $choix);
+    
+    // VERIFICATION AUTO
+    $reglementModel = new \Models\Reglement($db);
+    $reglementModel->verifierEtValiderRegle($reglement_id);
+    
+    header("Location: index.php?page=reglement&vote_success=1");
+}

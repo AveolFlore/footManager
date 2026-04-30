@@ -43,6 +43,7 @@ namespace Controllers;
         public function loginPage(){
             require_once "../views/pages/auth/login.php";
         }
+        
     }
 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace Controllers\Reglement;
 
 use App\Models\Reglement;
 use PDO;
@@ -9,8 +9,9 @@ class ReglementController {
     private $db;
 
     public function __construct($database) {
-        $this->db = $database;
-        $this->reglementModel = new \Models\Reglement($this->db);
+    $this->db = $database;
+    // On retire le slash si ton namespace est "Models" dans le fichier Reglement.php
+    $this->reglementModel = new \Models\Reglement($this->db);
     }
 
     /**

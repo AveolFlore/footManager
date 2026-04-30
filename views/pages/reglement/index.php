@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../../middleware/Role.php';
 // Initialisation sécurisée
 if (!isset($regles_actives)) $regles_actives = [];
 if (!isset($regles_en_reflexion)) $regles_en_reflexion = [];
+ var_dump($regles_en_reflexion); 
 if (!isset($count_actives)) $count_actives = 0;
 if (!isset($count_reflexion)) $count_reflexion = 0;
 requireLogin();
@@ -119,17 +120,33 @@ requireLogin();
                     <?php endforeach; ?>
                 </div>
 
-                <div id="content-reflexion" class="space-y-4 hidden">
-                    <?php foreach ($regles_en_reflexion as $r): 
-                        $total = ($r['total_pour'] ?? 0) + ($r['total_contre'] ?? 0);
-                        $pour_perc = ($total > 0) ? round(($r['total_pour'] / $total) * 100) : 0;
-                    ?>
-                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                            <h3 class="text-lg font-bold text-slate-800 mb-2"><?= htmlspecialchars($r['titre'] ?? 'Proposition') ?></h3>
-                            <p class="text-gray-600 text-sm mb-6"><?= htmlspecialchars($r['description']) ?></p>
-                            </div>
-                    <?php endforeach; ?>
+               <div id="content-reflexion" class="space-y-4 hidden">
+    <?php foreach ($regles_en_reflexion as $r): 
+        $total = ($r['total_pour'] ?? 0) + ($r['total_contre'] ?? 0);
+        $pour_perc = ($total > 0) ? round(($r['total_pour'] / $total) * 100) : 0;
+    ?>
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-2"><?= htmlspecialchars($r['titre']) ?></h3>
+            <p class="text-gray-600 text-sm mb-6"><?= htmlspecialchars($r['description']) ?></p>
+            
+            <!-- Barre de progression -->
+            <div class="flex items-center gap-4 mb-4">
+                <div class="flex-1 bg-gray-100 h-3 rounded-full overflow-hidden flex">
+                    <div class="bg-emerald-500 h-full transition-all" style="width: <?= $pour_perc ?>%"></div>
+                    <div class="bg-rose-500 h-full transition-all" style="width: <?= 100 - $pour_perc ?>%"></div>
                 </div>
+                <span class="text-sm font-bold text-slate-700"><?= $pour_perc ?>% Pour</span>
+            </div>
+
+            <!-- Formulaire de vote -->
+            <form action="/reglement-vote" method="POST" class="flex gap-2">
+                <input type="hidden" name="reglement_id" value="<?= $r['id'] ?>">
+                <button type="submit" name="choix" value="oui" class="flex-1 py-2 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl hover:bg-emerald-100 transition font-bold">👍 Pour</button>
+                <button type="submit" name="choix" value="non" class="flex-1 py-2 bg-rose-50 text-rose-700 border border-rose-100 rounded-xl hover:bg-rose-100 transition font-bold">👎 Contre</button>
+            </form>
+        </div>
+    <?php endforeach; ?>
+</div>
             </div>
         </main>
     </div>
