@@ -1,6 +1,6 @@
 <?php
 
-namespace Models\Convocation;
+namespace Models;
 
 /**
  * Enum pour définir les catégories d'équipe
@@ -18,12 +18,12 @@ class Convocation {
 
     # id de la convocation
     public  int  $id;
-#lliaisons avec l'id des matchs
+#liaisons avec l'id des matchs
     public int $match_id;
-#liaisons avec l'id des joueures
+#liaisons avec l'id des joueurs
     public int $joueur_id;
-#partie des enums pour les equipes A et B
-    public EquipeType $equipe;
+#partie des enums pour les équipes A et B
+    public EquipeType $équipe;
 
     #pour le capitaine gestion
     public bool $est_capitaine = false ;
@@ -38,7 +38,7 @@ class Convocation {
         $this->conn = $db;
     }
 
-    #ont recupere les users via la table users qui remplissent certaines conditions
+    #ont récupère les users via la table users qui remplissent certaines conditions
     public function  listPlayers(){
       try {
         $query = "SELECT * FROM users 
@@ -54,26 +54,70 @@ class Convocation {
 }
 #ont recupere les performance et la presence des utilisateur et ont fait la jointure 
 
-public function  qualifyPlayer(){
+public function qualifyPlayer($filters = []){
  try {
-        $query = " SELECT u.id, u.nom,
-        COALESCE(SUM(p.points_total),0) AS pts,
-        COUNT(CASE WHEN pr.type_presence='present' THEN 1 END) AS presences,
-        (COALESCE(SUM(p.points_total),0)*0.6 +
-         COUNT(CASE WHEN pr.type_presence='present' THEN 1 END)*0.4) AS score
-        FROM users u
-        -- left join pour recuperer tout les users meme ceux n'ayant aucun score en base de données
-        LEFT JOIN performance p ON p.joueur_id = u.id
-        LEFT JOIN presence pr ON pr.joueur_id = u.id
-        WHERE u.statut='valide'
-        GROUP BY u.id
-        ORDER BY score DESC
-        LIMIT 8";
+        $query = "SELECT * FROM (
+                    SELECT u.id, u.nom, u.equipe_id as equipe,
+                    --La fonction COALESCE sert à remplacer une valeur NULL par une autre valeur ici ont remplace le  null par 0
+                           COALESCE(p.pts,0) AS pts,
+                           COALESCE(pr.presences,0) AS presences,
+                           (COALESCE(p.pts,0)*0.6 + COALESCE(pr.presences,0)*0.4) AS score
+                    FROM users u
+                    LEFT JOIN (
+                        SELECT joueur_id, SUM(points_total) AS pts
+                        FROM performance
+                        GROUP BY joueur_id
+                    ) p ON p.joueur_id = u.id
+                    -- left join pour recupere tout les joueur y compris ceux n'ayant aucune performance ou points
+                    LEFT JOIN (
+                        SELECT joueur_id,
+                               COUNT(CASE WHEN type_presence='present' THEN 1 END) AS presences
+                        FROM presence
+                        GROUP BY joueur_id
+                    ) pr ON pr.joueur_id = u.id
+                    WHERE u.statut = 'valide' AND u.role = 'joueur'
+                ) AS ranked_players WHERE 1=1";
+
+        $params = [];
+        if (!empty($filters['nom'])) {
+            $query .= " AND nom LIKE :nom";
+            $params[':nom'] = '%' . $filters['nom'] . '%';
+        }
+        if (!empty($filters['equipe'])) {
+            $query .= " AND equipe = :equipe";
+            $params[':equipe'] = $filters['equipe'];
+        }
+        if (!empty($filters['score_min'])) {
+            $query .= " AND score >= :score_min";
+            $params[':score_min'] = $filters['score_min'];
+        }
+
+        $query .= " ORDER BY score DESC";
+
         $result = $this->conn->prepare($query);
-        $result->execute();
-        return $result->fetchAll();
+        $result->execute($params);
+        return $result->fetchAll(\PDO::FETCH_ASSOC);
  }  catch (\PDOException $e) {
         echo 'echec de la fonction:' . $e->getMessage();
+        return [];
       }
+}
+#addconvocation s'occupe ici d'ajouter dans la table convocation les donnees les joueures declarer comme convoquer
+public function addConvocation($match_id, $joueur_id, EquipeType $equipe) {
+    try {
+        $query = "INSERT INTO " . $this->table . " (match_id, joueur_id, equipe_match)
+                  VALUES (:match_id, :joueur_id, :equipe)";
+
+        $stmt = $this->conn->prepare($query);
+
+        return $stmt->execute([
+            ':match_id' => $match_id,
+            ':joueur_id' => $joueur_id,
+            ':equipe' => $equipe->value
+        ]);
+
+    } catch (\PDOException $e) {
+        echo 'Erreur insertion: ' . $e->getMessage();
+    }
 }
 }

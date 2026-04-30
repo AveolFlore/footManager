@@ -2,6 +2,7 @@
 
 use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
+use Controllers\Convocation\ConvocationController;
 use Controllers\PageController;
 
 
@@ -43,6 +44,10 @@ if (isset($controllerName)) {
                 break;
             case 'admin':
                 $controllerInstance = new AdminController();
+                break;
+                // appele du controller pour les convocation
+            case 'convocation':
+                $controllerInstance = new ConvocationController();
                 break;
 
             default:
@@ -117,7 +122,16 @@ if (isset($action)) {
                 break;
                 // route des convocations
             case 'convocation':
+                // On s'assure d'utiliser ConvocationController pour charger les données
+                // même si on arrive via 'page-convocation'
+                if (!($controllerInstance instanceof ConvocationController)) {
+                    $controllerInstance = new ConvocationController();
+                }
                 $controllerInstance->convocationPage();
+                break;
+                // appele la methode invoke dans le controller qui permet de convoquer les joueres
+            case 'invoke':
+                $controllerInstance->invokePlayer();
                 break;
 
             default:
