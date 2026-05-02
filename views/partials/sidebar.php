@@ -37,9 +37,9 @@ class="fixed md:static top-0 left-0 z-50 w-64 min-h-screen bg-green-900 text-whi
             Accueil
         </a>
 
-        <a href="/page-team"
+        <a href="/admin-team"
            class="block px-4 py-2 rounded-lg transition 
-           <?= isActive('page-team', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
+           <?= isActive('admin-team', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
             Équipe
         </a>
 
