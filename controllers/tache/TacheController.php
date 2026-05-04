@@ -27,11 +27,11 @@ class TacheController
     }
 
     // =========================================================
-    // INDEX — liste toutes les tâches (bureau + joueurs)
+    // INDEX — liste toutes les tâches
     // =========================================================
     public function index()
     {
-        requireRole(['president', 'censeur', 'organisateur', 'entraineur', 'joueur']);
+        requireLogin();
 
         $filtres = [
             'statut'       => $_GET['statut']       ?? null,
@@ -51,7 +51,7 @@ class TacheController
     // =========================================================
     public function mesTaches()
     {
-        requireRole(['joueur', 'president', 'censeur', 'organisateur', 'entraineur']);
+        requireLogin();
 
         $joueurId = $_SESSION['user']['id'];
         $taches   = $this->tacheModel->readByJoueur($joueurId);
@@ -64,7 +64,7 @@ class TacheController
     // =========================================================
     public function detail()
     {
-        requireRole(['president', 'censeur', 'organisateur', 'entraineur', 'joueur']);
+        requireLogin();
 
         $id    = intval($_GET['id'] ?? 0);
         $tache = $this->tacheModel->findById($id);
@@ -84,20 +84,18 @@ class TacheController
     // =========================================================
     public function create()
     {
-        requireRole(['president', 'censeur', 'organisateur']);
+        requireLogin();
 
         $categories = $this->categorieModel->readAll();
 
-        // Récupérer les joueurs validés pour le dropdown
         $stmt = $this->pdo->prepare(
             "SELECT id, nom, prenom FROM users
-             WHERE statut = 'valide' AND role = 'joueur'
+             WHERE statut = 'valide'
              ORDER BY nom ASC"
         );
         $stmt->execute();
         $joueurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Récupérer les séances à venir pour le dropdown optionnel
         $stmt2 = $this->pdo->prepare(
             "SELECT id, type, date, lieu FROM match_seance
              WHERE date >= CURDATE()
@@ -115,7 +113,7 @@ class TacheController
     // =========================================================
     public function store()
     {
-        requireRole(['president', 'censeur', 'organisateur']);
+        requireLogin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location:/tache-create");
@@ -126,16 +124,15 @@ class TacheController
             'titre'            => $_POST['titre']            ?? '',
             'description'      => $_POST['description']      ?? null,
             'categorie_id'     => $_POST['categorie_id']     ?? 0,
-            'seance_id'        => $_POST['seance_id']        ?? null,
-            'assigne_a'        => $_POST['assigne_a']         ?? 0,
+            'seance_id'        => !empty($_POST['seance_id']) ? $_POST['seance_id'] : null,
+            'assigne_a'        => $_POST['assigne_a']        ?? 0,
             'assigne_par'      => $_SESSION['user']['id'],
-            'priorite'         => $_POST['priorite']          ?? 'moyenne',
-            'deadline'         => $_POST['deadline']          ?? '',
-            'recurrente'       => $_POST['recurrente']        ?? 0,
-            'intervalle_jours' => $_POST['intervalle_jours']  ?? null,
+            'priorite'         => $_POST['priorite']         ?? 'moyenne',
+            'deadline'         => $_POST['deadline']         ?? '',
+            'recurrente'       => $_POST['recurrente']       ?? 0,
+            'intervalle_jours' => !empty($_POST['intervalle_jours']) ? $_POST['intervalle_jours'] : null,
         ];
 
-        // Validation basique
         if (empty($data['titre']) || empty($data['categorie_id'])
             || empty($data['assigne_a']) || empty($data['deadline'])) {
             header("Location:/tache-create?msg=champs_manquants");
@@ -144,18 +141,17 @@ class TacheController
 
         $ok = $this->tacheModel->create($data);
 
-        // Notifier le joueur assigné
         if ($ok) {
             $this->creerNotification(
                 intval($data['assigne_a']),
                 'tache',
-                "Nouvelle tâche assignée : {$data['titre']} — deadline : {$data['deadline']}",
+                "Nouvelle tâche assignée : {$data['titre']}",
                 '/tache-mesTaches'
             );
             $this->logActivite(
                 $_SESSION['user']['id'],
                 'tache_creee',
-                "Tâche « {$data['titre']} » assignée au joueur #{$data['assigne_a']}"
+                "Tâche « {$data['titre']} » créée"
             );
         }
 
@@ -164,11 +160,11 @@ class TacheController
     }
 
     // =========================================================
-    // EDIT — formulaire modification (bureau uniquement)
+    // EDIT — formulaire modification
     // =========================================================
     public function edit()
     {
-        requireRole(['president', 'censeur', 'organisateur']);
+        requireLogin();
 
         $id    = intval($_GET['id'] ?? 0);
         $tache = $this->tacheModel->findById($id);
@@ -182,7 +178,7 @@ class TacheController
 
         $stmt = $this->pdo->prepare(
             "SELECT id, nom, prenom FROM users
-             WHERE statut = 'valide' AND role = 'joueur'
+             WHERE statut = 'valide'
              ORDER BY nom ASC"
         );
         $stmt->execute();
@@ -196,7 +192,7 @@ class TacheController
     // =========================================================
     public function update()
     {
-        requireRole(['president', 'censeur', 'organisateur']);
+        requireLogin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location:/tache-index");
@@ -208,11 +204,11 @@ class TacheController
             'titre'            => $_POST['titre']            ?? '',
             'description'      => $_POST['description']      ?? null,
             'categorie_id'     => $_POST['categorie_id']     ?? 0,
-            'assigne_a'        => $_POST['assigne_a']         ?? 0,
-            'priorite'         => $_POST['priorite']          ?? 'moyenne',
-            'deadline'         => $_POST['deadline']          ?? '',
-            'recurrente'       => $_POST['recurrente']        ?? 0,
-            'intervalle_jours' => $_POST['intervalle_jours']  ?? null,
+            'assigne_a'        => $_POST['assigne_a']        ?? 0,
+            'priorite'         => $_POST['priorite']         ?? 'moyenne',
+            'deadline'         => $_POST['deadline']         ?? '',
+            'recurrente'       => $_POST['recurrente']       ?? 0,
+            'intervalle_jours' => !empty($_POST['intervalle_jours']) ? $_POST['intervalle_jours'] : null,
         ];
 
         $ok = $this->tacheModel->update($id, $data);
@@ -232,7 +228,7 @@ class TacheController
     // =========================================================
     public function cloturer()
     {
-        requireRole(['joueur', 'president', 'censeur', 'organisateur', 'entraineur']);
+        requireLogin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location:/tache-mesTaches");
@@ -246,14 +242,8 @@ class TacheController
         $ok = $this->tacheModel->cloturer($id, $joueurId, $commentaire);
 
         if ($ok) {
-            // Créer la prochaine occurrence si tâche récurrente
             $this->tacheModel->creerOccurrenceSuivante($id);
-
-            $this->logActivite(
-                $joueurId,
-                'tache_terminee',
-                "Tâche #$id marquée comme terminée"
-            );
+            $this->logActivite($joueurId, 'tache_terminee', "Tâche #$id terminée");
         }
 
         header("Location:/tache-mesTaches?msg=" . ($ok ? 'tache_terminee' : 'erreur'));
@@ -265,7 +255,7 @@ class TacheController
     // =========================================================
     public function commenter()
     {
-        requireRole(['president', 'censeur', 'organisateur', 'entraineur', 'joueur']);
+        requireLogin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location:/tache-index");
@@ -283,7 +273,7 @@ class TacheController
 
         $this->tacheModel->ajouterCommentaire($tacheId, $auteurId, $message);
 
-        header("Location:/tache-detail?id=$tacheId#commentaires");
+        header("Location:/tache-detail?id=$tacheId");
         exit;
     }
 
@@ -292,7 +282,7 @@ class TacheController
     // =========================================================
     public function kanban()
     {
-        requireRole(['president', 'censeur', 'organisateur', 'entraineur', 'joueur']);
+        requireLogin();
 
         $colonnes = $this->tacheModel->readGroupedByStatut();
 
@@ -300,21 +290,20 @@ class TacheController
     }
 
     // =========================================================
-    // STATS — score d'implication par joueur (bureau)
+    // STATS — score d'implication par joueur
     // =========================================================
     public function stats()
     {
-        requireRole(['president', 'censeur', 'organisateur']);
+        requireLogin();
 
         $stmt = $this->pdo->prepare(
             "SELECT id, nom, prenom, photo_profil FROM users
-             WHERE statut = 'valide' AND role = 'joueur'
+             WHERE statut = 'valide'
              ORDER BY nom ASC"
         );
         $stmt->execute();
         $joueurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Ajouter les stats à chaque joueur
         foreach ($joueurs as &$j) {
             $j['stats'] = $this->tacheModel->getStatsByJoueur($j['id']);
         }
@@ -323,11 +312,11 @@ class TacheController
     }
 
     // =========================================================
-    // SUPPRIMER — bureau uniquement (POST)
+    // SUPPRIMER — président uniquement (POST)
     // =========================================================
     public function supprimer()
     {
-        requireRole(['president']);
+        requireLogin();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location:/tache-index");
@@ -352,7 +341,7 @@ class TacheController
     // =========================================================
     public function api()
     {
-        requireRole(['president', 'censeur', 'organisateur', 'entraineur', 'joueur']);
+        requireLogin();
 
         $limite = intval($_GET['limit'] ?? 3);
         $taches = $this->tacheModel->getTachesDuJour($limite);

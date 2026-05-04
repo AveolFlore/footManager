@@ -79,7 +79,7 @@ class="fixed md:static top-0 left-0 z-50 w-64 min-h-screen bg-green-900 text-whi
            <?= isActive('page-classement', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
             Classement
         </a>
-        <a href="/page-tache"
+        <a href="/tache-index"
            class="block px-4 py-2 rounded-lg transition 
            <?= isActive('page-tache', $currentPage) ? 'bg-green-700' : 'hover:bg-green-800' ?>">
             Tâches

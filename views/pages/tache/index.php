@@ -95,12 +95,12 @@ function badgePriorite(string $p): string
                     <p class="text-sm text-gray-500">Gestion et suivi des tâches du club</p>
                 </div>
                 <div class="flex gap-2">
-                    <a href="/page-kanban"
+                    <a href="/tache-kanban"
                        class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 text-sm">
                         🗂 Kanban
                     </a>
                     <?php if (in_array($_SESSION['user']['role'], ['president','censeur','organisateur'])): ?>
-                        <a href="/page-create"
+                        <a href="/tache-create"
                            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-medium">
                             + Nouvelle tâche
                         </a>

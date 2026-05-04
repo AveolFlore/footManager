@@ -1,4 +1,6 @@
 <?php
+// $colonnes est injecté par TacheController::kanban()
+// Ne pas redéfinir $colonnes ici — les données viennent du controller
 $pageTitle = "Kanban — Tâches";
 ?>
 
@@ -159,7 +161,6 @@ function carteKanban(array $t): string
     <div class="border border-gray-100 border-t-4 ' . $prioriteCouleur . ' rounded-lg p-3 hover:shadow-md transition cursor-pointer"
          onclick="window.location=\'/tache-detail?id=' . $t['id'] . '\'">
 
-        <!-- Catégorie -->
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs px-2 py-0.5 rounded-full text-white font-medium"
                   style="background-color: ' . $t['categorie_couleur'] . '">
@@ -168,21 +169,17 @@ function carteKanban(array $t): string
             ' . $recurrente . '
         </div>
 
-        <!-- Titre -->
         <p class="text-sm font-semibold text-gray-800 leading-snug mb-3">
             ' . htmlspecialchars($t['titre']) . '
         </p>
 
-        <!-- Footer carte -->
         <div class="flex items-center justify-between">
-            <!-- Avatar joueur -->
             <div class="flex items-center gap-1.5">
                 <div class="w-6 h-6 rounded-full bg-green-700 text-white text-xs flex items-center justify-center font-bold">
                     ' . $initiales . '
                 </div>
                 <span class="text-xs text-gray-500">' . htmlspecialchars($t['joueur_prenom']) . '</span>
             </div>
-            <!-- Deadline -->
             <span class="text-xs text-gray-400">📅 ' . $deadlineStr . '</span>
         </div>
     </div>';
