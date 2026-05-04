@@ -68,8 +68,6 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                     <!-- Formulaire de convocation -->
                                     <form action="/Convocation-invoke" method="POST" class="mt-4 border-t pt-4">
                                         <input type="hidden" name="joueur_id" value="<?= $player['id'] ?>">
-                                        <input type="hidden" name="equipe" value="<?= htmlspecialchars($player['equipe'] ?? 'A') ?>">
-
                                         <div class="mb-3">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Sélectionner le Match</label>
                                             <select name="match_id" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
@@ -86,11 +84,11 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                         </div>
 
                                         <div class="mb-4">
-                                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Équipe attribuée</label>
-                                            <div class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg border border-gray-200">
-                                                <span class="w-3 h-3 rounded-full <?= ($player['equipe'] ?? 'A') === 'A' ? 'bg-blue-500' : 'bg-orange-500' ?>"></span>
-                                                <span class="text-sm font-bold text-gray-700">Équipe <?= htmlspecialchars($player['equipe'] ?? 'A') ?></span>
-                                            </div>
+                                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Équipe attribuée pour le match</label>
+                                            <select name="equipe" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                                                <option value="A" <?= ($player['equipe'] == 1 || $player['equipe'] === 'A') ? 'selected' : '' ?>>Équipe A</option>
+                                                <option value="B" <?= ($player['equipe'] == 2 || $player['equipe'] === 'B') ? 'selected' : '' ?>>Équipe B</option>
+                                            </select>
                                         </div>
 
                                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-colors text-sm">

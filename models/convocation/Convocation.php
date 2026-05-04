@@ -58,7 +58,6 @@ public function qualifyPlayer($filters = []){
  try {
         $query = "SELECT * FROM (
                     SELECT u.id, u.nom, u.equipe_id as equipe,
-                    --La fonction COALESCE sert à remplacer une valeur NULL par une autre valeur ici ont remplace le  null par 0
                            COALESCE(p.pts,0) AS pts,
                            COALESCE(pr.presences,0) AS presences,
                            (COALESCE(p.pts,0)*0.6 + COALESCE(pr.presences,0)*0.4) AS score

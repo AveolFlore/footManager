@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../../middleware/Role.php';
 
     requireLogin();
+
 ?>
 
 <!DOCTYPE html>
