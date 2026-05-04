@@ -23,6 +23,8 @@ $part = explode('-', $route);
 //Determiner le controller et l'action
 $controllerName = $part[0] ?? '/';
 $action = $part[1] ?? 'home';
+// instatiation du controller a nul ca peter chez moi sinon
+$controllerInstance = null;
 $id = $_GET['id'] ?? null;
 
 // var_dump($route);
@@ -45,8 +47,8 @@ if (isset($controllerName)) {
             case 'admin':
                 $controllerInstance = new AdminController();
                 break;
-                // appele du controller pour les convocation
-            case 'convocation':
+            // Ajout de la casse minuscule pour correspondre aux URLs
+            case 'Convocation':
                 $controllerInstance = new ConvocationController();
                 break;
 
@@ -59,8 +61,8 @@ if (isset($controllerName)) {
     }
 }
 
-// Determiner l'action a appelé
-if (isset($action)) {
+// Determiner l'action a appelé - On vérifie que le controller existe
+if (isset($action) && $controllerInstance !== null) {
     try {
         switch ($action) {
             case 'home':
