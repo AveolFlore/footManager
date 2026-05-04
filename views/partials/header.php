@@ -1,51 +1,40 @@
-
 <?php
-// On définit un titre par défaut si la page n'en a pas fourni
+// Titre par défaut si non défini par la page
 $titreAffiche = $pageTitle ?? "Gestion du Club";
 
-// On récupère les infos session en toute sécurité
+// Récupération sécurisée des infos session
 $prenom = $_SESSION['user']['prenom'] ?? 'Invité';
 $nom = $_SESSION['user']['nom'] ?? '';
-$role = $_SESSION['user']['role'] ?? '';
+$role = $_SESSION['user']['role'] ?? 'Utilisateur';
 ?>
 
 <!-- HEADER -->
-<header class="w-full h-16 bg-white border-b flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">
+<header class="w-full h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-30">
     
-    <!-- LEFT: Titre & Burger -->
-    <div class="flex items-center gap-4">
-        <!-- BURGER (mobile only) -->
-        <button onclick="toggleSidebar()" class="md:hidden bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition shadow-md">
-            ☰
-        </button>
-
-        <!-- TITLE DYNAMIQUE -->
-        <div>
-            <h1 class="text-lg font-bold text-gray-800 leading-tight">
-                <?= htmlspecialchars($titreAffiche) ?>
-            </h1>
-            <p class="text-xs text-gray-500 hidden sm:block">
-                Welcome, <span class="text-green-600 font-medium"><?= htmlspecialchars($prenom . ' ' . $nom) ?></span>
-            </p>
-        </div>
+    <!-- LEFT: Titre & Welcome Message -->
+    <div class="flex flex-col">
+        <h1 class="text-[#1e293b] text-lg font-extrabold leading-tight tracking-tight">
+            <?= htmlspecialchars($titreAffiche) ?>
+        </h1>
+        <p class="text-[11px] text-gray-400 font-medium">
+            Welcome, <span class="text-[#22c55e] font-bold"><?= htmlspecialchars($prenom . ' ' . $nom) ?></span>
+        </p>
     </div>
 
-    <!-- RIGHT: Notifs & Profil -->
-    <div class="flex items-center gap-3 md:gap-5">
+    <!-- RIGHT: Notifications & Badge Rôle -->
+    <div class="flex items-center gap-6">
 
         <!-- NOTIFICATIONS -->
-        <div class="relative group cursor-pointer">
-            <button class="text-gray-400 hover:text-green-600 transition text-xl p-1">
-                <i class="fa-regular fa-bell"></i> 🔔
-            </button>
-            <!-- Badge -->
-            <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
-        </div>
+        <button class="relative p-2 text-[#fbbf24] hover:scale-110 transition-transform">
+            <span class="text-2xl">🔔</span>
+            <!-- Badge Notification -->
+            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white shadow-sm"></span>
+        </button>
 
-        <!-- BADGE RÔLE (Visuel moderne) -->
-        <div class="hidden lg:flex items-center bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
-            <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-gray-600">
+        <!-- BADGE RÔLE -->
+        <div class="flex items-center bg-[#f1f5f9] px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
+            <div class="w-2 h-2 bg-[#22c55e] rounded-full mr-2 shadow-[0_0_5px_rgba(34,197,94,0.5)]"></div>
+            <span class="text-[10px] font-black uppercase tracking-widest text-[#475569]">
                 <?= htmlspecialchars($role) ?>
             </span>
         </div>
@@ -53,14 +42,13 @@ $role = $_SESSION['user']['role'] ?? '';
     </div>
 </header>
 
-
-<!-- SCRIPT MOBILE -->
 <script>
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
-
-    sidebar.classList.toggle('-translate-x-full');
-    overlay.classList.toggle('hidden');
+    if (sidebar && overlay) {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
 }
 </script>

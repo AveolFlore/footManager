@@ -40,16 +40,17 @@ class PerformanceController
         // Déterminer quel joueur on regarde (soi-même ou un joueur spécifique si admin)
         $joueurId = $_GET['id'] ?? $currentUser['id'];
 
-        // Récupérer les informations du joueur sélectionné
-        $selectedJoueur = $this->userModel->getFindId($joueurId);
+        // Récupérer les informations du joueur sélectionné avec son équipe
+        $selectedJoueur = $this->userModel->getFindIdWithTeam($joueurId);
         
-        // Récupérer la liste de tous les joueurs (pour le sélecteur admin)
-        $allJoueurs = $this->userModel->readAll();
+        // Récupérer la liste de tous les joueurs avec leur équipe
+        $allJoueurs = $this->userModel->readAllWithTeam();
 
         // Récupérer les statistiques
         $globalStats = $this->perfModel->getGlobalStats($joueurId);
         $evolutionData = $this->perfModel->getEvolution($joueurId);
         $teamAverages = $this->perfModel->getTeamAverages();
+        $matchPerformances = $this->perfModel->getPerformanceByMatch($joueurId);
 
         // Préparer les données pour Chart.js
         $chartLabels = [];

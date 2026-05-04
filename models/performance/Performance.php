@@ -32,8 +32,13 @@ class Performance
                     SUM(passes) as total_passes,
                     AVG(buts * 3 + passes * 2) as note_moyenne,
                     (SELECT COUNT(*) FROM match_seance ms 
+                     JOIN resultat_match rm ON rm.match_id = ms.id 
                      JOIN performance p ON p.seance_id = ms.id 
-                     WHERE p.joueur_id = :joueur_id AND ms.resultat = 'victoire') as victoires
+                     WHERE p.joueur_id = :joueur_id 
+                     AND (
+                        (rm.equipe_gagnante = 'A' AND p.equipe_type = 'A') OR 
+                        (rm.equipe_gagnante = 'B' AND p.equipe_type = 'B')
+                     )) as victoires
                 FROM {$this->table}
                 WHERE joueur_id = :joueur_id";
         
@@ -96,6 +101,34 @@ class Performance
             'avg_buts' => round($res['avg_buts'] ?? 0, 1),
             'avg_passes' => round($res['avg_passes'] ?? 0, 1)
         ];
+    }
+
+    /**
+     * Récupère le détail des performances par match pour un joueur
+     */
+    public function getPerformanceByMatch(int $joueurId): array
+    {
+        $sql = "SELECT 
+                    ms.date,
+                    ms.lieu,
+                    ms.type,
+                    p.buts,
+                    p.passes,
+                    p.points_total,
+                    ROUND((p.buts * 3 + p.passes * 2) / 10, 1) as note,
+                    rm.buts_equipe_a,
+                    rm.buts_equipe_b,
+                    rm.equipe_gagnante,
+                    p.equipe_type
+                FROM {$this->table} p
+                JOIN match_seance ms ON p.seance_id = ms.id
+                LEFT JOIN resultat_match rm ON rm.match_id = ms.id
+                WHERE p.joueur_id = :joueur_id
+                ORDER BY ms.date DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':joueur_id' => $joueurId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

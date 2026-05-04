@@ -122,6 +122,9 @@ if (isset($action)) {
             case 'index':
                 $controllerInstance->index();
                 break;
+            // case 'performance':
+            //     $controllerInstance->index();
+            //     break;
 
             default:
                 echo "Actions non existant !";

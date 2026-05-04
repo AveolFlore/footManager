@@ -1,4 +1,4 @@
-CREATE TABLE performance (
+CREATE TABLE IF NOT EXISTS performance (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
     seance_id INT NOT NULL,
@@ -6,6 +6,7 @@ CREATE TABLE performance (
 
     buts INT DEFAULT 0,
     passes INT DEFAULT 0,
+    equipe_type ENUM('A', 'B') NOT NULL,
 
     points_total INT
     GENERATED ALWAYS AS (

@@ -41,6 +41,33 @@ class User
     }
 
     // =========================================================
+    // LISTE USERS AVEC EQUIPE
+    // =========================================================
+    public function readAllWithTeam()
+    {
+        $query = "SELECT u.*, e.nom as equipe_nom 
+                  FROM {$this->table} u 
+                  LEFT JOIN equipe e ON u.equipe_id = e.id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // =========================================================
+    // FIND BY ID AVEC EQUIPE
+    // =========================================================
+    public function getFindIdWithTeam(int $id)
+    {
+        $sql = "SELECT u.*, e.nom as equipe_nom 
+                FROM {$this->table} u 
+                LEFT JOIN equipe e ON u.equipe_id = e.id 
+                WHERE u.id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // =========================================================
     // FIND BY EMAIL
     // =========================================================
     public function findByEmail($email)

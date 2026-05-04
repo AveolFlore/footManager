@@ -1,4 +1,4 @@
-CREATE TABLE resultat_match (
+CREATE TABLE IF NOT EXISTS resultat_match (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
     match_id INT UNIQUE NOT NULL,

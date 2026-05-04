@@ -1,7 +1,7 @@
 <?php
 namespace Config;
 class Database{
-private $host = "localhost";
+private $host = "127.0.0.1";
 private $dbname = "footmanager";
 private $user = "root";
 private $password = "";
@@ -13,7 +13,6 @@ try {
     $this->conn = new \PDO("mysql:host=".$this->host ."; dbname=". $this->dbname, $this->user,$this->password);
    
     $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-    echo "connection ok";
 } catch (\PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }

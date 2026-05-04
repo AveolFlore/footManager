@@ -1,4 +1,4 @@
-CREATE TABLE match_seance (
+CREATE TABLE IF NOT EXISTS match_seance (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
     type ENUM('match', 'entr') NOT NULL,
