@@ -39,8 +39,8 @@ public function convocationPage(){
 // fonction récupérer dans le model  pour l'affichage des joueurs qualifiers
     $qualifiedPlayers = $this->convocationModel->qualifyPlayer($filters);
     
-    // Récupération des matchs disponibles (publiés et à venir uniquement)
-    $stmt = $this->pdo->query("SELECT id, date, lieu, description FROM match_seance WHERE type = 'match' AND statut = 'publie' AND date >= CURDATE() ORDER BY date ASC");
+    // Récupération des matchs disponibles (publiés ou planifiés, et à venir uniquement)
+    $stmt = $this->pdo->query("SELECT id, date, lieu, description FROM match_seance WHERE type = 'match' AND statut IN ('publie', 'planifie') AND date >= CURDATE() ORDER BY date ASC");
     $matches = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     
     // $pageTitle = "Gestion des Convocations";
