@@ -50,7 +50,7 @@ if (isset($controllerName)) {
 
             case 'reglement':
                 // On passe la connexion $db au constructeur
-                $controllerInstance = new \Controllers\Reglement\ReglementController($db);
+                $controllerInstance = new ReglementController($db);
                 break;
 
             default:
@@ -110,6 +110,9 @@ if (isset($action)) {
                 break;
             case 'signup':
                 $controllerInstance->registerJoueur($_POST, $_POST);
+                break;
+            case 'index':
+                $controllerInstance->index();
                 break;
             case 'signin':
                 $controllerInstance->login();

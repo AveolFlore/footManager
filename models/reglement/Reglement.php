@@ -11,12 +11,20 @@ class Reglement {
     }
 
     // Récupère les règlements selon leur statut (actif ou propose)
-    public function getByStatut($statut) {
-    // On ignore le statut pour vérifier si la vue peut afficher quelque chose
-    $query = "SELECT * FROM reglement"; 
+public function getByStatut($statut) {
+    $query = "SELECT r.*, 
+              (SELECT COUNT(*) FROM vote WHERE reglement_id = r.id AND choix = 'oui') as total_pour,
+              (SELECT COUNT(*) FROM vote WHERE reglement_id = r.id AND choix = 'non') as total_contre
+              FROM reglement r 
+              WHERE r.statut = :statut";
+
     $stmt = $this->db->prepare($query);
-    $stmt->execute();
-    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $stmt->execute([
+        ':statut' => $statut
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
     // Pour compter rapidement pour les badges des onglets
@@ -54,8 +62,8 @@ public function verifierEtValiderRegle($id) {
     $stmt->execute(['id' => $id]);
     $res = $stmt->fetch();
 
-    // Exemple : Si on a 5 votes "Pour", elle passe en vigueur
-    if ($res['pour'] >= 5) {
+    // Exemple : Si on a 10 votes "Pour", elle passe en vigueur
+    if ($res['pour'] >= 10) {
         $upd = $this->db->prepare("UPDATE reglement SET statut = 'actif' WHERE id = :id");
         $upd->execute(['id' => $id]);
     }

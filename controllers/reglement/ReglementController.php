@@ -3,7 +3,7 @@
 namespace Controllers\Reglement;
 
 use App\Models\Reglement;
-use PDO;
+
 class ReglementController {
     private $reglementModel;
     private $db;
@@ -55,7 +55,8 @@ class ReglementController {
 
     // 5. Redirection finale
     if ($success) {
-        header("Location: /page-rule?success=1");
+        // On change le paramètre ici
+        header("Location: /page-rule?success=1&tab=reflexion");
     } else {
         header("Location: /page-rule?error=db_error");
     }

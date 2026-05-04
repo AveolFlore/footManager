@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../../middleware/Role.php';
 // Initialisation sécurisée
 if (!isset($regles_actives)) $regles_actives = [];
 if (!isset($regles_en_reflexion)) $regles_en_reflexion = [];
- var_dump($regles_en_reflexion); 
+var_dump($regles_en_reflexion);
 if (!isset($count_actives)) $count_actives = 0;
 if (!isset($count_reflexion)) $count_reflexion = 0;
 requireLogin();
@@ -69,7 +69,7 @@ requireLogin();
                 <input 
                     type="number" 
                     name="montant_amende" 
-                    defaultValue="0" 
+                    value="0" 
                     min="0" 
                     class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-gray-50/50" 
                     placeholder="Ex: 2000"
@@ -178,6 +178,18 @@ requireLogin();
                 btnV.className = "flex-1 py-4 text-center font-bold text-gray-500 hover:text-emerald-600 hover:bg-gray-50 border-b-4 border-transparent transition";
             }
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        
+        // Si l'URL contient ?tab=vigueur, on active l'onglet
+        if (tab === 'vigueur') {
+    switchTab('vigueur');
+} else if (tab === 'reflexion') {
+    switchTab('reflexion');
+}
+    });
     </script>
 </body>
 </html>
