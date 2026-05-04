@@ -4,6 +4,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
     <div class="flex">
@@ -74,7 +76,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                                 <?php if (!empty($matches)): ?>
                                                     <?php foreach ($matches as $match): ?>
                                                         <option value="<?= $match['id'] ?>">
-                                                            <?= date('d/m', strtotime($match['date'])) ?> - <?= htmlspecialchars($match['lieu']) ?> (<?= htmlspecialchars($match['description']) ?>)
+                                                            [<?= strtoupper($match['type']) ?>] <?= date('d/m', strtotime($match['date'])) ?> - <?= htmlspecialchars($match['lieu']) ?> (<?= htmlspecialchars($match['description']) ?>)
                                                         </option>
                                                     <?php endforeach; ?>
                                                 <?php else: ?>
@@ -83,7 +85,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                             </select>
                                         </div>
 
-                                        <!-- Sélection de l'équipe --> 
+                                        <!-- Sélection de l'équipe -->
                                         <div class="mb-4">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Équipe attribuée pour le match</label>
                                             <select name="equipe" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
@@ -113,4 +115,5 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
         </main>
     </div>
 </body>
+
 </html>
