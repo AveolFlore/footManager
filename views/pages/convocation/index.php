@@ -83,6 +83,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                             </select>
                                         </div>
 
+                                        <!-- Sélection de l'équipe --> 
                                         <div class="mb-4">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Équipe attribuée pour le match</label>
                                             <select name="equipe" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
