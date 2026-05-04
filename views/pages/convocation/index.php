@@ -24,7 +24,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                 <p class="text-gray-600 italic">Classement basé sur la performance (60%) et la présence (40%).</p>
             </div>
 
-            <!-- Filtres de recherche      -->
+            <!-- Filtres de recherche -->
             <form method="GET" action="/Convocation-convocation" class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Rechercher un nom</label>
