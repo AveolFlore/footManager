@@ -70,9 +70,15 @@ if (isset($action)) {
             case 'team':
                 $controllerInstance->teamPage();
                 break;
-//ajouter par Marcel
+            //ajouter par Marcel
             case 'createequipe':
                 $controllerInstance->createEquipePage();
+                break;
+
+            case 'details':
+                $id = $_GET['id'] ?? null;
+                $controller = new \Controllers\Equipe\EquipeController();
+                $controller->showDetails($id);
                 break;
 
             case 'storeequipe':
@@ -146,14 +152,6 @@ if (isset($action)) {
 
             default:
                 echo 'Actions non existant !';
-                break;
-
-            case 'createequipe':  // marcel/ Pour afficher le formulaire de création d'équipe
-                $controllerInstance->createEquipePage();
-                break;
-
-            case 'storeequipe':  // marcel/ Pour enregistrer les données du formulaire
-                $controllerInstance->storeEquipe($_POST);
                 break;
         }
     } catch (Exception $e) {

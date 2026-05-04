@@ -197,4 +197,28 @@ class EquipeController
         echo json_encode($equipes);
         exit();
     }
+
+    // Affiche les détails d'une équipe
+    public function showDetails($id) {
+    if (!$id) {
+        header('Location: /admin-team');
+        exit;
+    }
+
+    //  On récupère les infos de l'équipe pour le titre de la page
+    $equipe = $this->equipeModel->findById($id);
+
+    // On récupère UNIQUEMENT les joueurs liés à cet ID d'équipe
+    $query = "SELECT nom, prenom, email, date_naissance, poste, pied_dominant 
+              FROM users 
+              WHERE equipe_id = :equipe_id 
+              AND role = 'joueur'";
+              
+    $stmt = $this->pdo->prepare($query);
+    $stmt->execute(['equipe_id' => $id]);
+    $joueurs = $stmt->fetchAll();
+
+    // On charge la vue en lui passant les données
+    require_once __DIR__ . '/../../views/pages/historique_equipe/details_equipe.php';
+}
 }
