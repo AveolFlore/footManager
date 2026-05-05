@@ -62,7 +62,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                         <p class="text-sm text-green-600 font-medium">Score : <?= number_format($player['score'], 2) ?></p>
                                     </div>
                                     <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full font-semibold">
-                                        <?= $player['presences'] ?> matchs
+                                        <?= $player['nb_convocations'] ?> <?= $player['nb_convocations'] > 1 ? 'matchs' : 'match' ?>
                                     </span>
                                 </div>
 
@@ -77,7 +77,7 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                             });
                                             $isFullySummoned = empty($availableMatches);
                                         ?>
-                                        
+
                                         <input type="hidden" name="joueur_id" value="<?= $player['id'] ?>">
                                         <div class="mb-3">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Sélectionner le Match</label>
