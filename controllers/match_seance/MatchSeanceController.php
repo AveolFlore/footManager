@@ -60,8 +60,13 @@ class MatchSeanceController
             if (!empty($data['type']) && !empty($data['date']) && !empty($data['lieu'])) {
 
                 if (!empty($data['add_match']) && $data['add_match'] == 'Créer') {
+                    // vérifier que la date est dans le futur
+                    if (strtotime($validate['date']) <= time()) {
+                        header('Location: /page-matchcreate?msg=La date doit être dans le futur');
+                        exit;
+                    }
                     $result = $this->matchSeanceModel->create($validate);
-                  
+
                     if ($result) {
                         header('Location: /page-match?msg=Séance créée avec succès');
                         exit;
@@ -151,6 +156,15 @@ class MatchSeanceController
     // TERMINER
     public function terminer(int $id)
     {
+        $match = $this->matchSeanceModel->read_one($id);
+        $debut = strtotime($match['date']);
+        $maintenant = time();
+
+        if ($maintenant < $debut + (90 * 60)) {
+            header('Location: /page-matchdetail?id=' . $id . '&msg=Le match ne peut pas être clôturé avant 1h30 après le début');
+            exit;
+        }
+
         $result = $this->matchSeanceModel->terminer($id);
 
         if ($result) {
@@ -161,7 +175,7 @@ class MatchSeanceController
             exit;
         }
     }
-
+    
     // DELETE
     public function destroy(int $id)
     {

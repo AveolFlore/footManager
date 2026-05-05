@@ -12,9 +12,17 @@ $matchController = new MatchSeanceController();
 $convocationController = new ConvocationController();
 
 $matchs = $matchController->index();
+$matchs_en_retard = [];
+foreach ($matchs as $match) {
+    if (
+        $match['statut'] === 'publie' &&
+        strtotime($match['date']) < strtotime('-1 day')
+    ) {
+        $matchs_en_retard[] = $match;
+    }
+}
 $resultatController = new ResultatMatchController();
 
-// var_dump($_SESSION);
 ?>
 
 <!DOCTYPE html>
@@ -75,6 +83,13 @@ $resultatController = new ResultatMatchController();
                 </div>
             <?php endif; ?>
 
+            <!-- Alerte matchs non clôturés -->
+            <?php if (!empty($matchs_en_retard)): ?>
+                <div class="mb-4 px-4 py-3 rounded-lg bg-orange-100 text-orange-700 text-sm font-medium">
+                    ⚠️ <?= count($matchs_en_retard) ?> match(s) non clôturé(s) depuis plus d'un jour — pensez à saisir les résultats.
+                </div>
+            <?php endif; ?>
+
             <!-- Cards matchs -->
             <div id="liste-matchs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
@@ -97,7 +112,7 @@ $resultatController = new ResultatMatchController();
                     $score = null;
                     if ($match['statut'] === 'termine') {
 
-                        
+
                         $resultat = $resultatController->index((int) $match['id']);
                         if ($resultat) {
                             $score = $resultat['buts_equipe_a'] . ' - ' . $resultat['buts_equipe_b'];
@@ -133,6 +148,7 @@ $resultatController = new ResultatMatchController();
                             <div class="flex items-center gap-2 text-sm text-gray-500">
                                 <span>🕐</span>
                                 <span><?= date('H:i', strtotime($match['date'])) ?></span>
+
                             </div>
                             <div class="flex items-center gap-2 text-sm text-gray-500">
                                 <span>📍</span>

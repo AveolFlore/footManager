@@ -6,6 +6,7 @@ if (!in_array($_SESSION['user']['role'], ['president', 'organisateur'])) {
     header('Location: /page-match');
     exit;
 }
+
 ?>
 
 <!DOCTYPE html>
