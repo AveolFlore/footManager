@@ -47,6 +47,7 @@ namespace Controllers;
         public function convocationPage(){
             require_once "../views/pages/convocation/index.php";
         }
+        // 
     }
 
 
