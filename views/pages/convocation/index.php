@@ -1,5 +1,5 @@
 <?php
-// Les variables $qualifiedPlayers, $matches et $pageTitle sont fournies par le contrôleur
+// Les variables $qualifiedPlayers, $matches, $summonedMap et $pageTitle sont fournies par le contrôleur
 $roleUser = $_SESSION['user']['role'] ?? 'joueur';
 ?>
 <!DOCTYPE html>
@@ -69,18 +69,27 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                 <?php if ($roleUser !== 'joueur'): ?>
                                     <!-- Formulaire de convocation -->
                                     <form action="/Convocation-invoke" method="POST" class="mt-4 border-t pt-4">
+                                        <?php 
+                                            // LOGIQUE PHP : On filtre les matchs disponibles pour ce joueur précis
+                                            $playerConvocations = $summonedMap[$player['id']] ?? [];
+                                            $availableMatches = array_filter($matches, function($m) use ($playerConvocations) {
+                                                return !in_array($m['id'], $playerConvocations);
+                                            });
+                                            $isFullySummoned = empty($availableMatches);
+                                        ?>
+                                        
                                         <input type="hidden" name="joueur_id" value="<?= $player['id'] ?>">
                                         <div class="mb-3">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Sélectionner le Match</label>
-                                            <select name="match_id" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
-                                                <?php if (!empty($matches)): ?>
-                                                    <?php foreach ($matches as $match): ?>
+                                            <select name="match_id" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" <?= $isFullySummoned ? 'disabled' : '' ?>>
+                                                <?php if (!$isFullySummoned): ?>
+                                                    <?php foreach ($availableMatches as $match): ?>
                                                         <option value="<?= $match['id'] ?>">
                                                             [<?= strtoupper($match['type']) ?>] <?= date('d/m', strtotime($match['date'])) ?> - <?= htmlspecialchars($match['lieu']) ?> (<?= htmlspecialchars($match['description']) ?>)
                                                         </option>
                                                     <?php endforeach; ?>
                                                 <?php else: ?>
-                                                    <option disabled>Aucun match disponible</option>
+                                                    <option disabled selected>Déjà convoqué partout</option>
                                                 <?php endif; ?>
                                             </select>
                                         </div>
@@ -88,14 +97,16 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                                         <!-- Sélection de l'équipe -->
                                         <div class="mb-4">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Équipe attribuée pour le match</label>
-                                            <select name="equipe" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                                            <select name="equipe" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" <?= $isFullySummoned ? 'disabled' : '' ?>>
                                                 <option value="A" <?= ($player['equipe'] == 1 || $player['equipe'] === 'A') ? 'selected' : '' ?>>Équipe A</option>
                                                 <option value="B" <?= ($player['equipe'] == 2 || $player['equipe'] === 'B') ? 'selected' : '' ?>>Équipe B</option>
                                             </select>
                                         </div>
 
-                                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-colors text-sm">
-                                            Convoquer
+                                        <button type="submit" 
+                                            <?= $isFullySummoned ? 'disabled' : '' ?>
+                                            class="w-full <?= $isFullySummoned ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700' ?> text-white font-semibold py-2 rounded-lg transition-colors text-sm">
+                                            <?= $isFullySummoned ? 'Déjà convoqué' : 'Convoquer' ?>
                                         </button>
                                     </form>
                                 <?php else: ?>
@@ -114,6 +125,32 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
             </div>
         </main>
     </div>
+
+    <script>
+        /**
+         * Cette fonction gère uniquement l'aspect visuel du bouton
+         * car PHP a déjà marqué les options invalides comme 'disabled'
+         */
+        function checkConvocation(selectElement) {
+            const form = selectElement.closest('form');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+            // Si l'option sélectionnée est désactivée (PHP l'a décidé)
+            if (selectedOption.disabled) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Déjà convoqué';
+                submitBtn.classList.replace('bg-green-600', 'bg-gray-400');
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Convoquer';
+                submitBtn.classList.replace('bg-gray-400', 'bg-green-600');
+            }
+        }
+
+        // On lance la vérification au chargement pour bloquer le bouton si le 1er match de la liste est déjà pris
+        document.querySelectorAll('.match-select').forEach(select => checkConvocation(select));
+    </script>
 </body>
 
 </html>

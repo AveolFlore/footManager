@@ -42,6 +42,9 @@ class ConvocationController
         // fonction récupérer dans le model  pour l'affichage des joueurs qualifiers
         $qualifiedPlayers = $this->convocationModel->qualifyPlayer($filters);
 
+        // On récupère les convocations existantes pour la vérification dynamique
+        $summonedMap = $this->convocationModel->getConvocationsMap();
+
         // Récupération des événements disponibles (matchs ou entraînements, publiés ou planifiés)
         $stmt = $this->pdo->query("SELECT id, date, lieu, description, type FROM match_seance WHERE statut IN ('publie', 'planifie') ORDER BY date DESC");
         $matches = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -78,7 +81,7 @@ class ConvocationController
                     $checkStmt = $this->pdo->prepare("SELECT COUNT(*) FROM convocation WHERE match_id = :m_id AND joueur_id = :j_id");
                     $checkStmt->execute([':m_id' => $match_id, ':j_id' => $joueur_id]);
                     if ($checkStmt->fetchColumn() > 0) {
-                        header("Location: /page-home?msg=already_summoned");
+                        header("Location: /Convocation-convocation?msg=already_summoned");
                         exit;
                     }
 
@@ -94,7 +97,7 @@ class ConvocationController
                 }
 
                 // Redirection après succès
-                header("Location: /convocation-convocation?msg=success");
+                header("Location: /Convocation-convocation?msg=success");
                 exit;
             }
         } catch (\ValueError $e) {

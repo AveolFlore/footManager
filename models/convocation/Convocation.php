@@ -52,8 +52,9 @@ class Convocation {
         echo 'erreur recuperation:' . $e->getMessage();
       }
 }
-#ont recupere les performance et la presence des utilisateur et ont fait la jointure 
+#ont recupere les performance et la presence des utilisateur et ont fait la jointure
 
+// -- left join pour recupere tout les joueur y compris ceux n'ayant aucune performance ou points
 public function qualifyPlayer($filters = []){
  try {
         $query = "SELECT * FROM (
@@ -67,7 +68,6 @@ public function qualifyPlayer($filters = []){
                         FROM performance
                         GROUP BY joueur_id
                     ) p ON p.joueur_id = u.id
-                    -- left join pour recupere tout les joueur y compris ceux n'ayant aucune performance ou points
                     LEFT JOIN (
                         SELECT joueur_id,
                                COUNT(CASE WHEN type_presence='present' THEN 1 END) AS presences
@@ -119,4 +119,23 @@ public function addConvocation($match_id, $joueur_id, EquipeType $equipe) {
         echo 'Erreur insertion: ' . $e->getMessage();
     }
 }
+
+    /**
+     * Récupère la liste simplifiée des convocations existantes
+     * pour vérifier les doublons côté client.
+     */
+    public function getConvocationsMap()
+    {
+        $query = "SELECT joueur_id, match_id FROM " . $this->table;
+        $stmt = $this->conn->query($query);
+        $convocations = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        // On organise par joueur_id pour faciliter la recherche en PHP
+        // Format : [joueur_id => [match_id1, match_id2, ...]]
+        $map = [];
+        foreach ($convocations as $row) {
+            $map[$row['joueur_id']][] = $row['match_id'];
+        }
+        return $map;
+    }
 }
