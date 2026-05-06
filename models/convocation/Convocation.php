@@ -144,4 +144,36 @@ public function addConvocation($match_id, $joueur_id, EquipeType $equipe) {
         }
         return $map;
     }
+
+    /**
+     * Vérifie si le joueur est déjà convoqué pour un match qui se chevauche dans le temps.
+     * On considère par défaut qu'un match/séance dure 2 heures.
+     */
+    public function hasOverlap(int $joueur_id, int $match_id): bool
+    {
+        $stmtMatch = $this->conn->prepare("SELECT date FROM match_seance WHERE id = :id");
+        $stmtMatch->execute([':id' => $match_id]);
+        $newMatch = $stmtMatch->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$newMatch) return false;
+
+        // Logique de chevauchement :
+        // (Start_Nouveau < End_Existant) AND (End_Nouveau > Start_Existant)
+        // On utilise DATE_ADD pour simuler une durée de 2 heures.
+        $query = "SELECT COUNT(*) 
+                  FROM convocation c
+                  JOIN match_seance ms ON c.match_id = ms.id
+                  WHERE c.joueur_id = :joueur_id
+                    AND :new_start < DATE_ADD(ms.date, INTERVAL 2 HOUR)
+                    AND DATE_ADD(:new_start_alt, INTERVAL 2 HOUR) > ms.date";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([
+            ':joueur_id' => $joueur_id,
+            ':new_start' => $newMatch['date'],
+            ':new_start_alt' => $newMatch['date']
+        ]);
+
+        return (int)$stmt->fetchColumn() > 0;
+    }
 }

@@ -85,6 +85,12 @@ class ConvocationController
                         exit;
                     }
 
+                    // Vérification du chevauchement d'horaires (règle métier)
+                    if ($this->convocationModel->hasOverlap((int)$joueur_id, (int)$match_id)) {
+                        header("Location: /Convocation-convocation?msg=overlap");
+                        exit;
+                    }
+
                     // Conversion vers l'enum
                     $equipeEnum = EquipeType::from($equipe_val);
 

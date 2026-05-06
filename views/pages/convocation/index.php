@@ -1,6 +1,7 @@
 <?php
 // Les variables $qualifiedPlayers, $matches, $summonedMap et $pageTitle sont fournies par le contrôleur
 $roleUser = $_SESSION['user']['role'] ?? 'joueur';
+$currentUserId = $_SESSION['user']['id'] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +20,22 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
         <main class="flex-1 p-4 md:p-6">
+            <!-- Alertes de retour -->
+            <?php if (isset($_GET['msg'])): ?>
+                <div class="mb-6 p-4 rounded-lg flex items-center gap-3 <?= $_GET['msg'] === 'success' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200' ?>">
+                    <span class="text-lg">
+                        <?= $_GET['msg'] === 'success' ? '✅' : '⚠️' ?>
+                    </span>
+                    <p class="text-sm font-medium">
+                        <?php 
+                            if ($_GET['msg'] === 'success') echo "Le joueur a été convoqué avec succès !";
+                            if ($_GET['msg'] === 'already_summoned') echo "Ce joueur est déjà convoqué pour ce match précis.";
+                            if ($_GET['msg'] === 'overlap') echo "Impossible : ce joueur est déjà convoqué pour un autre match à ce créneau horaire.";
+                        ?>
+                    </p>
+                </div>
+            <?php endif; ?>
+
             <div class="mb-8">
                 <h2 class="text-2xl font-bold text-gray-800">Joueurs Éligibles</h2>
                 <p class="text-gray-600 italic">Classement basé sur la performance (60%) et la présence (40%).</p>
@@ -58,13 +75,50 @@ $roleUser = $_SESSION['user']['role'] ?? 'joueur';
                             <div class="p-5">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="text-lg font-bold text-gray-900"><?= htmlspecialchars($player['nom']) ?></h3>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="text-lg font-bold text-gray-900"><?= htmlspecialchars($player['nom']) ?></h3>
+                                            
+                                            <?php 
+                                            // Condition : Identité du user connecté + statut convoqué (présent dans le map)
+                                            if ($player['id'] == $currentUserId && !empty($summonedMap[$player['id']])): 
+                                            ?>
+                                                <!-- Indicateur visuel SVG (Etoile de sélection) -->
+                                                <svg class="w-5 h-5 text-yellow-500 animate-pulse" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            <?php endif; ?>
+                                        </div>
                                         <p class="text-sm text-green-600 font-medium">Score : <?= number_format($player['score'], 2) ?></p>
                                     </div>
                                     <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full font-semibold">
                                         <?= $player['nb_convocations'] ?> <?= $player['nb_convocations'] > 1 ? 'matchs' : 'match' ?>
                                     </span>
                                 </div>
+
+                                <?php
+                                // RÉVÉLATION DES DÉTAILS : Uniquement pour le joueur connecté sur sa propre carte
+                                if ($player['id'] == $currentUserId && !empty($summonedMap[$player['id']])): 
+                                ?>
+                                    <div class="mt-2 mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                        <p class="text-[10px] font-bold text-blue-800 uppercase mb-2 flex items-center gap-1">
+                                            <span>📅</span> Tes prochains rendez-vous
+                                        </p>
+                                        <ul class="space-y-2">
+                                            <?php 
+                                            foreach ($summonedMap[$player['id']] as $mId): 
+                                                // On retrouve les infos du match dans la liste globale $matches
+                                                $matchInfo = array_filter($matches, fn($m) => $m['id'] == $mId);
+                                                $matchInfo = reset($matchInfo);
+                                                if ($matchInfo):
+                                            ?>
+                                                <li class="text-xs text-blue-700 leading-tight">
+                                                    <span class="font-bold"><?= date('d/m à H:i', strtotime($matchInfo['date'])) ?></span><br>
+                                                    <span class="text-blue-900"><?= htmlspecialchars($matchInfo['description']) ?></span> @ <?= htmlspecialchars($matchInfo['lieu']) ?>
+                                                </li>
+                                            <?php endif; endforeach; ?>
+                                        </ul>
+                                    </div>
+                                <?php endif; ?>
 
                                 <?php if ($roleUser !== 'joueur'): ?>
                                     <!-- Formulaire de convocation -->
