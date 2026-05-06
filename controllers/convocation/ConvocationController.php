@@ -49,6 +49,12 @@ class ConvocationController
         $stmt = $this->pdo->query("SELECT id, date, lieu, description, type FROM match_seance WHERE statut IN ('publie', 'planifie') ORDER BY date DESC");
         $matches = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        // Indexation des matchs par ID pour un accès direct dans la vue (O(1) au lieu de O(n))
+        $matchesById = [];
+        foreach ($matches as $m) {
+            $matchesById[$m['id']] = $m;
+        }
+
         // $pageTitle = "Gestion des Convocations";
 
         // Chargement de la vue

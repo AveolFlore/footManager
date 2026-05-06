@@ -79,7 +79,7 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                             <h3 class="text-lg font-bold text-gray-900"><?= htmlspecialchars($player['nom']) ?></h3>
                                             
                                             <?php 
-                                            // Condition : Identité du user connecté + statut convoqué (présent dans le map)
+                                            // CONDITION UNIQUE : SVG uniquement pour moi si je suis convoqué
                                             if ($player['id'] == $currentUserId && !empty($summonedMap[$player['id']])): 
                                             ?>
                                                 <!-- Indicateur visuel SVG (Etoile de sélection) -->
@@ -95,25 +95,27 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                     </span>
                                 </div>
 
-                                <?php
-                                // RÉVÉLATION DES DÉTAILS : Uniquement pour le joueur connecté sur sa propre carte
+                                <?php 
+                                // CONDITION UNIQUE : Détails spécifiques uniquement pour moi
                                 if ($player['id'] == $currentUserId && !empty($summonedMap[$player['id']])): 
                                 ?>
                                     <div class="mt-2 mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-800 uppercase mb-2 flex items-center gap-1">
-                                            <span>📅</span> Tes prochains rendez-vous
+                                        <p class="text-[11px] font-bold text-blue-800 uppercase mb-2 flex items-center gap-1">
+                                            <span>📅</span> Détails de ma convocation
                                         </p>
                                         <ul class="space-y-2">
                                             <?php 
                                             foreach ($summonedMap[$player['id']] as $mId): 
-                                                // On retrouve les infos du match dans la liste globale $matches
-                                                $matchInfo = array_filter($matches, fn($m) => $m['id'] == $mId);
-                                                $matchInfo = reset($matchInfo);
+                                                // Récupération directe via l'index créé dans le contrôleur
+                                                $matchInfo = $matchesById[$mId] ?? null;
+                                                
                                                 if ($matchInfo):
                                             ?>
                                                 <li class="text-xs text-blue-700 leading-tight">
-                                                    <span class="font-bold"><?= date('d/m à H:i', strtotime($matchInfo['date'])) ?></span><br>
-                                                    <span class="text-blue-900"><?= htmlspecialchars($matchInfo['description']) ?></span> @ <?= htmlspecialchars($matchInfo['lieu']) ?>
+                                                    <div class="pr-2">
+                                                        <span class="font-bold text-blue-900"><?= date('d/m', strtotime($matchInfo['date'])) ?> à <?= date('H:i', strtotime($matchInfo['date'])) ?></span><br>
+                                                        <span class="text-blue-900"><?= htmlspecialchars($matchInfo['description']) ?></span>
+                                                    </div>
                                                 </li>
                                             <?php endif; endforeach; ?>
                                         </ul>
@@ -124,8 +126,9 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                     <!-- Formulaire de convocation -->
                                     <form action="/Convocation-invoke" method="POST" class="mt-4 border-t pt-4">
                                         <?php 
-                                            // LOGIQUE PHP : On filtre les matchs disponibles pour ce joueur précis
+                                            // On filtre les matchs disponibles (ceux où il n'est pas encore convoqué)
                                             $playerConvocations = $summonedMap[$player['id']] ?? [];
+                                            
                                             $availableMatches = array_filter($matches, function($m) use ($playerConvocations) {
                                                 return !in_array($m['id'], $playerConvocations);
                                             });
