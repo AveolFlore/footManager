@@ -1,6 +1,8 @@
 <?php
 namespace Controllers;
 
+require_once __DIR__ . '/../middleware/Admin.php';
+
     class PageController{
         // Constructor
 
@@ -32,9 +34,11 @@ namespace Controllers;
             require_once "../views/pages/classement/index.php";
         }
         public function adminCreateUserPage(){
+            requireAdmin();
             require_once "../views/pages/admin/create-user.php";
         }
         public function adminPage(){
+            requireAdmin();
             require_once "../views/pages/admin/index.php";
         }
         public function registerPage(){
@@ -42,6 +46,9 @@ namespace Controllers;
         }
         public function loginPage(){
             require_once "../views/pages/auth/login.php";
+        }
+        public function matchDetailPage(){
+            require_once "../views/pages/match_seance/detail.php";
         }
     }
 

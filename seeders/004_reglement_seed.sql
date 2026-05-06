@@ -11,7 +11,7 @@ VALUES
 (
     'Retard aux entraînements',
     'Tout joueur en retard paie une amende.',
-    2000,
+    200,
     'retard',
     'actif',
     2,
@@ -20,7 +20,7 @@ VALUES
 (
     'Absence injustifiée',
     'Toute absence sans justification sera sanctionnée.',
-    5000,
+    500,
     'absence',
     'actif',
     2,

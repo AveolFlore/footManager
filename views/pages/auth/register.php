@@ -20,8 +20,6 @@ $msg = $_GET['msg'] ?? null;
 
 <body class="bg-gradient-to-br from-green-700 to-green-900 min-h-screen">
 
-<?php include_once __DIR__ . '/../../partials/header.php'; ?>
-
 <div class="flex justify-center items-center min-h-[90vh] px-4">
 
     <div class="w-full max-w-lg bg-white rounded-xl shadow-lg overflow-hidden">

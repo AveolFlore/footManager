@@ -55,8 +55,12 @@ class AuthController
         }
 
         // email sanitize
-        // $email = htmlspecialchars(trim($data['email']));
         $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
+
+        if (!$email) {
+    header("Location:/page-register-joueur?msg=Email invalide");
+    exit;
+}
 
         // vérification email existant
         if ($this->userModel->findByEmail($email)) {
@@ -70,7 +74,7 @@ class AuthController
             'prenom' => htmlspecialchars(trim($data['prenom'])),
             'email' => $email,
             'telephone' => $data['telephone'] ?? null,
-            'date_naissance' => $data['date_naissance'],
+            'date_naissance' => $data['date_naissance'] ?? date('Y-m-d'),
             'poste' => $data['poste'] ?? null,
             'pied_dominant' => $data['pied_dominant'] ?? null,
             'numero_maillot' => $data['numero_maillot'] ?? null,
@@ -115,11 +119,19 @@ class AuthController
             header("Location:/page-login?msg=Utilisateur non trouvé");
             exit;
         }
-        
+
         if ($user && password_verify($mdp, $user['mot_de_passe'])) {
-            
-            if ($user['statut'] == 'en_attente') {
-                header("Location:/page-redirect?msg=Votre compte est en cours de traitement..");
+
+            if ($user['statut'] !== 'valide') {
+
+                if ($user['statut'] === 'en_attente') {
+                    header("Location:/page-redirect?msg=Votre compte est en cours de traitement..");
+                }
+
+                if ($user['statut'] === 'refuse') {
+                    header("Location:/page-login?msg=Compte refusé");
+                }
+
                 exit;
             }
 
@@ -133,7 +145,11 @@ class AuthController
                 'photo' => $user['photo_profil']
             ];
 
-            header("Location:/page-home");
+            if ($user['role'] === 'president') {
+    header("Location:/page-admin");
+} else {
+    header("Location:/page-home");
+}
             exit;
         }
 
@@ -147,14 +163,19 @@ class AuthController
     public function logout()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        
+
         // Détruire le cookie de session sur le navigateur
         if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
         }
 
         // Détruire la session sur le serveur
@@ -168,60 +189,60 @@ class AuthController
     // ADMIN CREATE USER
     // =========================================================
     public function createUserByAdmin(array $data)
-{
-    if (session_status() === PHP_SESSION_NONE) session_start();
-    require_once __DIR__ . '/../../middleware/Role.php';
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        require_once __DIR__ . '/../../middleware/Admin.php';
 
-    requireRole('president');
+        requireAdmin();
 
-    if ($_SERVER['REQUEST_METHOD'] !== "POST") {
-        header("Location:/page-admincreateuser");
+        if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+            header("Location:/page-admincreateuser");
+            exit;
+        }
+
+        if (
+            empty($data['nom']) ||
+            empty($data['prenom']) ||
+            empty($data['email']) ||
+            empty($data['mot_de_passe']) ||
+            empty($data['role'])
+        ) {
+            header("Location:/page-admincreateuser?msg=Champs requis");
+            exit;
+        }
+
+        $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
+
+        if ($this->userModel->findByEmail($email)) {
+            header("Location:/page-admincreateuser?msg=Email déjà utilisé");
+            exit;
+        }
+
+        $userData = [
+            'nom' => htmlspecialchars(trim($data['nom'])),
+            'prenom' => htmlspecialchars(trim($data['prenom'])),
+            'email' => $email,
+            'telephone' => $data['telephone'] ?? null,
+            'date_naissance' => $data['date_naissance'] ?? null,
+            'poste' => $data['poste'] ?? null,
+            'pied_dominant' => $data['pied_dominant'] ?? null,
+            'numero_maillot' => $data['numero_maillot'] ?? null,
+
+            'role' => $data['role'],
+            'statut' => 'valide',
+            'equipe_id' => null,
+
+            'mot_de_passe' => $data['mot_de_passe'] // brut → hash dans model
+        ];
+
+        $result = $this->userModel->create($userData);
+
+        if ($result) {
+            header("Location:/page-admin?msg=Utilisateur créé");
+        } else {
+            header("Location:/page-admincreateuser?msg=Erreur");
+        }
+
         exit;
     }
-
-    if (
-        empty($data['nom']) ||
-        empty($data['prenom']) ||
-        empty($data['email']) ||
-        empty($data['mot_de_passe']) ||
-        empty($data['role'])
-    ) {
-        header("Location:/page-admincreateuser?msg=Champs requis");
-        exit;
-    }
-
-    $email = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
-
-    if ($this->userModel->findByEmail($email)) {
-        header("Location:/page-admincreateuser?msg=Email déjà utilisé");
-        exit;
-    }
-
-    $userData = [
-        'nom' => htmlspecialchars(trim($data['nom'])),
-        'prenom' => htmlspecialchars(trim($data['prenom'])),
-        'email' => $email,
-        'telephone' => $data['telephone'] ?? null,
-        'date_naissance' => $data['date_naissance'] ?? null,
-        'poste' => $data['poste'] ?? null,
-        'pied_dominant' => $data['pied_dominant'] ?? null,
-        'numero_maillot' => $data['numero_maillot'] ?? null,
-
-        'role' => $data['role'],
-        'statut' => 'valide',
-        'equipe_id' => null,
-
-        'mot_de_passe' => $data['mot_de_passe'] // brut → hash dans model
-    ];
-
-    $result = $this->userModel->create($userData);
-
-    if ($result) {
-        header("Location:/page-admin?msg=Utilisateur créé");
-    } else {
-        header("Location:/page-admincreateuser?msg=Erreur");
-    }
-
-    exit;
-}
 }
