@@ -13,11 +13,10 @@ try {
     $this->conn = new \PDO("mysql:host=".$this->host ."; dbname=". $this->dbname, $this->user,$this->password);
    
     $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-    echo "connection ok";
+    echo "";
 } catch (\PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
 return $this->conn;
 }
-
 }

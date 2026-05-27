@@ -9,7 +9,7 @@ use Controllers\Reglement\ReglementController;
 use Controllers\Performance\PerformanceController;
 use Controllers\Match_seance\Match_seanceController;
 use Controllers\Galerie\GalerieController;
-
+use Controllers\Equipe\EquipeController;
 
 // on recupère la route demandée par l'utilisateur
 $route = $_SERVER['REQUEST_URI'];
@@ -25,7 +25,6 @@ if (strlen($route) > 1) {
 // Diviser la chaine par le tiret
 $part = explode('-', $route);
 
-//Determiner le controller et l'action
 $controllerName = $part[0] ?? '/';
 $action = $part[1] ?? 'home';
 $id = $_GET['id'] ?? null;
@@ -38,6 +37,7 @@ if (isset($controllerName)) {
         switch ($controllerName) {
 
             case '/':
+            case '':
                 $controllerInstance = new PageController();
                 break;
 
@@ -48,7 +48,11 @@ if (isset($controllerName)) {
                 $controllerInstance = new AuthController();
                 break;
             case 'admin':
-                $controllerInstance = new AdminController();
+                if (in_array($action, ['team', 'createequipe', 'storeequipe', 'teamedit', 'teamupdate', 'teamdelete', 'teamsearchajax'])) {
+                    $controllerInstance = new EquipeController();
+                } else {
+                    $controllerInstance = new AdminController();
+                }
                 break;
             case 'presence':
                 $controllerInstance = new PresenceController();
@@ -70,11 +74,11 @@ if (isset($controllerName)) {
                 break;
 
             default:
-                echo "Controller non existant !";
+                $controllerInstance = new PageController();
                 break;
         }
     } catch (Exception $e) {
-        echo "erreur..." . $e->getMessage();
+        echo 'erreur...' . $e->getMessage();
     }
 }
 
@@ -90,6 +94,29 @@ if (isset($action)) {
                 break;
             case 'team':
                 $controllerInstance->teamPage();
+                break;
+            case 'createequipe':
+                $controllerInstance->createEquipePage();
+                break;
+            case 'details':
+                $id = $_GET['id'] ?? null;
+                $controller = new EquipeController();
+                $controller->showDetails($id);
+                break;
+            case 'storeequipe':
+                $controllerInstance->storeEquipe($_POST);
+                break;
+            case 'teamedit':
+                $controllerInstance->editEquipePage($id);
+                break;
+            case 'teamupdate':
+                $controllerInstance->updateEquipe($_POST, $id);
+                break;
+            case 'teamdelete':
+                $controllerInstance->deleteEquipe($id);
+                break;
+            case 'teamsearchajax':
+                $controllerInstance->searchAJAX();
                 break;
             case 'match':
                 $controllerInstance->matchPage();
@@ -177,6 +204,7 @@ if (isset($action)) {
                 break;
         }
     } catch (Exception $e) {
-        echo "erreur..." . $e->getMessage();
+        echo 'erreur...' . $e->getMessage();
     }
 }
+

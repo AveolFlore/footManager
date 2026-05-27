@@ -43,3 +43,12 @@ INSERT INTO users (nom, prenom, email, mot_de_passe, telephone, date_naissance, 
 ('Leger', 'Marc', 'wait3@example.com', '$2y$10$hashedpassword', '94000003', '2006-11-20', 'att', 'droit', NULL, 'joueur', NULL, 'en_attente', CURDATE()),
 ('Vif', 'Alain', 'wait4@example.com', '$2y$10$hashedpassword', '94000004', '2005-08-15', 'gard', 'droit', NULL, 'joueur', NULL, 'en_attente', CURDATE()),
 ('Fort', 'Thomas', 'wait5@example.com', '$2y$10$hashedpassword', '94000005', '2003-01-30', 'def', 'droit', NULL, 'joueur', NULL, 'en_attente', CURDATE());
+    'mil',
+    'gauche',
+    10,
+    'president',
+    1,
+    'valide',
+    CURDATE()
+);
+>>>>>>> bcaca1d40763a14b084b94f1e5b4b30ed20af408

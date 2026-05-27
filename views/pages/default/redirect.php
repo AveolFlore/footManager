@@ -1,5 +1,9 @@
 <?php 
 if (session_status() === PHP_SESSION_NONE) session_start();
+// if($_SESSION['user']['statut'] !== 'en_attente') {
+//     header('Location: /');
+//     exit;
+// }
 $msg = $_GET['msg'] ?? null; 
 ?>
 <!DOCTYPE html>
