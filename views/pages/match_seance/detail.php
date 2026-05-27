@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../../middleware/Role.php';
 requireLogin();
 
 use Controllers\MatchSeanceController;
-use Controllers\ConvocationController;
+use Controllers\Convocation\ConvocationController;
 use Controllers\ResultatMatchController;
 
 $matchController = new MatchSeanceController();

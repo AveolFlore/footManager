@@ -7,7 +7,7 @@ if (!in_array($_SESSION['user']['role'], ['president', 'organisateur'])) {
     exit;
 }
 
-use Controllers\ConvocationController;
+use Controllers\Convocation\ConvocationController;
 use Controllers\MatchSeanceController;
 
 $matchController      = new MatchSeanceController();
