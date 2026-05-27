@@ -32,6 +32,8 @@ $id = $_GET['id'] ?? null;
 // var_dump($route);
 
 // Determiner le controller a appelé
+$controllerInstance = null;
+
 if (isset($controllerName)) {
     try {
         switch ($controllerName) {
