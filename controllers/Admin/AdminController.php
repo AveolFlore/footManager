@@ -82,11 +82,7 @@ class AdminController
     // REFUSER
     public function refuseUser()
     {
-<<<<<<< HEAD
         requireAdmin();
-=======
-        requireRole('president');
->>>>>>> bcaca1d40763a14b084b94f1e5b4b30ed20af408
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location:/page-admin");
@@ -100,7 +96,6 @@ class AdminController
         header("Location:/page-admin?msg=joueur_refuse");
         exit;
     }
-<<<<<<< HEAD
 
     // CHANGER D'EQUIPE
     public function changeTeam()
@@ -142,6 +137,4 @@ class AdminController
         header("Location:/page-team?equipe_id=$equipeId&msg=transfert_success");
         exit;
     }
-=======
->>>>>>> bcaca1d40763a14b084b94f1e5b4b30ed20af408
 }
