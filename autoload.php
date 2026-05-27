@@ -1,12 +1,19 @@
 <?php
 
-spl_autoload_register(function (string $class): void {
+$loadedClasses = [];
+
+spl_autoload_register(function (string $class) use (&$loadedClasses): void {
+    if (isset($loadedClasses[$class])) {
+        return;
+    }
+    
     $path = str_replace('\\', '/', $class) . '.php';
     $path = lcfirst($path);
     $fullPath = __DIR__ . '/' . $path;
 
     if (file_exists($fullPath)) {
         require($fullPath);
+        $loadedClasses[$class] = true;
         return;
     }
 
@@ -23,6 +30,7 @@ spl_autoload_register(function (string $class): void {
         foreach ($iterator as $file) {
             if ($file->getFilename() === $fileName) {
                 require($file->getPathname());
+                $loadedClasses[$class] = true;
                 return;
             }
         }

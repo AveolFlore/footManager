@@ -5,7 +5,7 @@ namespace Controllers\Convocation;
 use Config\Database;
 use Models\Convocation\EquipeType;
 use Models\Convocation\Convocation;
-use Models\MatchSeance\MatchSeance;
+use Models\MatchSeance;
 
 class ConvocationController
 {
