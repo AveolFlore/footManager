@@ -2,6 +2,7 @@
 
 use Controllers\Admin\AdminController;
 use Controllers\Auth\AuthController;
+use Controllers\Convocation\ConvocationController;
 use Controllers\PageController;
 use Controllers\Presence\PresenceController;
 use Controllers\Cotisation\CotisationController;
@@ -27,6 +28,8 @@ $part = explode('-', $route);
 
 $controllerName = $part[0] ?? '/';
 $action = $part[1] ?? 'home';
+// instatiation du controller a nul ca peter chez moi sinon
+$controllerInstance = null;
 $id = $_GET['id'] ?? null;
 
 // var_dump($route);
@@ -69,10 +72,14 @@ if (isset($controllerName)) {
                 $controllerInstance = new PerformanceController();
                 break;
             case 'match':
-                $controllerInstance = new Match_seanceController(); 
+                $controllerInstance = new Match_seanceController();
                 break;
             case 'galerie':
                 $controllerInstance = new GalerieController();
+                break;
+            // Ajout de la casse minuscule pour correspondre aux URLs
+            case 'Convocation':
+                $controllerInstance = new ConvocationController();
                 break;
 
             default:
@@ -84,8 +91,8 @@ if (isset($controllerName)) {
     }
 }
 
-// Determiner l'action a appelé
-if (isset($action)) {
+// Determiner l'action a appelé - On vérifie que le controller existe
+if (isset($action) && $controllerInstance !== null) {
     try {
         switch ($action) {
             case 'home':
@@ -168,7 +175,7 @@ if (isset($action)) {
             case 'register':
                 $controllerInstance->registerPage();
                 break;
-            
+
             // NOUVELLES ROUTES
             case 'detail':
                 $controllerInstance->matchDetailPage();
@@ -200,6 +207,18 @@ if (isset($action)) {
             case 'changeteam':
                 $controllerInstance->changeTeam();
                 break;
+            // route des convocations
+            case 'convocation':
+                // On s'assure d'utiliser ConvocationController pour charger les données
+                // même si on arrive via 'page-convocation'
+                if (!($controllerInstance instanceof ConvocationController)) {
+                    $controllerInstance = new ConvocationController();
+                }
+                $controllerInstance->convocationPage();
+                break;
+            // appele la methode invoke dans le controller qui permet de convoquer les joueres
+            case 'invoke':
+                $controllerInstance->invokePlayer();
 
             default:
                 echo "Actions non existant !";
@@ -209,4 +228,3 @@ if (isset($action)) {
         echo 'erreur...' . $e->getMessage();
     }
 }
-

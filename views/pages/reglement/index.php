@@ -2,9 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../../config/Database.php';
 require_once __DIR__ . '/../../../models/reglement/Reglement.php';
+require_once __DIR__ . '/../../../middleware/Role.php';
 
 use Config\Database;
 use Models\Reglement\Reglement;
+
+requireLogin();
 
 $db = (new Database())->connect();
 $reglementModel = new Reglement($db);
@@ -13,12 +16,14 @@ $reglements = $reglementModel->readAll();
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Règlement - Club Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-100 font-sans">
 
     <div class="flex min-h-screen">
@@ -45,7 +50,7 @@ $reglements = $reglementModel->readAll();
                             <p class="text-xl font-bold text-red-600"><?= number_format($r['montant_amende'], 0, ',', ' ') ?> <span class="text-xs">FCFA</span></p>
                         </div>
                         <p class="text-gray-600 text-sm mb-4"><?= $r['description'] ?></p>
-                        
+
                         <?php if ($r['statut'] === 'reflexion'): ?>
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <p class="text-sm font-medium text-gray-700 mb-3">Votez pour cette règle :</p>
@@ -106,4 +111,5 @@ $reglements = $reglementModel->readAll();
     </div>
 
 </body>
+
 </html>
