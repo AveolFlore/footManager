@@ -1,109 +1,184 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-require_once __DIR__ . '/../../../config/Database.php';
-require_once __DIR__ . '/../../../models/match_seance/MatchEntity.php';
+require_once __DIR__ . '/../../../middleware/Role.php';
 
-use Config\Database;
-use Models\Match_seance\MatchEntity;
+requireLogin();
 
-$db = (new Database())->connect();
-$matchModel = new MatchEntity($db);
-$events = $matchModel->readAll();
+use Controllers\MatchSeanceController;
+use Controllers\ConvocationController;
+use Controllers\ResultatMatchController;
+
+$matchController = new MatchSeanceController();
+$convocationController = new ConvocationController();
+
+$matchs = $matchController->index();
+$matchs_en_retard = [];
+foreach ($matchs as $match) {
+    if (
+        $match['statut'] === 'publie' &&
+        strtotime($match['date']) < strtotime('-1 day')
+    ) {
+        $matchs_en_retard[] = $match;
+    }
+}
+$resultatController = new ResultatMatchController();
+
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Matchs & Séances - Club Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Match</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans">
 
-    <div class="flex min-h-screen">
-        <?php include __DIR__ . '/../../partials/sidebar.php'; ?>
+<body>
+    <?php include_once __DIR__ . '/../../partials/header.php'; ?>
+    <div class="flex">
+        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
-        <main class="flex-1 p-8">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800">Matchs & Séances</h1>
-                <button onclick="document.getElementById('modal-add').classList.remove('hidden')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition">
-                    Nouvel événement
-                </button>
-            </header>
-
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50 border-b">
-                        <tr class="text-gray-400 text-xs uppercase tracking-wider">
-                            <th class="px-6 py-4">Date</th>
-                            <th class="px-6 py-4">Type</th>
-                            <th class="px-6 py-4">Lieu</th>
-                            <th class="px-6 py-4">Statut</th>
-                            <th class="px-6 py-4 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        <?php foreach ($events as $e): ?>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">
-                                    <p class="font-bold text-gray-800"><?= date('d/m/Y', strtotime($e['date'])) ?></p>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2 py-1 rounded-full text-xs font-bold <?= $e['type'] === 'match' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600' ?>">
-                                        <?= strtoupper($e['type']) ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-gray-600"><?= $e['lieu'] ?></td>
-                                <td class="px-6 py-4">
-                                    <span class="text-xs font-medium <?= $e['statut'] === 'termine' ? 'text-gray-400' : 'text-green-600' ?>">
-                                        <?= ucfirst($e['statut']) ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="/page-detail?id=<?= $e['id'] ?>" class="text-green-600 hover:underline font-medium">Détails</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-800">Matchs</h1>
+                    <p class="text-sm text-gray-500"><?= count($matchs) ?> matchs</p>
+                </div>
+                <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
+                    <a href="/page-matchcreate"
+                        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                        + Créer un match
+                    </a>
+                <?php endif; ?>
             </div>
+
+            <div class="flex gap-2 mb-6">
+                <button onclick="filtrer('tous')"
+                    id="btn-tous"
+                    class="filtre-btn px-4 py-2 rounded-full text-sm font-medium bg-green-600 text-white">
+                    Tous
+                </button>
+                <button onclick="filtrer('planifie')"
+                    id="btn-planifie"
+                    class="filtre-btn px-4 py-2 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">
+                    À venir
+                </button>
+                <button onclick="filtrer('termine')"
+                    id="btn-termine"
+                    class="filtre-btn px-4 py-2 rounded-full text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100">
+                    Terminés
+                </button>
+            </div>
+
+            <?php if (isset($_GET['msg'])): ?>
+                <div class="mb-4 px-4 py-3 rounded-lg bg-green-100 text-green-700 text-sm">
+                    <?= htmlspecialchars($_GET['msg']) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($matchs_en_retard)): ?>
+                <div class="mb-4 px-4 py-3 rounded-lg bg-orange-100 text-orange-700 text-sm font-medium">
+                    ⚠️ <?= count($matchs_en_retard) ?> match(s) non clôturé(s) depuis plus d'un jour — pensez à saisir les résultats.
+                </div>
+            <?php endif; ?>
+
+            <div id="liste-matchs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <?php foreach ($matchs as $match): ?>
+
+                    <?php
+                    $badge = match ($match['statut']) {
+                        'planifie' => ['label' => 'À venir',  'class' => 'bg-blue-100 text-blue-600'],
+                        'publie'   => ['label' => 'À venir',  'class' => 'bg-blue-100 text-blue-600'],
+                        'termine'  => ['label' => 'Terminé',  'class' => 'bg-green-100 text-green-600'],
+                        default    => ['label' => $match['statut'], 'class' => 'bg-gray-100 text-gray-600']
+                    };
+
+                    $convoques = $convocationController->index((int) $match['id']);
+                    $nb_convoques = count($convoques);
+
+                    $score = null;
+                    if ($match['statut'] === 'termine') {
+                        $resultat = $resultatController->index((int) $match['id']);
+                        if ($resultat) {
+                            $score = $resultat['buts_equipe_a'] . ' - ' . $resultat['buts_equipe_b'];
+                        }
+                    }
+                    ?>
+
+                    <a href="/page-matchdetail?id=<?= $match['id'] ?>"
+                        class="match-card block bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition"
+                        data-statut="<?= $match['statut'] ?>">
+
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-xs px-3 py-1 rounded-full font-medium <?= $badge['class'] ?>">
+                                <?= $badge['label'] ?>
+                            </span>
+                            <?php if ($score): ?>
+                                <span class="text-lg font-bold text-gray-800"><?= $score ?></span>
+                            <?php endif; ?>
+                        </div>
+
+                        <h2 class="text-lg font-semibold text-gray-800 mb-3">
+                            Équipe A vs Équipe B
+                        </h2>
+
+                        <div class="space-y-1 mb-4">
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <span>📅</span>
+                                <span><?= date('l d F', strtotime($match['date'])) ?></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <span>🕐</span>
+                                <span><?= date('H:i', strtotime($match['date'])) ?></span>
+
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <span>📍</span>
+                                <span><?= htmlspecialchars($match['lieu']) ?></span>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-100 mb-3">
+
+                        <p class="text-sm text-gray-400"><?= $nb_convoques ?> joueurs convoqués</p>
+
+                    </a>
+
+                <?php endforeach; ?>
+
+            </div>
+
         </main>
     </div>
 
-    <!-- Modal Ajouter -->
-    <div id="modal-add" class="fixed inset-0 bg-black/50 z-50 flex justify-center items-center hidden">
-        <div class="bg-white w-full max-w-lg p-8 rounded-xl">
-            <h2 class="text-2xl font-bold mb-6">Planifier une séance</h2>
-            <form action="/match-creer" method="POST" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                        <select name="type" class="w-full p-2 border rounded-lg outline-none">
-                            <option value="match">Match</option>
-                            <option value="entr">Entraînement</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                        <input type="date" name="date" required class="w-full p-2 border rounded-lg outline-none">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Lieu</label>
-                    <input type="text" name="lieu" required class="w-full p-2 border rounded-lg outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea name="description" rows="2" class="w-full p-2 border rounded-lg outline-none"></textarea>
-                </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('modal-add').classList.add('hidden')" class="px-4 py-2 text-gray-500">Annuler</button>
-                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">Créer</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <script>
+        function filtrer(statut) {
+            document.querySelectorAll('.filtre-btn').forEach(btn => {
+                btn.classList.remove('bg-green-600', 'text-white');
+                btn.classList.add('border', 'border-gray-300', 'text-gray-600');
+            });
 
+            const btnActif = document.getElementById('btn-' . statut);
+            if (btnActif) {
+                btnActif.classList.add('bg-green-600', 'text-white');
+                btnActif.classList.remove('border', 'border-gray-300', 'text-gray-600');
+            }
+
+            document.querySelectorAll('.match-card').forEach(card => {
+                if (statut === 'tous') {
+                    card.style.display = '';
+                } else if (statut === 'planifie') {
+                    card.style.display = (card.dataset.statut === 'planifie' || card.dataset.statut === 'publie') ? '' : 'none';
+                } else if (statut === 'termine') {
+                    card.style.display = card.dataset.statut === 'termine' ? '' : 'none';
+                }
+            });
+        }
+    </script>
 </body>
+
 </html>

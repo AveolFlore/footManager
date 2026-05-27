@@ -11,6 +11,8 @@ use Controllers\Performance\PerformanceController;
 use Controllers\Match_seance\Match_seanceController;
 use Controllers\Galerie\GalerieController;
 use Controllers\Equipe\EquipeController;
+use Controllers\MatchSeanceController;
+use Controllers\ResultatMatchController;
 
 // on recupère la route demandée par l'utilisateur
 $route = $_SERVER['REQUEST_URI'];
@@ -35,8 +37,6 @@ $id = $_GET['id'] ?? null;
 // var_dump($route);
 
 // Determiner le controller a appelé
-$controllerInstance = null;
-
 if (isset($controllerName)) {
     try {
         switch ($controllerName) {
@@ -80,6 +80,15 @@ if (isset($controllerName)) {
             // Ajout de la casse minuscule pour correspondre aux URLs
             case 'Convocation':
                 $controllerInstance = new ConvocationController();
+                break;
+            case 'convocation':
+                $controllerInstance = new ConvocationController();
+                break;
+            case 'matchSeance':
+                $controllerInstance = new MatchSeanceController();
+                break;
+            case 'resultatMatch':
+                $controllerInstance = new ResultatMatchController();
                 break;
 
             default:
@@ -219,7 +228,80 @@ if (isset($action) && $controllerInstance !== null) {
             // appele la methode invoke dans le controller qui permet de convoquer les joueres
             case 'invoke':
                 $controllerInstance->invokePlayer();
+                break;
+            
+            // les actions ajoutées par renaud
 
+            //  les actions pour afficher les vues de la rubrique match
+
+            case 'matchlist':
+                $controllerInstance->matchPage();
+                break;
+            case 'matchcreate':
+                $controllerInstance->matchCreatePage();
+                break;
+            case 'matchedit':
+                $controllerInstance->matchEditPage();
+                break;
+            case 'matchdetail':
+                $controllerInstance->matchDetailPage();
+                break;
+            case 'matchconvocations':
+                $controllerInstance->matchConvocationsPage();
+                break;
+
+            // les actions du controller match_seance
+            case 'list':
+                $controllerInstance->index();
+                break;
+            case 'show':
+                $controllerInstance->read_one((int) $id);
+                break;
+            case 'create':
+                $controllerInstance->store($_POST);
+                break;
+            case 'edit':
+                $controllerInstance->edit((int) $id);
+                break;
+            case 'update':
+                $controllerInstance->update($_POST);
+                break;
+            case 'publish':
+                $controllerInstance->publier((int) $id);
+                break;
+            case 'close':
+                $controllerInstance->terminer((int) $id);
+                break;
+            case 'destroy':
+                $controllerInstance->destroy((int) $id);
+                break;
+
+            // actions du controller convocation par renaud
+            case 'convoclist':
+                $controllerInstance->index((int) $id);
+                break;
+            case 'suggest':
+                $controllerInstance->get_suggestion();
+                break;
+            case 'convocsave':
+                $controllerInstance->store($_POST);
+                break;
+            case 'convocdelete':
+                $controllerInstance->destroy((int) $id);
+                break;
+
+
+            // actions du controller resultat_match
+            case 'resultatshow':
+                $controllerInstance->index((int) $id);
+                break;
+            case 'resultatsave':
+                $controllerInstance->store($_POST);
+                break;
+            case 'resultatupdate':
+                $controllerInstance->update($_POST);
+                break;
+            
             default:
                 echo "Actions non existant !";
                 break;

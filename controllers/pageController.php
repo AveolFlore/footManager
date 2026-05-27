@@ -71,4 +71,17 @@ class PageController
     {
         require_once "../views/pages/convocation/index.php";
     }
+    // les functions pour afficher tous les vues du rubrique matchs
+    public function matchCreatePage()
+    {
+        require_once "../views/pages/match_seance/create.php";
+    }
+    public function matchEditPage()
+    {
+        require_once "../views/pages/match_seance/edit.php";
+    }
+    public function matchConvocationsPage()
+    {
+        require_once "../views/pages/match_seance/convocations.php";
+    }
 }
