@@ -3,9 +3,9 @@
 namespace Controllers\Convocation;
 
 use Config\Database;
-use Models\EquipeType;
+use Models\Convocation\EquipeType;
 use Models\Utilisateur\User;
-use Models\Convocation;
+use Models\Convocation\Convocation;
 
 class ConvocationController
 {
