@@ -83,13 +83,10 @@ $resultat = $resultatController->index($id);
                             <p class="text-xs text-gray-400">Date</p>
                             <p class="text-sm font-medium text-gray-700">
                                 <?php
-                                $formatter = new IntlDateFormatter(
-                                    'fr_FR',
-                                    IntlDateFormatter::NONE,
-                                    IntlDateFormatter::NONE
-                                );
-                                $formatter->setPattern('EEEE dd MMMM');
-                                echo $formatter->format(strtotime($match['date']));
+                                $days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                                $months = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                                $timestamp = strtotime($match['date']);
+                                echo $days[date('w', $timestamp)] . ' ' . date('d', $timestamp) . ' ' . $months[date('n', $timestamp)];
                                 ?>
                             </p>
                         </div>
