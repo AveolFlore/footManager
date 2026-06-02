@@ -57,6 +57,11 @@ class MatchSeanceController
                 'createur_id' => (int) $_SESSION['user']['id']
             ];
 
+            // Convert datetime-local to MySQL DATETIME format
+            if (!empty($validate['date'])) {
+                $validate['date'] = str_replace('T', ' ', $validate['date']) . ':00';
+            }
+
             if (!empty($data['type']) && !empty($data['date']) && !empty($data['lieu'])) {
 
                 if (!empty($data['add_match']) && $data['add_match'] == 'Créer') {
@@ -110,6 +115,11 @@ class MatchSeanceController
                 'lieu'        => $this->sanitize($data['lieu']),
                 'description' => $this->sanitize($data['description'])
             ];
+
+            // Convert datetime-local to MySQL DATETIME format
+            if (!empty($validate['date'])) {
+                $validate['date'] = str_replace('T', ' ', $validate['date']) . ':00';
+            }
 
             if (!empty($data['date']) && !empty($data['lieu'])) {
 
@@ -175,10 +185,25 @@ class MatchSeanceController
             exit;
         }
     }
-    
+
     // DELETE
     public function destroy(int $id)
     {
+        $result = $this->matchSeanceModel->delete_one($id);
+
+        if ($result) {
+            header('Location: /page-match?msg=Match supprimé avec succès');
+            exit;
+        } else {
+            header('Location: /page-match?msg=Erreur lors de la suppression');
+            exit;
+        }
+    }
+
+    // DELETE (pour routeur)
+    public function delete()
+    {
+        $id = (int) $_GET['id'];
         $result = $this->matchSeanceModel->delete_one($id);
 
         if ($result) {

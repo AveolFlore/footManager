@@ -42,6 +42,31 @@ class AuthController
             exit;
         }
 
+        // validation nom/prenom (lettres seulement)
+        if (!preg_match("/^[a-zA-ZÀ-ÿ\s'-]+$/", $data['nom'])) {
+            header("Location:/page-register-joueur?msg=Nom invalide");
+            exit;
+        }
+        if (!preg_match("/^[a-zA-ZÀ-ÿ\s'-]+$/", $data['prenom'])) {
+            header("Location:/page-register-joueur?msg=Prénom invalide");
+            exit;
+        }
+
+        // validation téléphone (chiffres seulement)
+        if (!empty($data['telephone']) && !preg_match("/^[0-9+\s]+$/", $data['telephone'])) {
+            header("Location:/page-register-joueur?msg=Téléphone invalide");
+            exit;
+        }
+
+        // validation numéro maillot
+        if (!empty($data['numero_maillot'])) {
+            $numeroMaillot = intval($data['numero_maillot']);
+            if ($numeroMaillot < 1 || $numeroMaillot > 999) {
+                header("Location:/page-register-joueur?msg=Numéro maillot invalide");
+                exit;
+            }
+        }
+
         // confirmation mot de passe
         if ($data['mot_de_passe'] !== $data['confirm_mot_de_passe']) {
             header("Location:/page-register-joueur?msg=Les mots de passe ne correspondent pas");
@@ -77,7 +102,7 @@ class AuthController
             'date_naissance' => $data['date_naissance'] ?? date('Y-m-d'),
             'poste' => $data['poste'] ?? null,
             'pied_dominant' => $data['pied_dominant'] ?? null,
-            'numero_maillot' => $data['numero_maillot'] ?? null,
+            'numero_maillot' => !empty($data['numero_maillot']) ? intval($data['numero_maillot']) : null,
 
             // FORCÉS AUTOMATIQUEMENT
             'role' => 'joueur',

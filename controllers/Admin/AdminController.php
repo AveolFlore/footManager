@@ -90,8 +90,20 @@ class AdminController
         }
 
         $userId = intval($_POST['user_id']);
+        $adminId = $_SESSION['user']['id'];
 
         $this->userModel->refuseUser($userId);
+
+        // 1. Notifier le joueur
+        $this->notificationModel->create([
+            'destinataire_id' => $userId,
+            'type' => 'reglement',
+            'message' => "Désolé, ta demande d'inscription a été refusée. N'hésite pas à contacter le président pour plus d'informations.",
+            'lien' => '/'
+        ]);
+
+        // 2. Logger l'action
+        $this->activiteModel->log($adminId, 'joueur_refuse', "Joueur #$userId refusé");
 
         header("Location:/page-admin?msg=joueur_refuse");
         exit;
@@ -135,6 +147,56 @@ class AdminController
         $this->activiteModel->log($adminId, 'joueur_transfert', "Joueur #$userId transféré vers l'équipe #$equipeId. Motif: $motif");
 
         header("Location:/page-team?equipe_id=$equipeId&msg=transfert_success");
+        exit;
+    }
+
+    // PAGE MODIFIER UTILISATEUR
+    public function editUserPage()
+    {
+        requireAdmin();
+        $userId = intval($_GET['id']);
+        $user = $this->userModel->getFindId($userId);
+        require_once "../views/pages/admin/edit-user.php";
+    }
+
+    // METTRE A JOUR UTILISATEUR
+    public function updateUser()
+    {
+        requireAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location:/page-admin");
+            exit;
+        }
+
+        $userId = intval($_POST['user_id']);
+        $data = [
+            'role' => $_POST['role'],
+            'statut' => $_POST['statut'],
+            'equipe_id' => !empty($_POST['equipe_id']) ? intval($_POST['equipe_id']) : null
+        ];
+
+        $this->userModel->update($userId, $data);
+
+        $adminId = $_SESSION['user']['id'];
+        $this->activiteModel->log($adminId, 'utilisateur_modifie', "Utilisateur #$userId modifié");
+
+        header("Location:/page-admin?msg=utilisateur_modifie");
+        exit;
+    }
+
+    // SUPPRIMER UTILISATEUR
+    public function deleteUser()
+    {
+        requireAdmin();
+        $userId = intval($_GET['id']);
+
+        $this->userModel->delete($userId);
+
+        $adminId = $_SESSION['user']['id'];
+        $this->activiteModel->log($adminId, 'utilisateur_supprime', "Utilisateur #$userId supprimé");
+
+        header("Location:/page-admin?msg=utilisateur_supprime");
         exit;
     }
 }

@@ -3,22 +3,23 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../../middleware/Role.php';
 require_once __DIR__ . '/../../../config/Database.php';
 require_once __DIR__ . '/../../../models/galerie/Galerie.php';
-require_once __DIR__ . '/../../../models/match_seance/MatchEntity.php';
+require_once __DIR__ . '/../../../models/match_seance/MatchSeance.php';
 
 use Config\Database;
 use Models\Galerie\Galerie;
-use Models\match_seance\MatchEntity;
+use Models\MatchSeance;
 
 requireLogin();
 
 $db = (new Database())->connect();
 $galerieModel = new Galerie($db);
-$matchModel = new MatchEntity($db);
+$matchModel = new MatchSeance($db);
 
 $photos = $galerieModel->getAll();
-$matches = $matchModel->readAll(); // Assuming this exists or similar
+$matches = $matchModel->read();
 
 $isAdmin = in_array($_SESSION['user']['role'], ['admin', 'president', 'organisateur']);
+$pageTitle = "Galerie Photos";
 ?>
 
 <!DOCTYPE html>
@@ -34,35 +35,37 @@ $isAdmin = in_array($_SESSION['user']['role'], ['admin', 'president', 'organisat
     <div class="flex min-h-screen">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
         
-        <main class="flex-1 p-8">
-            <header class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Galerie Photos</h1>
-                    <p class="text-gray-600">Souvenirs et moments forts du club</p>
-                </div>
-                <?php if ($isAdmin): ?>
-                <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition">
-                    <i class="fas fa-upload"></i>
-                    <span>Ajouter une photo</span>
-                </button>
-                <?php endif; ?>
-            </header>
-
-            <?php if (isset($_GET['msg'])): ?>
-                <div class="mb-6 p-4 rounded-lg <?= strpos($_GET['msg'], 'success') !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
-                    <?= htmlspecialchars($_GET['msg']) ?>
-                </div>
-            <?php endif; ?>
-
-            <!-- Gallery Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <?php if (empty($photos)): ?>
-                    <div class="col-span-full text-center py-20">
-                        <i class="fas fa-images text-gray-300 text-6xl mb-4"></i>
-                        <p class="text-gray-500 italic">Aucune photo dans la galerie pour le moment.</p>
+        <main class="flex-1">
+            <?php include_once __DIR__ . '/../../partials/header.php'; ?>
+            <div class="p-8">
+                <header class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Galerie Photos</h1>
+                        <p class="text-gray-600">Souvenirs et moments forts du club</p>
                     </div>
-                <?php else: ?>
-                    <?php foreach ($photos as $photo): ?>
+                    <?php if ($isAdmin): ?>
+                    <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition">
+                        <i class="fas fa-upload"></i>
+                        <span>Ajouter une photo</span>
+                    </button>
+                    <?php endif; ?>
+                </header>
+
+                <?php if (isset($_GET['msg'])): ?>
+                    <div class="mb-6 p-4 rounded-lg <?= strpos($_GET['msg'], 'success') !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+                        <?= htmlspecialchars($_GET['msg']) ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <?php if (empty($photos)): ?>
+                        <div class="col-span-full text-center py-20">
+                            <i class="fas fa-images text-gray-300 text-6xl mb-4"></i>
+                            <p class="text-gray-500 italic">Aucune photo dans la galerie pour le moment.</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($photos as $photo): ?>
                         <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition group relative">
                             <img src="/<?= htmlspecialchars($photo['image_url']) ?>" alt="<?= htmlspecialchars($photo['titre']) ?>" class="w-full h-48 object-cover">
                             <div class="p-4">
@@ -84,8 +87,9 @@ $isAdmin = in_array($_SESSION['user']['role'], ['admin', 'president', 'organisat
                             </form>
                             <?php endif; ?>
                         </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
         </main>
     </div>
@@ -109,7 +113,7 @@ $isAdmin = in_array($_SESSION['user']['role'], ['admin', 'president', 'organisat
                     <select name="seance_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none">
                         <option value="">-- Choisir une séance --</option>
                         <?php foreach ($matches as $m): ?>
-                            <option value="<?= $m['id'] ?>"><?= date('d/m/Y', strtotime($m['date'])) ?> - <?= htmlspecialchars($m['lieu']) ?> (<?= $m['type'] ?>)</option>
+                            <option value="<?= $m['id'] ?>"><?= date('d/m/Y H:i', strtotime($m['date'])) ?> - <?= htmlspecialchars($m['lieu']) ?> (<?= $m['type'] ?>)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>

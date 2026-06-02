@@ -43,22 +43,25 @@ $msg = $_GET['msg'] ?? null;
             <form action="auth-signup" method="POST" enctype="multipart/form-data" class="space-y-3">
 
                 <input type="text" name="nom" placeholder="Nom" required
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                       pattern="[a-zA-ZÀ-ÿ\s'-]+" title="Seulement des lettres">
 
                 <input type="text" name="prenom" placeholder="Prénom" required
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                       pattern="[a-zA-ZÀ-ÿ\s'-]+" title="Seulement des lettres">
 
                 <input type="email" name="email" placeholder="Email" required
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
                 <input type="text" name="telephone" placeholder="Téléphone"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                       pattern="[0-9+\s]+" title="Seulement des chiffres">
 
                 <input type="date" name="date_naissance" required
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
                 <select name="poste" required
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                     <option value="">-- Poste --</option>
                     <option value="gard">Gardien</option>
                     <option value="def">Défenseur</option>
@@ -67,7 +70,7 @@ $msg = $_GET['msg'] ?? null;
                 </select>
 
                 <select name="pied_dominant"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                     <option value="">-- Pied dominant --</option>
                     <option value="droit">Droit</option>
                     <option value="gauche">Gauche</option>
@@ -75,22 +78,23 @@ $msg = $_GET['msg'] ?? null;
                 </select>
 
                 <input type="number" name="numero_maillot" placeholder="Numéro maillot (optionnel)"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                       min="1" max="999">
 
                 <div>
                     <label class="text-sm mb-1 block">Photo de profil</label>
                     <input type="file" name="photo_profil" accept="image/*"
-                        class="w-full text-sm">
+                           class="w-full text-sm">
                 </div>
 
                 <input type="password" name="mot_de_passe" placeholder="Mot de passe" required minlength="6"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
                 <input type="password" name="confirm_mot_de_passe" placeholder="Confirmer mot de passe" required minlength="6"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
 
                 <button type="submit"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
                     S'inscrire
                 </button>
 

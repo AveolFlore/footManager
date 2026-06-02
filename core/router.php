@@ -216,6 +216,15 @@ if (isset($action) && $controllerInstance !== null) {
             case 'changeteam':
                 $controllerInstance->changeTeam();
                 break;
+            case 'edituser':
+                $controllerInstance->editUserPage();
+                break;
+            case 'updateuser':
+                $controllerInstance->updateUser();
+                break;
+            case 'deleteuser':
+                $controllerInstance->deleteUser();
+                break;
             // route des convocations
             case 'convocation':
                 // On s'assure d'utiliser ConvocationController pour charger les données

@@ -33,4 +33,12 @@ class Vote
         $stmt->execute([$reglement_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function hasVoted($reglement_id, $joueur_id)
+    {
+        $query = "SELECT * FROM {$this->table} WHERE reglement_id = ? AND joueur_id = ? LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$reglement_id, $joueur_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

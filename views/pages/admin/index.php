@@ -195,10 +195,10 @@ $demandes = $userModel->getPendingUsers();
                                 </td>
 
                                 <td class="p-3 space-x-2">
-                                    <a href="/admin-edit-user?id=<?= $user['id'] ?>" class="text-blue-600 text-sm">
+                                    <a href="/admin-edituser?id=<?= $user['id'] ?>" class="text-blue-600 text-sm">
                                         Modifier
                                     </a>
-                                    <a href="/admin-delete-user?id=<?= $user['id'] ?>" class="text-red-600 text-sm">
+                                    <a href="/admin-deleteuser?id=<?= $user['id'] ?>" class="text-red-600 text-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
                                         Supprimer
                                     </a>
                                 </td>
