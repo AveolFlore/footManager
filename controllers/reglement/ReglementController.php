@@ -74,6 +74,35 @@ class ReglementController
         $choix = $_POST['choix'];
         $joueur_id = $_SESSION['user']['id'];
 
+        // Vérifier et mettre à jour les réglements expirés avant tout
+        $this->reglementModel->checkAndUpdateExpiredVotes();
+
+        // Récupérer le règlement pour vérifier le délai
+        $reglement = $this->reglementModel->readAll();
+        $r = null;
+        foreach ($reglement as $item) {
+            if ($item['id'] == $reglement_id) {
+                $r = $item;
+                break;
+            }
+        }
+
+        if (!$r) {
+            header("Location: /page-rule?msg=reglement_introuvable");
+            exit;
+        }
+
+        // Vérifier si le délai est dépassé
+        $date_debut = new DateTime($r['date_debut_vote']);
+        $maintenant = new DateTime();
+        $interval = $date_debut->diff($maintenant);
+        $heures_ecoulees = $interval->h + ($interval->days * 24);
+
+        if ($heures_ecoulees >= 24 || $r['statut'] !== 'reflexion') {
+            header("Location: /page-rule?msg=delai_depasse");
+            exit;
+        }
+
         try {
             $this->voteModel->create([
                 'reglement_id' => $reglement_id,
@@ -81,17 +110,7 @@ class ReglementController
                 'choix' => $choix
             ]);
 
-            // Vérifier si majorité (simplifié : si + de 5 votes OUI, on active)
-            $results = $this->voteModel->getResults($reglement_id);
-            $oui = 0;
-            foreach ($results as $res) {
-                if ($res['choix'] === 'oui') $oui = $res['total'];
-            }
-
-            if ($oui >= 5) {
-                $this->reglementModel->updateStatut($reglement_id, 'actif');
-                $this->activiteModel->log($joueur_id, 'reglement_actif', "Règlement #$reglement_id passé au statut ACTIF après vote.");
-            }
+            $this->activiteModel->log($joueur_id, 'vote_reglement', "Vote pour règlement #{$reglement_id} : {$choix}");
 
             header("Location: /page-rule?msg=vote_enregistre");
         } catch (\Exception $e) {

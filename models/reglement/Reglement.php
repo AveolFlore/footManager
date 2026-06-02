@@ -16,8 +16,8 @@ class Reglement
 
     public function create(array $data)
     {
-        $query = "INSERT INTO {$this->table} (titre, description, montant_amende, type_infraction, statut, propose_par, date_creation) 
-                  VALUES (:titre, :description, :montant_amende, :type_infraction, :statut, :propose_par, CURDATE())";
+        $query = "INSERT INTO {$this->table} (titre, description, montant_amende, type_infraction, statut, propose_par, date_creation, date_debut_vote) 
+                  VALUES (:titre, :description, :montant_amende, :type_infraction, :statut, :propose_par, CURDATE(), NOW())";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([
             ':titre' => $data['titre'],
@@ -50,5 +50,41 @@ class Reglement
         $query = "UPDATE {$this->table} SET statut = ? WHERE id = ?";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([$statut, $id]);
+    }
+
+    /**
+     * Vérifie et met à jour le statut des réglements dont le délai de vote est terminé
+     */
+    public function checkAndUpdateExpiredVotes()
+    {
+        // Récupérer tous les réglements en reflexion dont le délai est dépassé
+        $query = "SELECT * FROM {$this->table} WHERE statut = 'reflexion' AND date_debut_vote <= DATE_SUB(NOW(), INTERVAL 24 HOUR)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $reglements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($reglements as $r) {
+            // Calculer les votes
+            $voteQuery = "SELECT choix, COUNT(*) as total FROM vote WHERE reglement_id = ? GROUP BY choix";
+            $voteStmt = $this->conn->prepare($voteQuery);
+            $voteStmt->execute([$r['id']]);
+            $votes = $voteStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $oui = 0;
+            $non = 0;
+            foreach ($votes as $v) {
+                if ($v['choix'] === 'oui') $oui = $v['total'];
+                if ($v['choix'] === 'non') $non = $v['total'];
+            }
+
+            // Déterminer le nouveau statut
+            if ($oui > $non) {
+                $this->updateStatut($r['id'], 'actif');
+            } else {
+                $this->updateStatut($r['id'], 'rejete');
+            }
+        }
+
+        return true;
     }
 }

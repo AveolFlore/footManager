@@ -24,6 +24,8 @@ CREATE TABLE reglement (
 
     date_creation DATE,
 
+    date_debut_vote DATETIME DEFAULT CURRENT_TIMESTAMP,
+
     CONSTRAINT fk_reglement_propose
         FOREIGN KEY (propose_par)
         REFERENCES users(id)
