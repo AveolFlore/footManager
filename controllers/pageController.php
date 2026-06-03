@@ -84,4 +84,9 @@ class PageController
     {
         require_once "../views/pages/match_seance/convocations.php";
     }
+    
+    public function sanctionPage()
+    {
+        require_once "../views/pages/sanction/index.php";
+    }
 }

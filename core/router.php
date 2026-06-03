@@ -13,6 +13,7 @@ use Controllers\Galerie\GalerieController;
 use Controllers\Equipe\EquipeController;
 use Controllers\MatchSeanceController;
 use Controllers\ResultatMatchController;
+use Controllers\Sanction\SanctionController;
 
 // on recupère la route demandée par l'utilisateur
 $route = $_SERVER['REQUEST_URI'];
@@ -29,7 +30,12 @@ if (strlen($route) > 1) {
 $part = explode('-', $route);
 
 $controllerName = $part[0] ?? '/';
-$action = $part[1] ?? 'home';
+// Déterminer l'action par défaut selon le contrôleur
+if ($controllerName === 'presence' || $controllerName === 'sanction') {
+    $action = $part[1] ?? 'index';
+} else {
+    $action = $part[1] ?? 'home';
+}
 // instatiation du controller a nul ca peter chez moi sinon
 $controllerInstance = null;
 $id = $_GET['id'] ?? null;
@@ -90,7 +96,9 @@ if (isset($controllerName)) {
             case 'resultatMatch':
                 $controllerInstance = new ResultatMatchController();
                 break;
-
+            case 'sanction':
+                $controllerInstance = new SanctionController();
+                break;
             default:
                 $controllerInstance = new PageController();
                 break;
@@ -189,8 +197,19 @@ if (isset($action) && $controllerInstance !== null) {
             case 'detail':
                 $controllerInstance->matchDetailPage();
                 break;
+            case 'index':
+                if ($controllerInstance instanceof PresenceController) {
+                    $controllerInstance->index();
+                } else {
+                    $controllerInstance->homePage();
+                }
+                break;
             case 'marquer':
-                $controllerInstance->marquerPresence();
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $controllerInstance->marquerPresence();
+                } else {
+                    $controllerInstance->formulaireMarquage();
+                }
                 break;
             case 'payer':
                 $controllerInstance->payerCotisation();
@@ -234,11 +253,17 @@ if (isset($action) && $controllerInstance !== null) {
                 }
                 $controllerInstance->convocationPage();
                 break;
+            case 'sanction':
+                if (!($controllerInstance instanceof SanctionController)) {
+                    $controllerInstance = new SanctionController();
+                }
+                $controllerInstance->index();
+                break;
             // appele la methode invoke dans le controller qui permet de convoquer les joueres
             case 'invoke':
                 $controllerInstance->invokePlayer();
                 break;
-            
+
             // les actions ajoutées par renaud
 
             //  les actions pour afficher les vues de la rubrique match
@@ -310,7 +335,10 @@ if (isset($action) && $controllerInstance !== null) {
             case 'resultatupdate':
                 $controllerInstance->update($_POST);
                 break;
-            
+            case 'marquerpayee':
+                $controllerInstance->marquerPayee();
+                break;
+
             default:
                 echo "Actions non existant !";
                 break;

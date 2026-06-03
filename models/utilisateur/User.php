@@ -272,7 +272,14 @@ public function refuseUser($userId)
     return $stmt->execute(['id' => $userId]);
 }
 
-
-
+    // =========================================================
+    // OBTENIR TOUS LES JOUEURS VALIDES
+    // =========================================================
+    public function getAllJoueursValides()
+    {
+        $sql = "SELECT * FROM users WHERE role = 'joueur' AND statut = 'valide' ORDER BY nom ASC";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 }

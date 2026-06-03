@@ -77,6 +77,12 @@ class MatchSeance
         }
     }
 
+    // Alias pour read_one()
+    public function getById(int $id)
+    {
+        return $this->read_one($id);
+    }
+
     // UPDATE (modifier lieu, date, description)
     public function update(int $id, array $data)
     {

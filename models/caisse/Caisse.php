@@ -57,4 +57,19 @@ class Caisse
         $stmt = $this->conn->query($query);
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     }
+
+    public function getTotalByCategory($categorie, $type = null)
+    {
+        $query = "SELECT SUM(montant) as total FROM {$this->table} WHERE categorie = :categorie";
+        if ($type) {
+            $query .= " AND type = :type";
+        }
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':categorie', $categorie);
+        if ($type) {
+            $stmt->bindParam(':type', $type);
+        }
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+    }
 }
