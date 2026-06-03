@@ -36,14 +36,12 @@ $joueurs = $pdo->query(
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Convocations</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body>
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
 
@@ -51,7 +49,6 @@ $joueurs = $pdo->query(
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
         <main class="flex-1 p-4 md:p-6">
-
             <!-- Retour -->
             <a href="/page-matchdetail?id=<?= $id ?>"
                 class="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-6">
@@ -60,7 +57,7 @@ $joueurs = $pdo->query(
 
             <!-- Message flash -->
             <?php if (isset($_GET['msg'])): ?>
-                <div class="mb-4 px-4 py-3 rounded-lg bg-red-100 text-red-700 text-sm">
+                <div class="mb-4 px-4 py-3 rounded-lg <?= str_contains($_GET['msg'], 'Erreur') || str_contains($_GET['msg'], 'ne peut pas') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' ?>">
                     <?= htmlspecialchars($_GET['msg']) ?>
                 </div>
             <?php endif; ?>
@@ -99,28 +96,49 @@ $joueurs = $pdo->query(
 
             <!-- Formulaire convocations -->
             <div class="bg-white rounded-xl border border-gray-200 p-6">
-
                 <h2 class="text-lg font-semibold text-gray-700 mb-4">
                     Sélectionner les joueurs
                 </h2>
 
-                <form action="/convocation-convocsave" method="POST">
+                <!-- Compteurs -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 rounded-lg border border-blue-200 bg-blue-50">
+                        <p class="text-sm text-blue-700 font-semibold mb-1">Équipe A</p>
+                        <p class="text-2xl font-bold text-blue-600" id="countA">0 / 8 joueurs</p>
+                    </div>
+                    <div class="p-4 rounded-lg border border-red-200 bg-red-50">
+                        <p class="text-sm text-red-700 font-semibold mb-1">Équipe B</p>
+                        <p class="text-2xl font-bold text-red-600" id="countB">0 / 8 joueurs</p>
+                    </div>
+                </div>
+
+                <form action="/convocation-convocsave" method="POST" id="convocationForm">
                     <input type="hidden" name="match_id" value="<?= $id ?>">
 
                     <?php if (empty($joueurs)): ?>
                         <p class="text-sm text-gray-400">Aucun joueur disponible.</p>
 
                     <?php else: ?>
-                        <div class="space-y-2 mb-6">
+                        <div class="space-y-2 mb-6" id="playersList">
                             <?php foreach ($joueurs as $joueur): ?>
+                                <?php
+                                // Récupérer les données du joueur déjà convoqué si présent
+                                $convoqueData = null;
+                                foreach ($deja_convoques as $dc) {
+                                    if ($dc['joueur_id'] == $joueur['id']) {
+                                        $convoqueData = $dc;
+                                        break;
+                                    }
+                                }
+                                ?>
                                 <div class="flex items-center gap-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
-
                                     <!-- Checkbox sélection -->
                                     <input type="checkbox"
                                         name="joueurs[<?= $joueur['id'] ?>][selectionne]"
                                         value="1"
-                                        <?= in_array($joueur['id'], $ids_convoques) ? 'checked' : '' ?>
-                                        class="w-4 h-4 accent-green-600">
+                                        class="w-4 h-4 accent-green-600 player-checkbox"
+                                        data-player-id="<?= $joueur['id'] ?>"
+                                        <?= in_array($joueur['id'], $ids_convoques) ? 'checked' : '' ?>>
 
                                     <!-- Nom + poste -->
                                     <div class="flex-1">
@@ -133,9 +151,10 @@ $joueurs = $pdo->query(
 
                                     <!-- Équipe A ou B -->
                                     <select name="joueurs[<?= $joueur['id'] ?>][equipe]"
-                                        class="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500">
-                                        <option value="A">Équipe A</option>
-                                        <option value="B">Équipe B</option>
+                                        class="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500 team-select"
+                                        data-player-id="<?= $joueur['id'] ?>">
+                                        <option value="A" <?= $convoqueData && $convoqueData['equipe_match'] === 'A' ? 'selected' : '' ?>>Équipe A</option>
+                                        <option value="B" <?= $convoqueData && $convoqueData['equipe_match'] === 'B' ? 'selected' : '' ?>>Équipe B</option>
                                     </select>
 
                                     <!-- Capitaine -->
@@ -143,18 +162,20 @@ $joueurs = $pdo->query(
                                         <input type="checkbox"
                                             name="joueurs[<?= $joueur['id'] ?>][capitaine]"
                                             value="1"
-                                            class="w-3 h-3 accent-green-600">
+                                            class="w-3 h-3 accent-green-600 captain-checkbox"
+                                            data-player-id="<?= $joueur['id'] ?>"
+                                            data-team="<?= $convoqueData ? $convoqueData['equipe_match'] : 'A' ?>"
+                                            <?= $convoqueData && $convoqueData['est_capitaine'] ? 'checked' : '' ?>>
                                         Cap.
                                     </label>
 
                                     <!-- Numéro maillot -->
                                     <input type="number"
                                         name="joueurs[<?= $joueur['id'] ?>][maillot]"
-                                        value="<?= $joueur['numero_maillot'] ?? '' ?>"
+                                        value="<?= $convoqueData ? $convoqueData['numero_maillot'] : ($joueur['numero_maillot'] ?? '') ?>"
                                         placeholder="N°"
                                         min="1" max="99"
                                         class="w-16 text-sm border border-gray-300 rounded-lg px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-green-500">
-
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -171,13 +192,69 @@ $joueurs = $pdo->query(
                             </a>
                         </div>
                     <?php endif; ?>
-
                 </form>
             </div>
-
         </main>
     </div>
 
-</body>
+    <script>
+        // Fonction pour mettre à jour les compteurs
+        function updateCounts() {
+            let countA = 0;
+            let countB = 0;
 
+            document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+                if (checkbox.checked) {
+                    const playerId = checkbox.dataset.playerId;
+                    const teamSelect = document.querySelector(`.team-select[data-player-id="${playerId}"]`);
+                    if (teamSelect.value === 'A') {
+                        countA++;
+                    } else {
+                        countB++;
+                    }
+                }
+            });
+
+            document.getElementById('countA').textContent = `${countA} / 8 joueurs`;
+            document.getElementById('countB').textContent = `${countB} / 8 joueurs`;
+            document.getElementById('countA').className = countA > 8 ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-blue-600';
+            document.getElementById('countB').className = countB > 8 ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-red-600';
+        }
+
+        // Mettre à jour la team du capitaine quand la team change
+        document.querySelectorAll('.team-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const playerId = this.dataset.playerId;
+                const captainCheckbox = document.querySelector(`.captain-checkbox[data-player-id="${playerId}"]`);
+                if (captainCheckbox) {
+                    captainCheckbox.dataset.team = this.value;
+                }
+                updateCounts();
+            });
+        });
+
+        // Gérer les clicks sur les checkboxes de capitaine
+        document.querySelectorAll('.captain-checkbox').forEach(captainCheckbox => {
+            captainCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    const team = this.dataset.team;
+                    // Désélectionner les autres capitaines de la même équipe
+                    document.querySelectorAll(`.captain-checkbox[data-team="${team}"]`).forEach(otherCheckbox => {
+                        if (otherCheckbox !== this) {
+                            otherCheckbox.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+
+        // Ajouter écouteurs sur les checkboxes de joueurs
+        document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateCounts);
+        });
+
+        // Appeler updateCounts au chargement initial
+        updateCounts();
+    </script>
+</body>
 </html>

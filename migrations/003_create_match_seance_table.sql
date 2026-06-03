@@ -3,7 +3,7 @@ CREATE TABLE match_seance (
 
     type ENUM('match', 'entr') NOT NULL,
 
-    date DATE NOT NULL,
+    date DATETIME NOT NULL,
 
     lieu VARCHAR(200),
 

@@ -16,8 +16,8 @@ class Reglement
 
     public function create(array $data)
     {
-        $query = "INSERT INTO {$this->table} (titre, description, montant_amende, type_infraction, statut, propose_par, date_creation, date_debut_vote) 
-                  VALUES (:titre, :description, :montant_amende, :type_infraction, :statut, :propose_par, CURDATE(), NOW())";
+        $query = "INSERT INTO {$this->table} (titre, description, montant_amende, type_infraction, statut, propose_par, date_creation, date_debut_vote, duree_vote_heures) 
+                  VALUES (:titre, :description, :montant_amende, :type_infraction, :statut, :propose_par, CURDATE(), NOW(), :duree_vote_heures)";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([
             ':titre' => $data['titre'],
@@ -25,7 +25,8 @@ class Reglement
             ':montant_amende' => $data['montant_amende'],
             ':type_infraction' => $data['type_infraction'],
             ':statut' => $data['statut'] ?? 'reflexion',
-            ':propose_par' => $data['propose_par']
+            ':propose_par' => $data['propose_par'],
+            ':duree_vote_heures' => $data['duree_vote_heures'] ?? 24
         ]);
     }
 
@@ -58,7 +59,7 @@ class Reglement
     public function checkAndUpdateExpiredVotes()
     {
         // Récupérer tous les réglements en reflexion dont le délai est dépassé
-        $query = "SELECT * FROM {$this->table} WHERE statut = 'reflexion' AND date_debut_vote <= DATE_SUB(NOW(), INTERVAL 24 HOUR)";
+        $query = "SELECT * FROM {$this->table} WHERE statut = 'reflexion' AND DATE_ADD(date_debut_vote, INTERVAL duree_vote_heures HOUR) <= NOW()";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         $reglements = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -66,6 +66,7 @@ if (!in_array($_SESSION['user']['role'], ['president', 'organisateur'])) {
                         </label>
                         <input type="datetime-local" name="date"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                            id="match-date"
                             required>
                     </div>
 
@@ -109,5 +110,19 @@ if (!in_array($_SESSION['user']['role'], ['president', 'organisateur'])) {
     </div>
 
 </body>
+<script>
+    // Définir la date minimale comme la date et l'heure actuelles
+    document.addEventListener('DOMContentLoaded', function() {
+        const matchDate = document.getElementById('match-date');
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        matchDate.setAttribute('min', minDateTime);
+    });
+</script>
 
 </html>

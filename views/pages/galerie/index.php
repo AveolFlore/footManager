@@ -24,6 +24,7 @@ $pageTitle = "Galerie Photos";
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,10 +32,11 @@ $pageTitle = "Galerie Photos";
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-50 font-sans">
     <div class="flex min-h-screen">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-        
+
         <main class="flex-1">
             <?php include_once __DIR__ . '/../../partials/header.php'; ?>
             <div class="p-8">
@@ -44,10 +46,10 @@ $pageTitle = "Galerie Photos";
                         <p class="text-gray-600">Souvenirs et moments forts du club</p>
                     </div>
                     <?php if ($isAdmin): ?>
-                    <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition">
-                        <i class="fas fa-upload"></i>
-                        <span>Ajouter une photo</span>
-                    </button>
+                        <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition">
+                            <i class="fas fa-upload"></i>
+                            <span>Ajouter une photo</span>
+                        </button>
                     <?php endif; ?>
                 </header>
 
@@ -66,27 +68,39 @@ $pageTitle = "Galerie Photos";
                         </div>
                     <?php else: ?>
                         <?php foreach ($photos as $photo): ?>
-                        <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition group relative">
-                            <img src="/<?= htmlspecialchars($photo['image_url']) ?>" alt="<?= htmlspecialchars($photo['titre']) ?>" class="w-full h-48 object-cover">
-                            <div class="p-4">
-                                <h3 class="font-bold text-gray-800 truncate"><?= htmlspecialchars($photo['titre']) ?></h3>
-                                <p class="text-xs text-gray-500 mb-2">
-                                    <i class="fas fa-calendar-alt mr-1"></i> <?= date('d/m/Y', strtotime($photo['date_upload'])) ?>
-                                    <?php if ($photo['lieu']): ?>
-                                        | <i class="fas fa-map-marker-alt ml-1 mr-1"></i> <?= htmlspecialchars($photo['lieu']) ?>
-                                    <?php endif; ?>
-                                </p>
-                                <p class="text-sm text-gray-600 line-clamp-2"><?= htmlspecialchars($photo['description']) ?></p>
+                            <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition group relative">
+                                <img src="/<?= htmlspecialchars($photo['image_url']) ?>" alt="<?= htmlspecialchars($photo['titre']) ?>" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-bold text-gray-800 truncate"><?= htmlspecialchars($photo['titre']) ?></h3>
+                                    <p class="text-xs text-gray-500 mb-2">
+                                        <i class="fas fa-calendar-alt mr-1"></i> <?= date('d/m/Y', strtotime($photo['date_upload'])) ?>
+                                        <?php if ($photo['lieu']): ?>
+                                            | <i class="fas fa-map-marker-alt ml-1 mr-1"></i> <?= htmlspecialchars($photo['lieu']) ?>
+                                        <?php endif; ?>
+                                    </p>
+                                    <p class="text-sm text-gray-600 line-clamp-2"><?= htmlspecialchars($photo['description']) ?></p>
+                                </div>
+                                <?php if ($isAdmin): ?>
+                                    <button onclick="openConfirmModal(
+                                'Supprimer la photo ?',
+                                'Êtes-vous sûr de vouloir supprimer cette photo ?',
+                                () => {
+                                    const form = document.createElement('form');
+                                    form.method = 'POST';
+                                    form.action = '/galerie-delete';
+                                    const input = document.createElement('input');
+                                    input.type = 'hidden';
+                                    input.name = 'id';
+                                    input.value = '<?= $photo['id'] ?>';
+                                    form.appendChild(input);
+                                    document.body.appendChild(form);
+                                    form.submit();
+                                }
+                            )" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition bg-red-600 text-white p-2 rounded-full hover:bg-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                <?php endif; ?>
                             </div>
-                            <?php if ($isAdmin): ?>
-                            <form action="/galerie-delete" method="POST" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition">
-                                <input type="hidden" name="id" value="<?= $photo['id'] ?>">
-                                <button type="submit" class="bg-red-600 text-white p-2 rounded-full hover:bg-red-700" onclick="return confirm('Supprimer cette photo ?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                            <?php endif; ?>
-                        </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
@@ -134,4 +148,5 @@ $pageTitle = "Galerie Photos";
         </div>
     </div>
 </body>
+
 </html>

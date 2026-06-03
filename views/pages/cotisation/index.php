@@ -38,7 +38,7 @@ $unpaid = $cotisationModel->getUnpaidCurrentMonth(date('m'), date('Y'));
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 
                 <!-- Section: Cotisations Impayées -->
                 <div class="bg-white p-6 rounded-xl shadow-sm">

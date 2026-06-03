@@ -1,5 +1,4 @@
 <?php
-
 namespace Controllers\Convocation;
 
 use Config\Database;
@@ -126,17 +125,59 @@ class ConvocationController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $match_id = (int) $data['match_id'];
+
+            // D'abord supprimer les anciennes convocations pour ce match
+            $deleteStmt = $this->pdo->prepare("DELETE FROM convocation WHERE match_id = :match_id");
+            $deleteStmt->execute([':match_id' => $match_id]);
+
             if (!empty($data['joueurs'])) {
+                $compteurs = ['A' => 0, 'B' => 0];
+                $capitaines = ['A' => 0, 'B' => 0];
+                $joueursAVerifier = [];
+
+                // Compter et vérifier
                 foreach ($data['joueurs'] as $joueur_id => $info) {
                     if (isset($info['selectionne']) && $info['selectionne'] == '1') {
-                        $this->convocationModel->create([
-                            'match_id'       => $match_id,
-                            'joueur_id'      => (int) $joueur_id,
-                            'equipe_match'   => $this->sanitize($info['equipe']),
-                            'est_capitaine'  => isset($info['capitaine']) ? 1 : 0,
-                            'numero_maillot' => (int) $info['maillot']
-                        ]);
+                        $equipe = $this->sanitize($info['equipe']);
+                        $compteurs[$equipe]++;
+                        if (isset($info['capitaine'])) {
+                            $capitaines[$equipe]++;
+                        }
+                        $joueursAVerifier[] = [
+                            'joueur_id' => $joueur_id,
+                            'equipe' => $equipe,
+                            'capitaine' => isset($info['capitaine']),
+                            'maillot' => (int)$info['maillot']
+                        ];
                     }
+                }
+
+                // Vérifications
+                $erreur = null;
+                if ($compteurs['A'] > 8) {
+                    $erreur = "L'équipe A ne peut pas avoir plus de 8 joueurs !";
+                } elseif ($compteurs['B'] > 8) {
+                    $erreur = "L'équipe B ne peut pas avoir plus de 8 joueurs !";
+                } elseif ($capitaines['A'] > 1) {
+                    $erreur = "L'équipe A ne peut avoir qu'un seul capitaine !";
+                } elseif ($capitaines['B'] > 1) {
+                    $erreur = "L'équipe B ne peut avoir qu'un seul capitaine !";
+                }
+
+                if ($erreur) {
+                    header('Location: /page-matchconvocations?id=' . $match_id . '&msg=' . urlencode($erreur));
+                    exit;
+                }
+
+                // Ajouter les convocations
+                foreach ($joueursAVerifier as $j) {
+                    $this->convocationModel->create([
+                        'match_id'       => $match_id,
+                        'joueur_id'      => (int) $j['joueur_id'],
+                        'equipe_match'   => $j['equipe'],
+                        'est_capitaine'  => $j['capitaine'] ? 1 : 0,
+                        'numero_maillot' => $j['maillot']
+                    ]);
                 }
 
                 $this->matchSeanceModel->publier($match_id);

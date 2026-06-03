@@ -1,4 +1,3 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../config/Database.php';
@@ -113,8 +112,28 @@ if ($user_id) {
 </header>
 
 
-<!-- SCRIPT MOBILE & NOTIFICATIONS -->
+<!-- CONFIRMATION MODAL -->
+<div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+        <div class="p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-2" id="confirmModalTitle">Êtes-vous sûr ?</h3>
+            <p class="text-gray-600 mb-6" id="confirmModalMessage">Cette action est irréversible.</p>
+        </div>
+        <div class="flex gap-3 p-4 border-t bg-gray-50">
+            <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
+                Annuler
+            </button>
+            <button onclick="executeConfirmAction()" class="flex-1 px-4 py-2 bg-red-600 rounded-lg text-white font-medium hover:bg-red-700 transition">
+                Confirmer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT MOBILE & NOTIFICATIONS & CONFIRM MODAL -->
 <script>
+let confirmCallback = null;
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -128,12 +147,37 @@ function toggleNotifications() {
     list.classList.toggle('hidden');
 }
 
+function openConfirmModal(title, message, callback) {
+    document.getElementById('confirmModalTitle').textContent = title;
+    document.getElementById('confirmModalMessage').textContent = message;
+    confirmCallback = callback;
+    document.getElementById('confirmModal').classList.remove('hidden');
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+    confirmCallback = null;
+}
+
+function executeConfirmAction() {
+    if (confirmCallback) {
+        confirmCallback();
+    }
+    closeConfirmModal();
+}
+
 // Close dropdown when clicking outside
 document.addEventListener('click', function(event) {
     const dropdown = document.getElementById('notificationsDropdown');
     const list = document.getElementById('notificationsList');
     if (!dropdown.contains(event.target)) {
         list.classList.add('hidden');
+    }
+
+    // Close confirm modal if clicking outside
+    const confirmModal = document.getElementById('confirmModal');
+    if (confirmModal && event.target === confirmModal) {
+        closeConfirmModal();
     }
 });
 </script>

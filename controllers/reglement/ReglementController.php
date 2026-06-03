@@ -45,7 +45,8 @@ class ReglementController
             'montant_amende' => intval($_POST['montant_amende']),
             'type_infraction' => $_POST['type_infraction'],
             'statut' => 'reflexion',
-            'propose_par' => $_SESSION['user']['id']
+            'propose_par' => $_SESSION['user']['id'],
+            'duree_vote_heures' => intval($_POST['duree_vote_heures'])
         ];
 
         $this->reglementModel->create($data);
@@ -93,12 +94,11 @@ class ReglementController
         }
 
         // Vérifier si le délai est dépassé
-        $date_debut = new DateTime($r['date_debut_vote']);
-        $maintenant = new DateTime();
-        $interval = $date_debut->diff($maintenant);
-        $heures_ecoulees = $interval->h + ($interval->days * 24);
+        $date_debut = new \DateTime($r['date_debut_vote']);
+        $date_fin = (clone $date_debut)->modify('+ ' . $r['duree_vote_heures'] . ' hours');
+        $maintenant = new \DateTime();
 
-        if ($heures_ecoulees >= 24 || $r['statut'] !== 'reflexion') {
+        if ($maintenant > $date_fin || $r['statut'] !== 'reflexion') {
             header("Location: /page-rule?msg=delai_depasse");
             exit;
         }

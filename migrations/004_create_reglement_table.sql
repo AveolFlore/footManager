@@ -25,6 +25,8 @@ CREATE TABLE reglement (
     date_creation DATE,
 
     date_debut_vote DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    duree_vote_heures INT DEFAULT 24,
 
     CONSTRAINT fk_reglement_propose
         FOREIGN KEY (propose_par)

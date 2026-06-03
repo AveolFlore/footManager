@@ -45,7 +45,6 @@ $pageTitle = "Règlements du Club";
                 <header class="flex justify-between items-center mb-8">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-800">Règlement Intérieur</h1>
-                        <p class="text-gray-600">Votes ouverts pendant 24 heures</p>
                     </div>
                     <button onclick="document.getElementById('modal-propose').classList.remove('hidden')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition shadow-md">
                         <i class="fas fa-plus mr-2"></i> Proposer un règlement
@@ -91,12 +90,15 @@ $pageTitle = "Règlements du Club";
                         $ouiPercent = $totalVotes > 0 ? round(($ouiVotes / $totalVotes) * 100) : 0;
                         $nonPercent = $totalVotes > 0 ? round(($nonVotes / $totalVotes) * 100) : 0;
 
-                        // Calculer le temps restant
+                        // Calculer le temps restant avec la durée personnalisée
                         $tempsRestant = null;
                         $delaiDepasse = false;
+                        $dateDebut = null;
+                        $dateFin = null;
+
                         if ($r['statut'] === 'reflexion') {
                             $dateDebut = new DateTime($r['date_debut_vote']);
-                            $dateFin = (clone $dateDebut)->modify('+24 hours');
+                            $dateFin = (clone $dateDebut)->modify('+ ' . $r['duree_vote_heures'] . ' hours');
                             $maintenant = new DateTime();
                             $interval = $maintenant->diff($dateFin);
 
@@ -264,6 +266,10 @@ $pageTitle = "Règlements du Club";
                         </select>
                     </div>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Durée du vote (heures)</label>
+                    <input type="number" name="duree_vote_heures" required min="1" value="24" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                     <button type="button" onclick="document.getElementById('modal-propose').classList.add('hidden')" class="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium transition">
                         Annuler
@@ -278,5 +284,4 @@ $pageTitle = "Règlements du Club";
 
 </body>
 
-</html>ALTER TABLE reglement ADD COLUMN date_debut_vote DATETIME DEFAULT CURRENT_TIMESTAMP AFTER date_creation;
-UPDATE reglement SET date_debut_vote = CONCAT(date_creation, ' 00:00:00') WHERE date_debut_vote IS NULL;
+</html>

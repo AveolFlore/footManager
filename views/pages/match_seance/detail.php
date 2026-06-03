@@ -18,10 +18,15 @@ $match = $matchController->read_one($id);
 $convoques = $convocationController->index($id);
 $resultat = $resultatController->index($id);
 
+// Grouper les convoqués par équipe
+$joueursParEquipe = ['A' => [], 'B' => []];
+foreach ($convoques as $convoque) {
+    $joueursParEquipe[$convoque['equipe_match']][] = $convoque;
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -37,14 +42,12 @@ $resultat = $resultatController->index($id);
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
         <main class="flex-1 overflow-y-auto p-4 md:p-6">
-
             <a href="/page-match"
                 class="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-6">
                 ← Retour aux matchs
             </a>
 
             <div class="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h1 class="text-2xl font-semibold text-gray-800 mb-2">
@@ -116,8 +119,7 @@ $resultat = $resultatController->index($id);
                 </div>
 
                 <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
-                    <div class="flex gap-2 mt-6 pt-4 border-t border-gray-100">
-
+                    <div class="flex gap-3 mt-6 pt-4 border-t border-gray-100">
                         <?php if ($match['statut'] === 'planifie'): ?>
                             <a href="/page-matchconvocations?id=<?= $match['id'] ?>"
                                 class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
@@ -130,53 +132,94 @@ $resultat = $resultatController->index($id);
                         <?php endif; ?>
 
                         <?php if ($match['statut'] !== 'termine'): ?>
-                            <a href="/matchSeance-delete?id=<?= $match['id'] ?>"
-                                onclick="return confirm('Supprimer ce match ?')"
-                                class="px-4 py-2 bg-red-100 text-red-600 text-sm rounded-lg hover:bg-red-200 transition">
+                            <button onclick="openConfirmModal(
+                                'Supprimer le match ?',
+                                'Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.',
+                                () => window.location.href = '/matchSeance-delete?id=<?= $match['id'] ?>'
+                            )" class="px-4 py-2 bg-red-100 text-red-600 text-sm rounded-lg hover:bg-red-200 transition">
                                 Supprimer
-                            </a>
+                            </button>
                         <?php endif; ?>
-
                     </div>
                 <?php endif; ?>
-
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Équipe A -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-lg">🔵</span>
+                        <h2 class="text-lg font-semibold text-gray-700">
+                            Équipe A (<?= count($joueursParEquipe['A']) ?> joueurs)
+                        </h2>
+                    </div>
 
-                <div class="flex items-center gap-2 mb-6">
-                    <span class="text-lg">👥</span>
-                    <h2 class="text-lg font-semibold text-gray-700">
-                        Convoqués (<?= count($convoques) ?>)
-                    </h2>
+                    <?php if (empty($joueursParEquipe['A'])): ?>
+                        <p class="text-sm text-gray-400">Aucun joueur convoqué dans cette équipe.</p>
+                    <?php else: ?>
+                        <div class="space-y-3">
+                            <?php foreach ($joueursParEquipe['A'] as $convoque): ?>
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                        🧑
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-700">
+                                            <?= htmlspecialchars($convoque['nom']) ?>
+                                            <?= htmlspecialchars($convoque['prenom']) ?>
+                                        </p>
+                                        <?php if ($convoque['numero_maillot']): ?>
+                                            <p class="text-xs text-gray-500">#<?= $convoque['numero_maillot'] ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if ($convoque['est_capitaine']): ?>
+                                        <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full border border-yellow-200">
+                                            Capitaine
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
-                <?php if (empty($convoques)): ?>
-                    <p class="text-sm text-gray-400">Aucun joueur convoqué pour ce match.</p>
-
-                <?php else: ?>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <?php foreach ($convoques as $convoque): ?>
-                            <div class="flex flex-col items-center gap-2">
-
-                                <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-2xl">
-                                    🧑
-                                </div>
-
-                                <p class="text-sm font-medium text-gray-700 text-center">
-                                    <?= htmlspecialchars($convoque['nom']) ?>
-                                    <?= htmlspecialchars($convoque['prenom']) ?>
-                                </p>
-
-                                <p class="text-xs text-gray-400">
-                                    Équipe <?= $convoque['equipe_match'] ?>
-                                </p>
-
-                            </div>
-                        <?php endforeach; ?>
+                <!-- Équipe B -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-lg">🔴</span>
+                        <h2 class="text-lg font-semibold text-gray-700">
+                            Équipe B (<?= count($joueursParEquipe['B']) ?> joueurs)
+                        </h2>
                     </div>
-                <?php endif; ?>
 
+                    <?php if (empty($joueursParEquipe['B'])): ?>
+                        <p class="text-sm text-gray-400">Aucun joueur convoqué dans cette équipe.</p>
+                    <?php else: ?>
+                        <div class="space-y-3">
+                            <?php foreach ($joueursParEquipe['B'] as $convoque): ?>
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                                        🧑
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-700">
+                                            <?= htmlspecialchars($convoque['nom']) ?>
+                                            <?= htmlspecialchars($convoque['prenom']) ?>
+                                        </p>
+                                        <?php if ($convoque['numero_maillot']): ?>
+                                            <p class="text-xs text-gray-500">#<?= $convoque['numero_maillot'] ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if ($convoque['est_capitaine']): ?>
+                                        <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full border border-yellow-200">
+                                            Capitaine
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <?php if (
@@ -184,7 +227,7 @@ $resultat = $resultatController->index($id);
                 $match['statut'] === 'publie' &&
                 !$resultat
             ): ?>
-                <div class="bg-white rounded-xl border border-gray-200 p-6 mt-4">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
                     <h2 class="text-lg font-semibold text-gray-700 mb-4">Saisir le résultat</h2>
 
                     <form action="/resultatMatch-resultatsave" method="POST">
@@ -210,10 +253,8 @@ $resultat = $resultatController->index($id);
                     </form>
                 </div>
             <?php endif; ?>
-
         </main>
     </div>
-
 </body>
 
 </html>
