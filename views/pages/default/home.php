@@ -48,8 +48,57 @@ $pageTitle = "Tableau de bord";
     <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
+        
+        .cyber-bg {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+        
+        .holo-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(34, 211, 238, 0.25);
+            box-shadow: 0 0 35px rgba(34, 211, 238, 0.1);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px rgb(34 211 238),
+                        0 0 20px rgb(34 211 238);
+        }
+        
+        .stat-glow {
+            transition: all 0.4s ease;
+        }
+        
+        .stat-glow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+        }
+        
+        .scan-line {
+            position: relative;
+        }
+        
+        .scan-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: scan 6s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 300%; }
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-800">
+<body class="cyber-bg text-slate-200 min-h-screen font-sans">
 
     <div class="flex min-h-screen">
         <?php include __DIR__ . '/../../partials/sidebar.php'; ?>
@@ -58,239 +107,169 @@ $pageTitle = "Tableau de bord";
             <?php include __DIR__ . '/../../partials/header.php'; ?>
             
             <div class="p-6 md:p-8 lg:p-10">
-                <!-- HERO WELCOME SECTION -->
-                <div class="mb-10 bg-gradient-to-r from-slate-900 via-green-900 to-slate-900 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden relative">
-                    <!-- Decorative Elements -->
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-green-500/30 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-
+                
+                <!-- HERO CYBER -->
+                <div class="mb-10 holo-card rounded-3xl p-8 md:p-12 relative overflow-hidden scan-line">
+                    <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-violet-500/10"></div>
+                    
                     <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
                         <div class="flex-1">
-                            <h2 class="text-green-400 font-semibold uppercase tracking-widest text-sm mb-3">Welcome back, Coach!</h2>
-                            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
-                                Bonjour, <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400"><?= htmlspecialchars($_SESSION['user']['prenom']) ?></span> 👋
+                            <h2 class="text-cyan-400 font-medium uppercase tracking-[4px] text-sm mb-2">SYSTÈME OPÉRATIONNEL</h2>
+                            <h1 class="text-4xl md:text-5xl font-bold tracking-tighter neon-text mb-4">
+                                BIENVENUE, <span class="text-cyan-300"><?= htmlspecialchars($_SESSION['user']['prenom']) ?></span>
                             </h1>
-                            <p class="text-slate-300 text-lg mb-6 max-w-2xl">
-                                Voici ce qui se passe aujourd'hui dans le club. Votre équipe est prête à dominer le terrain!
+                            <p class="text-slate-400 text-lg max-w-xl">
+                                Tableau de contrôle central • FC Blue Lock
                             </p>
-
-                            <!-- Quick Stats Row -->
-                            <div class="flex flex-wrap gap-4">
-                                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-green-500/30 flex items-center justify-center text-green-400 text-xl">
-                                        <i class="fa-solid fa-calendar-check"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-300 text-xs uppercase font-semibold">Prochain Match</p>
-                                        <p class="text-white font-bold text-sm">
-                                            <?= $nextMatch ? date('d M, H:i', strtotime($nextMatch['date'])) : 'À planifier' ?>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-blue-500/30 flex items-center justify-center text-blue-400 text-xl">
-                                        <i class="fa-solid fa-users"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-300 text-xs uppercase font-semibold">Joueurs Actifs</p>
-                                        <p class="text-white font-bold text-sm"><?= $totalJoueurs ?></p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
-                        <!-- Quick Actions -->
                         <div class="flex flex-col gap-3 w-full md:w-auto">
-                            <a href="/page-matchcreate" class="flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-green-900/30 transition-all hover:scale-105">
+                            <a href="/page-matchcreate" 
+                               class="btn-glow flex items-center justify-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-cyan-500/50 transition-all">
                                 <i class="fa-solid fa-plus"></i>
-                                Planifier un Match
+                                PLANIFIER MATCH
                             </a>
-                            <a href="/page-convocation" class="flex items-center justify-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold px-8 py-4 rounded-2xl transition-all">
+                            <a href="/page-convocation" 
+                               class="flex items-center justify-center gap-3 border border-slate-600 hover:border-cyan-400 text-slate-300 hover:text-cyan-400 font-bold px-8 py-4 rounded-2xl transition-all">
                                 <i class="fa-solid fa-clipboard-list"></i>
-                                Envoyer une Convocation
+                                CONVOCATION
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- STATISTICS CARDS GRID -->
+                <!-- STATISTICS GRID -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    <!-- Total Players -->
-                    <div class="group relative overflow-hidden bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-200">
-                                    <i class="fa-solid fa-users text-white text-2xl"></i>
-                                </div>
-                                <span class="flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-100 px-3 py-1.5 rounded-full">
-                                    <i class="fa-solid fa-arrow-trend-up"></i>
-                                    12%
-                                </span>
+                    <!-- Joueurs -->
+                    <div class="holo-card rounded-3xl p-6 stat-glow">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-users text-white text-3xl"></i>
                             </div>
-                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest mb-1">Joueurs Total</p>
-                            <p class="text-4xl font-extrabold text-slate-800"><?= $totalJoueurs ?></p>
+                            <span class="text-emerald-400 text-sm font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> +12%
+                            </span>
                         </div>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">JOUEURS ACTIFS</p>
+                        <p class="text-5xl font-bold text-white mt-2"><?= $totalJoueurs ?></p>
                     </div>
 
-                    <!-- Total Teams -->
-                    <div class="group relative overflow-hidden bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
-                                    <i class="fa-solid fa-people-group text-white text-2xl"></i>
-                                </div>
-                                <span class="flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1.5 rounded-full">
-                                    <i class="fa-solid fa-minus"></i>
-                                    0%
-                                </span>
+                    <!-- Équipes -->
+                    <div class="holo-card rounded-3xl p-6 stat-glow">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-people-group text-white text-3xl"></i>
                             </div>
-                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest mb-1">Équipes</p>
-                            <p class="text-4xl font-extrabold text-slate-800"><?= $totalEquipes ?></p>
+                            <span class="text-slate-400 text-sm font-medium">STABLE</span>
                         </div>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">ÉQUIPES</p>
+                        <p class="text-5xl font-bold text-white mt-2"><?= $totalEquipes ?></p>
                     </div>
 
-                    <!-- Total Matches -->
-                    <div class="group relative overflow-hidden bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200">
-                                    <i class="fa-solid fa-futbol text-white text-2xl"></i>
-                                </div>
-                                <span class="flex items-center gap-1 text-xs font-semibold text-purple-600 bg-purple-100 px-3 py-1.5 rounded-full">
-                                    <i class="fa-solid fa-arrow-trend-up"></i>
-                                    8%
-                                </span>
+                    <!-- Matchs -->
+                    <div class="holo-card rounded-3xl p-6 stat-glow">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-futbol text-white text-3xl"></i>
                             </div>
-                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest mb-1">Matchs Total</p>
-                            <p class="text-4xl font-extrabold text-slate-800"><?= $totalMatchs ?></p>
+                            <span class="text-emerald-400 text-sm font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> +8%
+                            </span>
                         </div>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">MATCHS</p>
+                        <p class="text-5xl font-bold text-white mt-2"><?= $totalMatchs ?></p>
                     </div>
 
-                    <!-- Participation Rate -->
-                    <div class="group relative overflow-hidden bg-white rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-slate-100">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200">
-                                    <i class="fa-solid fa-check-to-slot text-white text-2xl"></i>
-                                </div>
-                                <span class="flex items-center gap-1 text-xs font-semibold text-orange-600 bg-orange-100 px-3 py-1.5 rounded-full">
-                                    <i class="fa-solid fa-check"></i>
-                                    Excellent
-                                </span>
+                    <!-- Présence -->
+                    <div class="holo-card rounded-3xl p-6 stat-glow">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-chart-pie text-white text-3xl"></i>
                             </div>
-                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest mb-1">Taux de Présence</p>
-                            <p class="text-4xl font-extrabold text-slate-800"><?= $tauxPresence ?>%</p>
+                            <span class="text-emerald-400 text-sm font-medium">EXCELLENT</span>
                         </div>
+                        <p class="text-slate-400 text-sm uppercase tracking-widest">TAUX PRÉSENCE</p>
+                        <p class="text-5xl font-bold text-white mt-2"><?= $tauxPresence ?>%</p>
                     </div>
                 </div>
 
-                <!-- MAIN CONTENT GRID -->
+                <!-- MAIN GRID -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- COLUMN 1 & 2 (MATCHES & CLASSMENT) -->
+                    
+                    <!-- LEFT + CENTER -->
                     <div class="lg:col-span-2 space-y-8">
-                        <!-- MATCHES SECTION -->
-                        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-                            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50">
-                                <div class="flex items-center justify-between">
-                                    <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-3">
-                                        <i class="fa-solid fa-futbol text-green-600"></i>
-                                        Derniers Matchs
-                                    </h2>
-                                    <a href="/page-match" class="text-green-600 font-semibold text-sm hover:text-green-700 transition flex items-center gap-2">
-                                        Voir tous <i class="fa-solid fa-arrow-right"></i>
-                                    </a>
-                                </div>
+                        
+                        <!-- Derniers Matchs -->
+                        <div class="holo-card rounded-3xl overflow-hidden">
+                            <div class="p-6 border-b border-slate-700 bg-gradient-to-r from-slate-900 to-transparent">
+                                <h2 class="text-2xl font-bold flex items-center gap-3">
+                                    <i class="fa-solid fa-futbol text-cyan-400"></i>
+                                    DERNIERS MATCHS
+                                </h2>
                             </div>
-
-                            <div class="p-6">
+                            <div class="p-6 space-y-4">
                                 <?php if (empty($recentMatches)): ?>
-                                    <div class="text-center py-12">
-                                        <i class="fas fa-calendar-times text-slate-300 text-5xl mb-4"></i>
-                                        <p class="text-slate-500 font-medium">Aucun match programmé</p>
-                                        <a href="/page-matchcreate" class="inline-block mt-4 text-green-600 font-semibold">Planifier un match →</a>
-                                    </div>
+                                    <p class="text-slate-400 text-center py-12">Aucun match récent</p>
                                 <?php else: ?>
-                                    <div class="space-y-4">
-                                        <?php foreach ($recentMatches as $match): ?>
-                                            <div class="flex items-center gap-4 p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all border border-slate-100">
-                                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center text-white text-lg font-bold shadow-lg">
-                                                    <?= date('d', strtotime($match['date'])) ?>
-                                                </div>
-                                                <div class="flex-1">
-                                                    <div class="flex items-center gap-2 mb-1">
-                                                        <span class="px-3 py-1 rounded-full text-xs font-bold <?= $match['type'] === 'match' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' ?>">
-                                                            <?= strtoupper($match['type']) ?>
-                                                        </span>
-                                                        <span class="text-slate-500 text-xs"><?= date('M Y', strtotime($match['date'])) ?></span>
-                                                    </div>
-                                                    <h3 class="font-bold text-slate-800"><?= htmlspecialchars($match['titre'] ?? 'Match sans titre') ?></h3>
-                                                    <p class="text-sm text-slate-500"><i class="fas fa-map-marker-alt mr-1"></i> <?= htmlspecialchars($match['lieu'] ?? 'Lieu non défini') ?></p>
-                                                </div>
-                                                <div class="text-right">
-                                                    <p class="text-xs text-slate-500 font-semibold uppercase">Heure</p>
-                                                    <p class="text-lg font-extrabold text-slate-700"><?= date('H:i', strtotime($match['date'])) ?></p>
-                                                </div>
+                                    <?php foreach ($recentMatches as $match): ?>
+                                        <div class="flex items-center gap-5 p-5 bg-slate-900/60 hover:bg-slate-800/80 rounded-2xl border border-slate-700 transition-all">
+                                            <div class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center text-2xl font-bold text-cyan-300">
+                                                <?= date('d', strtotime($match['date'])) ?>
                                             </div>
-                                        <?php endforeach; ?>
-                                    </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="px-4 py-1 text-xs font-bold rounded-full <?= $match['type'] === 'match' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-violet-500/20 text-violet-400' ?>">
+                                                        <?= strtoupper($match['type']) ?>
+                                                    </span>
+                                                    <span class="text-xs text-slate-400"><?= date('M Y', strtotime($match['date'])) ?></span>
+                                                </div>
+                                                <h3 class="font-semibold text-lg"><?= htmlspecialchars($match['titre'] ?? 'Match') ?></h3>
+                                                <p class="text-slate-400 text-sm"><?= htmlspecialchars($match['lieu'] ?? 'Lieu inconnu') ?></p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-cyan-300 text-2xl font-bold"><?= date('H:i', strtotime($match['date'])) ?></p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
                         </div>
 
-                        <!-- CLASSMENT SECTION -->
-                        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-                            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50">
-                                <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-3">
-                                    <i class="fa-solid fa-trophy text-yellow-600"></i>
-                                    Classement
+                        <!-- Classement -->
+                        <div class="holo-card rounded-3xl overflow-hidden">
+                            <div class="p-6 border-b border-slate-700">
+                                <h2 class="text-2xl font-bold flex items-center gap-3">
+                                    <i class="fa-solid fa-trophy text-yellow-400"></i>
+                                    CLASSEMENT
                                 </h2>
                             </div>
-
                             <div class="p-6">
                                 <table class="w-full">
                                     <thead>
-                                        <tr class="text-xs text-slate-500 uppercase tracking-widest border-b-2 border-slate-100">
-                                            <th class="pb-3 text-left w-12">#</th>
-                                            <th class="pb-3 text-left">Club</th>
-                                            <th class="pb-3 text-center w-16">M</th>
-                                            <th class="pb-3 text-center w-16">V</th>
-                                            <th class="pb-3 text-center w-16">N</th>
-                                            <th class="pb-3 text-center w-16">D</th>
-                                            <th class="pb-3 text-right">Pts</th>
+                                        <tr class="text-xs uppercase text-slate-400 border-b border-slate-700">
+                                            <th class="pb-4 text-left w-12">#</th>
+                                            <th class="pb-4 text-left">Club</th>
+                                            <th class="pb-4 text-center">M</th>
+                                            <th class="pb-4 text-center">V</th>
+                                            <th class="pb-4 text-center">N</th>
+                                            <th class="pb-4 text-center">D</th>
+                                            <th class="pb-4 text-right">Pts</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100">
+                                    <tbody class="divide-y divide-slate-700">
                                         <?php foreach ($classement as $equipe): ?>
-                                            <tr class="hover:bg-slate-50 transition-all <?= $equipe['club'] === 'FC Blue Lock' ? 'bg-gradient-to-r from-green-50 to-transparent border-l-4 border-l-green-500' : '' ?>">
-                                                <td class="py-4">
-                                                    <div class="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm
-                                                        <?php if ($equipe['position'] === 1): ?>
-                                                            bg-gradient-to-br from-yellow-400 to-yellow-600 text-white shadow-md
-                                                        <?php elseif ($equipe['position'] === 2): ?>
-                                                            bg-gradient-to-br from-slate-300 to-slate-400 text-slate-800
-                                                        <?php elseif ($equipe['position'] === 3): ?>
-                                                            bg-gradient-to-br from-orange-400 to-orange-600 text-white
-                                                        <?php else: ?>
-                                                            bg-slate-100 text-slate-600
-                                                        <?php endif; ?>">
+                                            <tr class="hover:bg-slate-800/50 transition-all <?= $equipe['club'] === 'FC Blue Lock' ? 'bg-cyan-900/30 border-l-4 border-cyan-400' : '' ?>">
+                                                <td class="py-5">
+                                                    <div class="w-9 h-9 rounded-2xl flex items-center justify-center font-bold <?= $equipe['position'] <= 3 ? 'bg-gradient-to-br from-yellow-400 to-amber-500 text-black' : 'bg-slate-700 text-slate-300' ?>">
                                                         <?= $equipe['position'] ?>
                                                     </div>
                                                 </td>
-                                                <td class="py-4">
-                                                    <span class="font-bold text-slate-800 text-lg"><?= $equipe['club'] ?></span>
-                                                </td>
-                                                <td class="py-4 text-center text-slate-600 font-semibold"><?= $equipe['matches'] ?></td>
-                                                <td class="py-4 text-center text-green-700 font-bold"><?= $equipe['wins'] ?></td>
-                                                <td class="py-4 text-center text-slate-500 font-semibold"><?= $equipe['draws'] ?></td>
-                                                <td class="py-4 text-center text-red-600 font-semibold"><?= $equipe['losses'] ?></td>
-                                                <td class="py-4 text-right">
-                                                    <span class="text-2xl font-extrabold text-slate-800"><?= $equipe['points'] ?></span>
-                                                </td>
+                                                <td class="py-5 font-semibold"><?= $equipe['club'] ?></td>
+                                                <td class="py-5 text-center text-slate-300"><?= $equipe['matches'] ?></td>
+                                                <td class="py-5 text-center text-emerald-400 font-bold"><?= $equipe['wins'] ?></td>
+                                                <td class="py-5 text-center text-slate-400"><?= $equipe['draws'] ?></td>
+                                                <td class="py-5 text-center text-red-400"><?= $equipe['losses'] ?></td>
+                                                <td class="py-5 text-right font-bold text-xl"><?= $equipe['points'] ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -299,93 +278,57 @@ $pageTitle = "Tableau de bord";
                         </div>
                     </div>
 
-                    <!-- COLUMN 3 (ACTIVITIES & QUICK INFO) -->
+                    <!-- RIGHT COLUMN -->
                     <div class="space-y-8">
-                        <!-- ACTIVITY FEED -->
-                        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-                            <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50">
-                                <div class="flex items-center justify-between">
-                                    <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-                                        <i class="fa-solid fa-list-check text-green-600"></i>
-                                        Activités Récentes
-                                    </h2>
-                                    <span class="text-xs text-slate-500 font-semibold bg-slate-100 px-3 py-1 rounded-full"><?= count($activities) ?></span>
-                                </div>
+                        <!-- Activités Récentes -->
+                        <div class="holo-card rounded-3xl overflow-hidden">
+                            <div class="p-6 border-b border-slate-700">
+                                <h2 class="text-xl font-bold flex items-center gap-2">
+                                    <i class="fa-solid fa-list-check text-cyan-400"></i>
+                                    ACTIVITÉS RÉCENTES
+                                </h2>
                             </div>
-                            <div class="p-6">
-                                <div class="space-y-5">
-                                    <?php if (empty($activities)): ?>
-                                        <div class="text-center py-10">
-                                            <i class="fas fa-inbox text-slate-300 text-4xl mb-3"></i>
-                                            <p class="text-slate-500 font-medium">Aucune activité</p>
+                            <div class="p-6 space-y-6">
+                                <?php foreach ($activities as $index => $act): ?>
+                                    <div class="flex gap-5">
+                                        <div class="text-cyan-400 text-2xl">
+                                            <i class="fas fa-<?= $index % 3 === 0 ? 'clipboard-list' : ($index % 3 === 1 ? 'user-plus' : 'futbol') ?>"></i>
                                         </div>
-                                    <?php else: ?>
-                                        <?php foreach ($activities as $index => $act): ?>
-                                            <div class="flex gap-4">
-                                                <div class="flex flex-col items-center">
-                                                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-200 flex items-center justify-center text-emerald-700 text-lg shadow-sm">
-                                                        <i class="fas fa-<?= $index % 3 === 0 ? 'clipboard-list' : ($index % 3 === 1 ? 'user-plus' : 'futbol') ?>"></i>
-                                                    </div>
-                                                    <?php if ($index < count($activities) - 1): ?>
-                                                        <div class="w-0.5 h-full bg-slate-200 mt-2"></div>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="flex-1 pb-4">
-                                                    <p class="font-semibold text-slate-800 text-sm">
-                                                        <?= htmlspecialchars($act['description']) ?>
-                                                    </p>
-                                                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
-                                                        <i class="far fa-clock"></i>
-                                                        <?= date('d M, H:i', strtotime($act['date_action'])) ?>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </div>
+                                        <div class="flex-1">
+                                            <p class="text-sm text-slate-200"><?= htmlspecialchars($act['description']) ?></p>
+                                            <p class="text-xs text-slate-500 mt-1"><?= date('d M, H:i', strtotime($act['date_action'])) ?></p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
 
-                        <!-- QUICK INFO CARD -->
-                        <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-xl p-6 text-white border border-slate-700">
-                            <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
-                                <i class="fa-solid fa-fire text-orange-400"></i>
-                                Focus Aujourd'hui
+                        <!-- Focus Aujourd'hui -->
+                        <div class="holo-card rounded-3xl p-6">
+                            <h3 class="font-bold text-lg mb-5 flex items-center gap-2 text-orange-400">
+                                <i class="fa-solid fa-fire"></i>
+                                FOCUS DU JOUR
                             </h3>
-                            <ul class="space-y-3">
-                                <li class="flex items-center gap-3 text-sm">
-                                    <div class="w-2 h-2 rounded-full bg-green-400"></div>
-                                    <span class="text-slate-300">Rassemblement 18:00</span>
-                                </li>
-                                <li class="flex items-center gap-3 text-sm">
-                                    <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
-                                    <span class="text-slate-300">Récupération active</span>
-                                </li>
-                                <li class="flex items-center gap-3 text-sm">
-                                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
-                                    <span class="text-slate-300">Stratégie offensive</span>
-                                </li>
+                            <ul class="space-y-4 text-sm">
+                                <li class="flex items-center gap-3"><div class="w-2 h-2 bg-emerald-400 rounded-full"></div> Rassemblement 18:00</li>
+                                <li class="flex items-center gap-3"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Récupération active</li>
+                                <li class="flex items-center gap-3"><div class="w-2 h-2 bg-cyan-400 rounded-full"></div> Stratégie offensive</li>
                             </ul>
                         </div>
 
-                        <!-- FINANCE SNIPPET -->
+                        <!-- Solde Caisse -->
                         <?php if (in_array($_SESSION['user']['role'], ['president', 'censeur', 'organisateur'])): ?>
-                            <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6">
-                                <h3 class="font-bold text-lg text-slate-800 mb-4 flex items-center gap-2">
-                                    <i class="fa-solid fa-wallet text-green-600"></i>
-                                    Solde Caisse
+                            <div class="holo-card rounded-3xl p-6 text-center">
+                                <h3 class="font-bold text-lg mb-4 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-wallet text-emerald-400"></i>
+                                    SOLDE CAISSE
                                 </h3>
-                                <div class="text-center">
-                                    <p class="text-5xl font-extrabold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent mb-2">
-                                        <?= number_format($solde ?? 0, 0, ',', ' ') ?>
-                                    </p>
-                                    <p class="text-sm text-slate-500 uppercase tracking-wider font-semibold">FCFA</p>
-                                </div>
-                                <div class="mt-6 pt-4 border-t border-slate-100">
-                                    <a href="/page-finance" class="flex items-center justify-center gap-2 text-green-600 font-semibold text-sm hover:text-green-700 transition">
-                                        Voir les détails financiers <i class="fa-solid fa-arrow-right"></i>
-                                    </a>
-                                </div>
+                                <p class="text-5xl font-bold text-emerald-400">
+                                    <?= number_format($solde ?? 0, 0, ',', ' ') ?> <span class="text-2xl">FCFA</span>
+                                </p>
+                                <a href="/page-finance" class="mt-6 inline-block text-cyan-400 hover:text-cyan-300 font-medium">
+                                    Détails financiers →
+                                </a>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -393,6 +336,5 @@ $pageTitle = "Tableau de bord";
             </div>
         </main>
     </div>
-
 </body>
 </html>
