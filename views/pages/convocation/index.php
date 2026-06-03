@@ -1,10 +1,114 @@
 <?php
-// Les variables $qualifiedPlayers, $matches, $summonedMap et $pageTitle sont fournies par le contrôleur
+// =====================================================================
+// DONNÉES FOURNIES PAR LE CONTRÔLEUR
+// =====================================================================
+// $qualifiedPlayers : joueurs déjà paginés
+// $matches : liste des matchs disponibles
+// $summonedMap : convocations par joueur
+// $matchesById : index des matchs par id
+// $page : page actuelle
+// $perPage : nombre d'éléments par page
+// $totalPlayers : nombre total de joueurs correspondant aux filtres
+// $totalPages : nombre total de pages
+// =====================================================================
+
 $roleUser = $_SESSION['user']['role'] ?? 'joueur';
 $currentUserId = $_SESSION['user']['id'] ?? null;
+
+
+// =====================================================================
+// CONFIGURATION DE LA PAGINATION
+// =====================================================================
+
+// Page actuelle envoyée par le contrôleur
+$currentPage = $page;
+
+// Les joueurs sont déjà paginés dans le modèle.
+// On ne doit PAS refaire un array_slice ici.
+$playersToShow = $qualifiedPlayers;
+
+// Offset utilisé uniquement pour l'affichage
+$offset = ($currentPage - 1) * $perPage;
+
+// Sécurité : si quelqu'un saisit une page trop grande
+if ($currentPage > $totalPages && $totalPages > 0) {
+    $currentPage = $totalPages;
+}
+
+
+// =====================================================================
+// GÉNÉRATION DES LIENS DE PAGINATION
+// Conserve tous les filtres dans l'URL
+// =====================================================================
+
+function buildPaginationLink($pageNum)
+{
+    $params = $_GET;
+    $params['page'] = $pageNum;
+
+    return '/Convocation-convocation?' . http_build_query($params);
+}
+
+
+// =====================================================================
+// GÉNÉRATION DES NUMÉROS DE PAGE
+// Exemple : 1 ... 4 5 6 7 8 ... 20
+// =====================================================================
+
+function getPaginationRange($currentPage, $totalPages, $delta = 2)
+{
+    $range = [];
+
+    // Peu de pages => tout afficher
+    if ($totalPages <= 7) {
+        for ($i = 1; $i <= $totalPages; $i++) {
+            $range[] = $i;
+        }
+
+        return $range;
+    }
+
+    // Première page
+    $range[] = 1;
+
+    // Fenêtre autour de la page actuelle
+    $start = max(2, $currentPage - $delta);
+    $end = min($totalPages - 1, $currentPage + $delta);
+
+    // Ellipse après la page 1
+    if ($start > 2) {
+        $range[] = '...';
+    }
+
+    // Pages centrales
+    for ($i = $start; $i <= $end; $i++) {
+        $range[] = $i;
+    }
+
+    // Ellipse avant la dernière page
+    if ($end < $totalPages - 1) {
+        $range[] = '...';
+    }
+
+    // Dernière page
+    $range[] = $totalPages;
+
+    return $range;
+}
+
+
+// =====================================================================
+// TABLEAU FINAL DE PAGINATION
+// =====================================================================
+
+$paginationRange = getPaginationRange(
+    $currentPage,
+    $totalPages
+);
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -12,9 +116,19 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
     <title>convocation page</title>
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animation subtile pour les transitions de page */
+        .player-card {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-gray-50">
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
     <div class="flex">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
@@ -36,9 +150,16 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                 </div>
             <?php endif; ?>
 
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-gray-800">Joueurs Éligibles</h2>
-                <p class="text-gray-600 italic">Classement basé sur la performance (60%) et la présence (40%).</p>
+            <div class="mb-8 flex justify-between items-end">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Joueurs Éligibles</h2>
+                    <p class="text-gray-600 italic">Classement basé sur la performance (60%) et la présence (40%).</p>
+                </div>
+                <!-- Indicateur de pagination -->
+                <div class="text-sm text-gray-500">
+                    <span class="font-semibold text-gray-700"><?= $totalPlayers ?></span> joueur<?= $totalPlayers > 1 ? 's' : '' ?> au total
+
+                </div>
             </div>
 
             <!-- Filtres de recherche -->
@@ -59,6 +180,8 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Score Min</label>
                     <input type="number" step="0.1" name="filter_score" value="<?= htmlspecialchars($_GET['filter_score'] ?? '') ?>" placeholder="0.0" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
                 </div>
+                <!-- Conservation de la page lors du filtrage (reset à 1) -->
+                <input type="hidden" name="page" value="1">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-bold">
                     Filtrer
                 </button>
@@ -69,9 +192,9 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
 
             <!-- Grille des joueurs -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php if (!empty($qualifiedPlayers)): ?>
-                    <?php foreach ($qualifiedPlayers as $player): ?>
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                <?php if (!empty($playersToShow)): ?>
+                    <?php foreach ($playersToShow as $player): ?>
+                        <div class="player-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
                             <div class="p-5">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
@@ -82,7 +205,6 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                             // CONDITION UNIQUE : SVG uniquement pour moi si je suis convoqué
                                             if ($player['id'] == $currentUserId && !empty($summonedMap[$player['id']])): 
                                             ?>
-                                                <!-- Indicateur visuel SVG (Etoile de sélection) -->
                                                 <svg class="w-5 h-5 text-yellow-500 animate-pulse" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                                 </svg>
@@ -96,7 +218,6 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                 </div>
 
                                 <?php 
-                                // CONDITION UNIQUE : Détails spécifiques uniquement pour moi
                                 if ($player['id'] == $currentUserId && !empty($summonedMap[$player['id']])): 
                                 ?>
                                     <div class="mt-2 mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
@@ -106,9 +227,7 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                         <ul class="space-y-2">
                                             <?php 
                                             foreach ($summonedMap[$player['id']] as $mId): 
-                                                // Récupération directe via l'index créé dans le contrôleur
                                                 $matchInfo = $matchesById[$mId] ?? null;
-                                                
                                                 if ($matchInfo):
                                             ?>
                                                 <li class="text-xs text-blue-700 leading-tight">
@@ -123,12 +242,9 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                 <?php endif; ?>
 
                                 <?php if ($roleUser !== 'joueur'): ?>
-                                    <!-- Formulaire de convocation -->
                                     <form action="/Convocation-invoke" method="POST" class="mt-4 border-t pt-4">
                                         <?php 
-                                            // On filtre les matchs disponibles (ceux où il n'est pas encore convoqué)
                                             $playerConvocations = $summonedMap[$player['id']] ?? [];
-                                            
                                             $availableMatches = array_filter($matches, function($m) use ($playerConvocations) {
                                                 return !in_array($m['id'], $playerConvocations);
                                             });
@@ -151,7 +267,6 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                                             </select>
                                         </div>
 
-                                        <!-- Sélection de l'équipe -->
                                         <div class="mb-4">
                                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Équipe attribuée pour le match</label>
                                             <select name="equipe" required class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-green-500 outline-none" <?= $isFullySummoned ? 'disabled' : '' ?>>
@@ -180,20 +295,76 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
                     </div>
                 <?php endif; ?>
             </div>
+
+            <!-- ==================== PAGINATION NAVIGATION ==================== -->
+            <?php if ($totalPages > 1): ?>
+            <nav class="mt-10 flex justify-center items-center gap-2" aria-label="Pagination">
+                
+                <!-- Bouton Précédent -->
+                <?php if ($currentPage > 1): ?>
+                    <a href="<?= buildPaginationLink($currentPage - 1) ?>" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all group">
+                        <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </a>
+                <?php else: ?>
+                    <span class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </span>
+                <?php endif; ?>
+
+                <!-- Numéros de pages avec ellipses -->
+                <?php foreach ($paginationRange as $page): ?>
+                    <?php if ($page === '...'): ?>
+                        <span class="w-10 h-10 flex items-center justify-center text-gray-400 text-sm">...</span>
+                    <?php elseif ($page == $currentPage): ?>
+                        <span class="w-10 h-10 flex items-center justify-center rounded-lg bg-blue-600 text-white font-semibold text-sm shadow-md shadow-blue-200">
+                            <?= $page ?>
+                        </span>
+                    <?php else: ?>
+                        <a href="<?= buildPaginationLink($page) ?>" 
+                           class="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all text-sm font-medium">
+                            <?= $page ?>
+                        </a>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+
+                <!-- Bouton Suivant -->
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="<?= buildPaginationLink($currentPage + 1) ?>" 
+                       class="flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all group">
+                        <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                <?php else: ?>
+                    <span class="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </span>
+                <?php endif; ?>
+
+            </nav>
+
+            <!-- Info complémentaire -->
+            <p class="text-center text-xs text-gray-400 mt-3">
+                Affichage des joueurs <?= $offset + 1 ?> à <?= min($offset + $perPage, $totalPlayers) ?> sur <?= $totalPlayers ?>
+            </p>
+            <?php endif; ?>
+
         </main>
     </div>
 
     <script>
-        /**
-         * Cette fonction gère uniquement l'aspect visuel du bouton
-         * car PHP a déjà marqué les options invalides comme 'disabled'
-         */
         function checkConvocation(selectElement) {
             const form = selectElement.closest('form');
             const submitBtn = form.querySelector('button[type="submit"]');
             const selectedOption = selectElement.options[selectElement.selectedIndex];
 
-            // Si l'option sélectionnée est désactivée (PHP l'a décidé)
             if (selectedOption.disabled) {
                 submitBtn.disabled = true;
                 submitBtn.innerText = 'Déjà convoqué';
@@ -205,7 +376,6 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
             }
         }
 
-        // On lance la vérification au chargement pour bloquer le bouton si le 1er match de la liste est déjà pris
         document.querySelectorAll('.match-select').forEach(select => checkConvocation(select));
     </script>
 </body>

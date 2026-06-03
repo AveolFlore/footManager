@@ -39,13 +39,22 @@ class Caisse
         return $stmt->fetch(PDO::FETCH_ASSOC)['solde'] ?? 0;
     }
 
-    public function getAllTransactions()
+    public function getAllTransactions($page = 1, $perPage = 10)
     {
+        $offset = ($page - 1) * $perPage;
         $query = "SELECT c.*, u.nom, u.prenom 
                   FROM {$this->table} c
                   LEFT JOIN users u ON c.enregistre_par = u.id
-                  ORDER BY date_transaction DESC";
+                  ORDER BY date_transaction DESC
+                  LIMIT " . (int)$perPage . " OFFSET " . (int)$offset;
         $stmt = $this->conn->query($query);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotalTransactions()
+    {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $stmt = $this->conn->query($query);
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     }
 }

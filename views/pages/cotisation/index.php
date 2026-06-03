@@ -12,19 +12,41 @@ $db = (new Database())->connect();
 $caisseModel = new Caisse($db);
 $cotisationModel = new Cotisation($db);
 
+// Pagination params
+$unpaidPage = isset($_GET['unpaid_page']) ? max(1, (int)$_GET['unpaid_page']) : 1;
+$transactionsPage = isset($_GET['transactions_page']) ? max(1, (int)$_GET['transactions_page']) : 1;
+$perPage = 10;
+
 $solde = $caisseModel->getSolde();
-$transactions = $caisseModel->getAllTransactions();
-$unpaid = $cotisationModel->getUnpaidCurrentMonth(date('m'), date('Y'));
+$transactions = $caisseModel->getAllTransactions($transactionsPage, $perPage);
+$totalTransactions = $caisseModel->getTotalTransactions();
+$totalPagesTransactions = ceil($totalTransactions / $perPage);
+
+$currentMonth = date('m');
+$currentYear = date('Y');
+$unpaid = $cotisationModel->getUnpaidCurrentMonth($currentMonth, $currentYear, $unpaidPage, $perPage);
+$totalUnpaid = $cotisationModel->getTotalUnpaidCurrentMonth($currentMonth, $currentYear);
+$totalPagesUnpaid = ceil($totalUnpaid / $perPage);
+
+// Function to build pagination URL with preserving other params
+function buildPaginationUrl($paramName, $page)
+{
+    $params = $_GET;
+    $params[$paramName] = $page;
+    return '?' . http_build_query($params);
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Finance - Club Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-100 font-sans">
 
     <div class="flex min-h-screen">
@@ -39,7 +61,7 @@ $unpaid = $cotisationModel->getUnpaidCurrentMonth(date('m'), date('Y'));
             </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                
+
                 <!-- Section: Cotisations Impayées -->
                 <div class="bg-white p-6 rounded-xl shadow-sm">
                     <h2 class="text-xl font-bold text-gray-700 mb-6">Cotisations à percevoir (<?= date('m/Y') ?>)</h2>
@@ -70,6 +92,29 @@ $unpaid = $cotisationModel->getUnpaidCurrentMonth(date('m'), date('Y'));
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination for Unpaid -->
+                    <?php if ($totalPagesUnpaid > 1): ?>
+                        <div class="flex items-center justify-center gap-2 mt-6">
+                            <?php if ($unpaidPage > 1): ?>
+                                <a href="<?= buildPaginationUrl('unpaid_page', $unpaidPage - 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php for ($i = 1; $i <= $totalPagesUnpaid; $i++): ?>
+                                <a href="<?= buildPaginationUrl('unpaid_page', $i) ?>" class="px-3 py-1 border rounded transition <?= $i == $unpaidPage ? 'bg-blue-500 text-white border-blue-500' : 'border-gray-300 hover:bg-gray-50' ?>">
+                                    <?= $i ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <?php if ($unpaidPage < $totalPagesUnpaid): ?>
+                                <a href="<?= buildPaginationUrl('unpaid_page', $unpaidPage + 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Section: Historique Caisse -->
@@ -89,6 +134,29 @@ $unpaid = $cotisationModel->getUnpaidCurrentMonth(date('m'), date('Y'));
                             </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <!-- Pagination for Transactions -->
+                    <?php if ($totalPagesTransactions > 1): ?>
+                        <div class="flex items-center justify-center gap-2 mt-6">
+                            <?php if ($transactionsPage > 1): ?>
+                                <a href="<?= buildPaginationUrl('transactions_page', $transactionsPage - 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php for ($i = 1; $i <= $totalPagesTransactions; $i++): ?>
+                                <a href="<?= buildPaginationUrl('transactions_page', $i) ?>" class="px-3 py-1 border rounded transition <?= $i == $transactionsPage ? 'bg-blue-500 text-white border-blue-500' : 'border-gray-300 hover:bg-gray-50' ?>">
+                                    <?= $i ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <?php if ($transactionsPage < $totalPagesTransactions): ?>
+                                <a href="<?= buildPaginationUrl('transactions_page', $transactionsPage + 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -96,4 +164,5 @@ $unpaid = $cotisationModel->getUnpaidCurrentMonth(date('m'), date('Y'));
     </div>
 
 </body>
+
 </html>

@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . '/../../../middleware/Role.php';
 require_once __DIR__ . '/../../../config/Database.php';
 require_once __DIR__ . '/../../../models/galerie/Galerie.php';
-require_once __DIR__ . '/../../../models/match_seance/MatchSeance.php';
+require_once __DIR__ . '/../../../models/MatchSeance.php';
 
 use Config\Database;
 use Models\Galerie\Galerie;

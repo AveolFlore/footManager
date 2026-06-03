@@ -36,12 +36,14 @@ $joueurs = $pdo->query(
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Convocations</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
 
@@ -104,11 +106,11 @@ $joueurs = $pdo->query(
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="p-4 rounded-lg border border-blue-200 bg-blue-50">
                         <p class="text-sm text-blue-700 font-semibold mb-1">Équipe A</p>
-                        <p class="text-2xl font-bold text-blue-600" id="countA">0 / 8 joueurs</p>
+                        <p class="text-2xl font-bold" id="countA">0 / 10 joueurs</p>
                     </div>
                     <div class="p-4 rounded-lg border border-red-200 bg-red-50">
                         <p class="text-sm text-red-700 font-semibold mb-1">Équipe B</p>
-                        <p class="text-2xl font-bold text-red-600" id="countB">0 / 8 joueurs</p>
+                        <p class="text-2xl font-bold" id="countB">0 / 10 joueurs</p>
                     </div>
                 </div>
 
@@ -131,7 +133,7 @@ $joueurs = $pdo->query(
                                     }
                                 }
                                 ?>
-                                <div class="flex items-center gap-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
+                                <div class="flex items-center gap-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50" id="player-row-<?= $joueur['id'] ?>">
                                     <!-- Checkbox sélection -->
                                     <input type="checkbox"
                                         name="joueurs[<?= $joueur['id'] ?>][selectionne]"
@@ -198,11 +200,14 @@ $joueurs = $pdo->query(
     </div>
 
     <script>
-        // Fonction pour mettre à jour les compteurs
+        const MAX_PLAYERS = 10;
+
+        // Fonction pour mettre à jour les compteurs et désactiver les checkboxes
         function updateCounts() {
             let countA = 0;
             let countB = 0;
 
+            // D'abord compter les joueurs sélectionnés
             document.querySelectorAll('.player-checkbox').forEach(checkbox => {
                 if (checkbox.checked) {
                     const playerId = checkbox.dataset.playerId;
@@ -215,10 +220,40 @@ $joueurs = $pdo->query(
                 }
             });
 
-            document.getElementById('countA').textContent = `${countA} / 8 joueurs`;
-            document.getElementById('countB').textContent = `${countB} / 8 joueurs`;
-            document.getElementById('countA').className = countA > 8 ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-blue-600';
-            document.getElementById('countB').className = countB > 8 ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-red-600';
+            // Mettre à jour les textes et couleurs des compteurs
+            const countAElement = document.getElementById('countA');
+            const countBElement = document.getElementById('countB');
+
+            countAElement.textContent = `${countA} / ${MAX_PLAYERS} joueurs`;
+            countBElement.textContent = `${countB} / ${MAX_PLAYERS} joueurs`;
+
+            countAElement.className = countA >= MAX_PLAYERS ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-blue-600';
+            countBElement.className = countB >= MAX_PLAYERS ? 'text-2xl font-bold text-red-600' : 'text-2xl font-bold text-red-600';
+
+            // Désactiver les checkboxes pour les équipes qui ont atteint la limite
+            document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+                const playerId = checkbox.dataset.playerId;
+                const teamSelect = document.querySelector(`.team-select[data-player-id="${playerId}"]`);
+                const row = document.getElementById(`player-row-${playerId}`);
+
+                // Si la checkbox n'est pas cochée, vérifier si l'équipe sélectionnée a atteint la limite
+                if (!checkbox.checked) {
+                    if (teamSelect.value === 'A' && countA >= MAX_PLAYERS) {
+                        checkbox.disabled = true;
+                        row.classList.add('opacity-50', 'cursor-not-allowed');
+                    } else if (teamSelect.value === 'B' && countB >= MAX_PLAYERS) {
+                        checkbox.disabled = true;
+                        row.classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        checkbox.disabled = false;
+                        row.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                } else {
+                    // Toujours activer les checkboxes cochées
+                    checkbox.disabled = false;
+                    row.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
         }
 
         // Mettre à jour la team du capitaine quand la team change
@@ -257,4 +292,5 @@ $joueurs = $pdo->query(
         updateCounts();
     </script>
 </body>
+
 </html>

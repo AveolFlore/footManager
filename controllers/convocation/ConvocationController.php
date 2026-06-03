@@ -1,4 +1,5 @@
 <?php
+
 namespace Controllers\Convocation;
 
 use Config\Database;
@@ -36,7 +37,7 @@ class ConvocationController
 
     /**
      * Affiche la page des convocations
-     * Appelée par le router via l'action 'convocation'
+     * Appelée par le routeur via l'action 'convocation'
      */
     public function convocationPage()
     {
@@ -45,7 +46,13 @@ class ConvocationController
             'equipe'    => $_GET['filter_equipe'] ?? '',
             'score_min' => $_GET['filter_score'] ?? ''
         ];
-        $qualifiedPlayers = $this->convocationModel->qualifyPlayer($filters);
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = 5;
+        
+        $qualifiedPlayers = $this->convocationModel->qualifyPlayer($filters, $page, $perPage);
+        $totalPlayers = $this->convocationModel->countQualifiedPlayers($filters);
+        $totalPages = ceil($totalPlayers / $perPage);
+        
         $summonedMap = $this->convocationModel->getConvocationsMap();
         $stmt = $this->pdo->query("SELECT id, date, lieu, description, type FROM match_seance WHERE statut IN ('publie', 'planifie') ORDER BY date DESC");
         $matches = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -154,10 +161,10 @@ class ConvocationController
 
                 // Vérifications
                 $erreur = null;
-                if ($compteurs['A'] > 8) {
-                    $erreur = "L'équipe A ne peut pas avoir plus de 8 joueurs !";
-                } elseif ($compteurs['B'] > 8) {
-                    $erreur = "L'équipe B ne peut pas avoir plus de 8 joueurs !";
+                if ($compteurs['A'] > 10) {
+                    $erreur = "L'équipe A ne peut pas avoir plus de 10 joueurs !";
+                } elseif ($compteurs['B'] > 10) {
+                    $erreur = "L'équipe B ne peut pas avoir plus de 10 joueurs !";
                 } elseif ($capitaines['A'] > 1) {
                     $erreur = "L'équipe A ne peut avoir qu'un seul capitaine !";
                 } elseif ($capitaines['B'] > 1) {

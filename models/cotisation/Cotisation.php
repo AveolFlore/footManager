@@ -53,16 +53,32 @@ class Cotisation
     }
 
     /**
-     * Récupère les cotisations impayées du mois en cours.
+     * Récupère les cotisations impayées du mois en cours (avec pagination).
      */
-    public function getUnpaidCurrentMonth($mois, $annee)
+    public function getUnpaidCurrentMonth($mois, $annee, $page = 1, $perPage = 10)
     {
+        $offset = ($page - 1) * $perPage;
         $query = "SELECT c.*, u.nom, u.prenom 
+                  FROM {$this->table} c
+                  JOIN users u ON c.joueur_id = u.id
+                  WHERE c.mois = ? AND c.annee = ? AND c.statut = 'non_paye'
+                  LIMIT " . (int)$perPage . " OFFSET " . (int)$offset;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$mois, $annee]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Compte le nombre total de cotisations impayées du mois en cours.
+     */
+    public function getTotalUnpaidCurrentMonth($mois, $annee)
+    {
+        $query = "SELECT COUNT(*) as total
                   FROM {$this->table} c
                   JOIN users u ON c.joueur_id = u.id
                   WHERE c.mois = ? AND c.annee = ? AND c.statut = 'non_paye'";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$mois, $annee]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 }

@@ -117,11 +117,13 @@ class Convocation
     }
 
     /**
-     * Récupère les performance et la présence des utilisateurs avec score
+     * Récupère les performance et la présence des utilisateurs avec score (avec pagination)
      */
-    public function qualifyPlayer($filters = [])
+    public function qualifyPlayer($filters = [], $page = 1, $perPage = 5)
     {
         try {
+            $offset = ($page - 1) * $perPage;
+            
             $query = "SELECT * FROM (
                         SELECT u.id, u.nom, u.equipe_id as equipe,
                                COALESCE(p.pts,0) AS pts,
@@ -162,7 +164,7 @@ class Convocation
                 $params[':score_min'] = $filters['score_min'];
             }
 
-            $query .= " ORDER BY score DESC";
+            $query .= " ORDER BY score DESC LIMIT " . (int)$perPage . " OFFSET " . (int)$offset;
 
             $result = $this->conn->prepare($query);
             $result->execute($params);
@@ -172,6 +174,70 @@ class Convocation
             return [];
         }
     }
+
+    /**
+     * Compte le nombre total de joueurs éligibles avec filtres
+     */
+  public function countQualifiedPlayers($filters = [])
+{
+    try {
+        $query = "SELECT COUNT(*) AS total FROM (
+                    SELECT u.id,
+                           u.nom,
+                           u.equipe_id as equipe,
+                           COALESCE(p.pts,0) AS pts,
+                           COALESCE(pr.presences,0) AS presences,
+                           COALESCE(cv.nb_conv,0) AS nb_convocations,
+                           (COALESCE(p.pts,0)*0.6 + COALESCE(pr.presences,0)*0.4) AS score
+                    FROM users u
+                    LEFT JOIN (
+                        SELECT joueur_id, SUM(points_total) AS pts
+                        FROM performance
+                        GROUP BY joueur_id
+                    ) p ON p.joueur_id = u.id
+                    LEFT JOIN (
+                        SELECT joueur_id,
+                               COUNT(CASE WHEN type_presence='present' THEN 1 END) AS presences
+                        FROM presence
+                        GROUP BY joueur_id
+                    ) pr ON pr.joueur_id = u.id
+                    LEFT JOIN (
+                        SELECT joueur_id, COUNT(*) AS nb_conv
+                        FROM convocation
+                        GROUP BY joueur_id
+                    ) cv ON cv.joueur_id = u.id
+                    WHERE u.statut = 'valide'
+                    AND u.role = 'joueur'
+                ) AS ranked_players
+                WHERE 1=1";
+
+        $params = [];
+
+        if (!empty($filters['nom'])) {
+            $query .= " AND nom LIKE :nom";
+            $params[':nom'] = '%' . $filters['nom'] . '%';
+        }
+
+        if (!empty($filters['equipe'])) {
+            $query .= " AND equipe = :equipe";
+            $params[':equipe'] = $filters['equipe'];
+        }
+
+        if (!empty($filters['score_min'])) {
+            $query .= " AND score >= :score_min";
+            $params[':score_min'] = $filters['score_min'];
+        }
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+
+        return (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+    } catch (PDOException $e) {
+        echo 'echec de la fonction: ' . $e->getMessage();
+        return 0;
+    }
+}
 
     /**
      * Ajoute une convocation pour un joueur à un match avec équipe spécifiée
