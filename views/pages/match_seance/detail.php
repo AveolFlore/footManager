@@ -23,6 +23,8 @@ $joueursParEquipe = ['A' => [], 'B' => []];
 foreach ($convoques as $convoque) {
     $joueursParEquipe[$convoque['equipe_match']][] = $convoque;
 }
+
+$pageTitle = "Détails du match";
 ?>
 
 <!DOCTYPE html>
@@ -31,228 +33,251 @@ foreach ($convoques as $convoque) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails Match</title>
+    <title><?= $pageTitle ?> - FC Blue Lock</title>
+    <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100">
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-    <div class="flex">
+    <div class="flex min-h-screen">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-6">
-            <a href="/page-match"
-                class="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-6">
-                ← Retour aux matchs
-            </a>
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-6 md:p-8 lg:p-10">
+                <a href="/page-match"
+                    class="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 font-semibold">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour aux matchs
+                </a>
 
-            <div class="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h1 class="text-2xl font-semibold text-gray-800 mb-2">
-                            Équipe A vs Équipe B
-                        </h1>
+                <div class="bg-white rounded-3xl border border-slate-100 p-8 mb-8 shadow-xl">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+                        <div>
+                            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-3 flex items-center gap-3">
+                                <i class="fas fa-futbol text-green-600"></i>
+                                Équipe A vs Équipe B
+                            </h1>
 
-                        <?php
-                        $badge = match ($match['statut']) {
-                            'planifie' => ['label' => 'À venir',  'class' => 'bg-blue-100 text-blue-600'],
-                            'publie'   => ['label' => 'À venir',  'class' => 'bg-blue-100 text-blue-600'],
-                            'termine'  => ['label' => 'Terminé',  'class' => 'bg-green-100 text-green-600'],
-                            default    => ['label' => $match['statut'], 'class' => 'bg-gray-100 text-gray-600']
-                        };
-                        ?>
-                        <span class="text-xs px-3 py-1 rounded-full font-medium <?= $badge['class'] ?>">
-                            <?= $badge['label'] ?>
-                        </span>
+                            <?php
+                            $badge = match ($match['statut']) {
+                                'planifie' => ['label' => 'À venir', 'class' => 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border border-blue-200'],
+                                'publie' => ['label' => 'À venir', 'class' => 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 border border-blue-200'],
+                                'termine' => ['label' => 'Terminé', 'class' => 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border border-green-200'],
+                                default => ['label' => $match['statut'], 'class' => 'bg-slate-100 text-slate-700 border border-slate-200']
+                            };
+                            ?>
+                            <span class="inline-block text-sm px-5 py-2 rounded-2xl font-bold <?= $badge['class'] ?>">
+                                <i class="fas fa-clock mr-2"></i>
+                                <?= $badge['label'] ?>
+                            </span>
+                        </div>
+
+                        <?php if ($match['statut'] === 'termine' && $resultat): ?>
+                            <div class="text-center lg:text-right">
+                                <p class="text-sm text-slate-500 mb-2 font-semibold">Score final</p>
+                                <p class="text-5xl font-extrabold text-slate-800">
+                                    <?= $resultat['buts_equipe_a'] ?> <span class="text-slate-400 text-4xl mx-2">—</span> <?= $resultat['buts_equipe_b'] ?>
+                                </p>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
-                    <?php if ($match['statut'] === 'termine' && $resultat): ?>
-                        <div class="text-right">
-                            <p class="text-xs text-gray-400 mb-1">Score final</p>
-                            <p class="text-4xl font-bold text-gray-800">
-                                <?= $resultat['buts_equipe_a'] ?> - <?= $resultat['buts_equipe_b'] ?>
-                            </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                        <div class="flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-200">
+                                <i class="fas fa-calendar text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold uppercase tracking-wide">Date</p>
+                                <p class="text-xl font-bold text-slate-800">
+                                    <?php
+                                    $days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                                    $months = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                                    $timestamp = strtotime($match['date']);
+                                    echo $days[date('w', $timestamp)] . ' ' . date('d', $timestamp) . ' ' . $months[date('n', $timestamp)];
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-600 to-orange-700 flex items-center justify-center shadow-lg shadow-yellow-200">
+                                <i class="fas fa-clock text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold uppercase tracking-wide">Heure</p>
+                                <p class="text-xl font-bold text-slate-800">
+                                    <?= date('H:i', strtotime($match['date'])) ?>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-700 flex items-center justify-center shadow-lg shadow-purple-200">
+                                <i class="fas fa-map-marker-alt text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold uppercase tracking-wide">Lieu</p>
+                                <p class="text-xl font-bold text-slate-800">
+                                    <?= htmlspecialchars($match['lieu']) ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
+                        <div class="flex flex-wrap gap-4 mt-8 pt-6 border-t-2 border-slate-100">
+                            <?php if ($match['statut'] === 'planifie'): ?>
+                                <a href="/page-matchconvocations?id=<?= $match['id'] ?>"
+                                    class="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl font-bold hover:from-green-700 hover:to-green-800 transition-all shadow-lg shadow-green-200">
+                                    <i class="fas fa-users"></i>
+                                    Gérer les convocations
+                                </a>
+                                <a href="/matchSeance-edit?id=<?= $match['id'] ?>"
+                                    class="flex items-center gap-3 px-6 py-3 border-2 border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all bg-white shadow-sm">
+                                    <i class="fas fa-edit"></i>
+                                    Modifier
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if ($match['statut'] !== 'termine'): ?>
+                                <button onclick="window.location.href = '/matchSeance-delete?id=<?= $match['id'] ?>'" class="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-red-50 to-pink-50 text-red-600 border border-red-200 rounded-2xl font-bold hover:bg-gradient-to-r from-red-100 to-pink-100 transition-all shadow-sm">
+                                    <i class="fas fa-trash"></i>
+                                    Supprimer
+                                </button>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4 mt-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
-                            📅
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Équipe A -->
+                    <div class="bg-white rounded-3xl border border-slate-100 p-8 shadow-xl">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-200">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-extrabold text-slate-800">
+                                Équipe A <span class="text-xl text-slate-400 font-semibold">(<?= count($joueursParEquipe['A']) ?> joueurs)</span>
+                            </h2>
                         </div>
-                        <div>
-                            <p class="text-xs text-gray-400">Date</p>
-                            <p class="text-sm font-medium text-gray-700">
-                                <?php
-                                $days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-                                $months = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-                                $timestamp = strtotime($match['date']);
-                                echo $days[date('w', $timestamp)] . ' ' . date('d', $timestamp) . ' ' . $months[date('n', $timestamp)];
-                                ?>
-                            </p>
-                        </div>
+
+                        <?php if (empty($joueursParEquipe['A'])): ?>
+                            <div class="text-center py-12 text-slate-400">
+                                <i class="fas fa-user-slash text-5xl mb-4"></i>
+                                <p class="text-lg font-semibold">Aucun joueur convoqué dans cette équipe.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-4">
+                                <?php foreach ($joueursParEquipe['A'] as $convoque): ?>
+                                    <div class="flex items-center gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-all">
+                                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                                            <i class="fas fa-user text-blue-600 text-2xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-lg font-bold text-slate-800">
+                                                <?= htmlspecialchars($convoque['nom']) ?>
+                                                <?= htmlspecialchars($convoque['prenom']) ?>
+                                            </p>
+                                            <?php if ($convoque['numero_maillot']): ?>
+                                                <p class="text-sm text-slate-500 font-semibold">N° <?= $convoque['numero_maillot'] ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ($convoque['est_capitaine']): ?>
+                                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-700 border border-yellow-200">
+                                                <i class="fas fa-crown"></i>
+                                                Capitaine
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                            🕐
+
+                    <!-- Équipe B -->
+                    <div class="bg-white rounded-3xl border border-slate-100 p-8 shadow-xl">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-pink-700 flex items-center justify-center shadow-lg shadow-red-200">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-extrabold text-slate-800">
+                                Équipe B <span class="text-xl text-slate-400 font-semibold">(<?= count($joueursParEquipe['B']) ?> joueurs)</span>
+                            </h2>
                         </div>
-                        <div>
-                            <p class="text-xs text-gray-400">Heure</p>
-                            <p class="text-sm font-medium text-gray-700">
-                                <?= date('H:i', strtotime($match['date'])) ?>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center">
-                            📍
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-400">Lieu</p>
-                            <p class="text-sm font-medium text-gray-700">
-                                <?= htmlspecialchars($match['lieu']) ?>
-                            </p>
-                        </div>
+
+                        <?php if (empty($joueursParEquipe['B'])): ?>
+                            <div class="text-center py-12 text-slate-400">
+                                <i class="fas fa-user-slash text-5xl mb-4"></i>
+                                <p class="text-lg font-semibold">Aucun joueur convoqué dans cette équipe.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-4">
+                                <?php foreach ($joueursParEquipe['B'] as $convoque): ?>
+                                    <div class="flex items-center gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-all">
+                                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-100 to-pink-100 flex items-center justify-center">
+                                            <i class="fas fa-user text-red-600 text-2xl"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-lg font-bold text-slate-800">
+                                                <?= htmlspecialchars($convoque['nom']) ?>
+                                                <?= htmlspecialchars($convoque['prenom']) ?>
+                                            </p>
+                                            <?php if ($convoque['numero_maillot']): ?>
+                                                <p class="text-sm text-slate-500 font-semibold">N° <?= $convoque['numero_maillot'] ?></p>
+                                            <?php endif; ?>
+                                        </div>
+                                        <?php if ($convoque['est_capitaine']): ?>
+                                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-700 border border-yellow-200">
+                                                <i class="fas fa-crown"></i>
+                                                Capitaine
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
-                    <div class="flex gap-3 mt-6 pt-4 border-t border-gray-100">
-                        <?php if ($match['statut'] === 'planifie'): ?>
-                            <a href="/page-matchconvocations?id=<?= $match['id'] ?>"
-                                class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition">
-                                Gérer les convocations
-                            </a>
-                            <a href="/matchSeance-edit?id=<?= $match['id'] ?>"
-                                class="px-4 py-2 border border-gray-300 text-gray-600 text-sm rounded-lg hover:bg-gray-50 transition">
-                                Modifier
-                            </a>
-                        <?php endif; ?>
+                <?php if (
+                    in_array($_SESSION['user']['role'], ['president', 'censeur']) &&
+                    $match['statut'] === 'publie' &&
+                    !$resultat
+                ): ?>
+                    <div class="bg-white rounded-3xl border border-slate-100 p-8 mt-8 shadow-xl">
+                        <h2 class="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                            <i class="fas fa-clipboard-list text-green-600"></i>
+                            Saisir le résultat
+                        </h2>
 
-                        <?php if ($match['statut'] !== 'termine'): ?>
-                            <button onclick="openConfirmModal(
-                                'Supprimer le match ?',
-                                'Êtes-vous sûr de vouloir supprimer ce match ? Cette action est irréversible.',
-                                () => window.location.href = '/matchSeance-delete?id=<?= $match['id'] ?>'
-                            )" class="px-4 py-2 bg-red-100 text-red-600 text-sm rounded-lg hover:bg-red-200 transition">
-                                Supprimer
-                            </button>
-                        <?php endif; ?>
+                        <form action="/resultatMatch-resultatsave" method="POST">
+                            <input type="hidden" name="match_id" value="<?= $match['id'] ?>">
+
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="text-center">
+                                    <label class="text-sm text-slate-500 font-bold uppercase tracking-wide block mb-3">Équipe A</label>
+                                    <input type="number" name="buts_equipe_a" min="0" value="0"
+                                        class="w-24 border-2 border-slate-200 rounded-2xl px-5 py-4 text-center text-3xl font-extrabold focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500 bg-white">
+                                </div>
+                                <span class="text-4xl font-extrabold text-slate-300 mt-8 md:mt-0">—</span>
+                                <div class="text-center">
+                                    <label class="text-sm text-slate-500 font-bold uppercase tracking-wide block mb-3">Équipe B</label>
+                                    <input type="number" name="buts_equipe_b" min="0" value="0"
+                                        class="w-24 border-2 border-slate-200 rounded-2xl px-5 py-4 text-center text-3xl font-extrabold focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500 bg-white">
+                                </div>
+                                <div class="mt-8 md:mt-0">
+                                    <button type="submit" name="save_resultat" value="Enregistrer"
+                                        class="px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl text-lg font-bold hover:from-green-700 hover:to-green-800 transition-all shadow-lg shadow-green-200">
+                                        <i class="fas fa-check mr-2"></i>
+                                        Enregistrer
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 <?php endif; ?>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Équipe A -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="text-lg">🔵</span>
-                        <h2 class="text-lg font-semibold text-gray-700">
-                            Équipe A (<?= count($joueursParEquipe['A']) ?> joueurs)
-                        </h2>
-                    </div>
-
-                    <?php if (empty($joueursParEquipe['A'])): ?>
-                        <p class="text-sm text-gray-400">Aucun joueur convoqué dans cette équipe.</p>
-                    <?php else: ?>
-                        <div class="space-y-3">
-                            <?php foreach ($joueursParEquipe['A'] as $convoque): ?>
-                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                        🧑
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-700">
-                                            <?= htmlspecialchars($convoque['nom']) ?>
-                                            <?= htmlspecialchars($convoque['prenom']) ?>
-                                        </p>
-                                        <?php if ($convoque['numero_maillot']): ?>
-                                            <p class="text-xs text-gray-500">#<?= $convoque['numero_maillot'] ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                    <?php if ($convoque['est_capitaine']): ?>
-                                        <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full border border-yellow-200">
-                                            Capitaine
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Équipe B -->
-                <div class="bg-white rounded-xl border border-gray-200 p-6">
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="text-lg">🔴</span>
-                        <h2 class="text-lg font-semibold text-gray-700">
-                            Équipe B (<?= count($joueursParEquipe['B']) ?> joueurs)
-                        </h2>
-                    </div>
-
-                    <?php if (empty($joueursParEquipe['B'])): ?>
-                        <p class="text-sm text-gray-400">Aucun joueur convoqué dans cette équipe.</p>
-                    <?php else: ?>
-                        <div class="space-y-3">
-                            <?php foreach ($joueursParEquipe['B'] as $convoque): ?>
-                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                                        🧑
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-700">
-                                            <?= htmlspecialchars($convoque['nom']) ?>
-                                            <?= htmlspecialchars($convoque['prenom']) ?>
-                                        </p>
-                                        <?php if ($convoque['numero_maillot']): ?>
-                                            <p class="text-xs text-gray-500">#<?= $convoque['numero_maillot'] ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                    <?php if ($convoque['est_capitaine']): ?>
-                                        <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full border border-yellow-200">
-                                            Capitaine
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <?php if (
-                in_array($_SESSION['user']['role'], ['president', 'censeur']) &&
-                $match['statut'] === 'publie' &&
-                !$resultat
-            ): ?>
-                <div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
-                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Saisir le résultat</h2>
-
-                    <form action="/resultatMatch-resultatsave" method="POST">
-                        <input type="hidden" name="match_id" value="<?= $match['id'] ?>">
-
-                        <div class="flex items-center gap-4">
-                            <div>
-                                <label class="text-sm text-gray-500 block mb-1">Équipe A</label>
-                                <input type="number" name="buts_equipe_a" min="0" value="0"
-                                    class="w-20 border border-gray-300 rounded-lg px-3 py-2 text-center text-lg font-bold">
-                            </div>
-                            <span class="text-2xl font-bold text-gray-400 mt-4">-</span>
-                            <div>
-                                <label class="text-sm text-gray-500 block mb-1">Équipe B</label>
-                                <input type="number" name="buts_equipe_b" min="0" value="0"
-                                    class="w-20 border border-gray-300 rounded-lg px-3 py-2 text-center text-lg font-bold">
-                            </div>
-                            <button type="submit" name="save_resultat" value="Enregistrer"
-                                class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition">
-                                Enregistrer
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            <?php endif; ?>
         </main>
     </div>
 </body>

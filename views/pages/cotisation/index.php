@@ -40,6 +40,8 @@ function buildPaginationUrl($paramName, $page)
     $params[$paramName] = $page;
     return '?' . http_build_query($params);
 }
+
+$pageTitle = "Gestion Financière";
 ?>
 
 <!DOCTYPE html>
@@ -47,192 +49,206 @@ function buildPaginationUrl($paramName, $page)
 
 <head>
     <meta charset="UTF-8">
-    <title>Finance - Club Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $pageTitle ?> - FC Blue Lock</title>
+    <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-gray-100 font-sans">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans">
 
     <div class="flex min-h-screen">
         <?php include __DIR__ . '/../../partials/sidebar.php'; ?>
 
-        <main class="flex-1 p-8">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-800">
-                    <i class="fas fa-chart-line mr-2 text-green-600"></i>
-                    Gestion Financière
-                </h1>
-                <div class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-xl font-bold text-2xl shadow-lg">
-                    <i class="fas fa-wallet mr-2"></i>
-                    Solde : <?= number_format($solde, 0, ',', ' ') ?> FCFA
-                </div>
-            </header>
+        <main class="flex-1">
+            <?php include __DIR__ . '/../../partials/header.php'; ?>
+            <div class="p-6 md:p-8 lg:p-10">
+                <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-6">
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 flex items-center gap-4">
+                        <i class="fas fa-chart-line text-green-600 text-4xl"></i>
+                        Gestion Financière
+                    </h1>
+                    <div class="bg-gradient-to-r from-green-600 to-green-700 text-white px-10 py-4 rounded-3xl font-extrabold text-3xl shadow-xl shadow-green-200">
+                        <i class="fas fa-wallet mr-3"></i>
+                        Solde : <?= number_format($solde, 0, ',', ' ') ?> FCFA
+                    </div>
+                </header>
 
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Cotisations -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-users text-blue-600 text-2xl"></i>
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <!-- Cotisations -->
+                    <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+                                    <i class="fas fa-users text-white text-2xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Cotisations</p>
+                            <p class="text-3xl font-extrabold text-blue-600"><?= number_format($totalCotisations, 0, ',', ' ') ?> FCFA</p>
                         </div>
                     </div>
-                    <p class="text-gray-500 text-sm font-medium mb-1">Total Cotisations</p>
-                    <p class="text-3xl font-bold text-blue-600"><?= number_format($totalCotisations, 0, ',', ' ') ?> FCFA</p>
-                </div>
 
-                <!-- Sanctions -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-gavel text-yellow-600 text-2xl"></i>
+                    <!-- Sanctions -->
+                    <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200">
+                                    <i class="fas fa-gavel text-white text-2xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Sanctions</p>
+                            <p class="text-3xl font-extrabold text-orange-600"><?= number_format($totalSanctions, 0, ',', ' ') ?> FCFA</p>
                         </div>
                     </div>
-                    <p class="text-gray-500 text-sm font-medium mb-1">Total Sanctions</p>
-                    <p class="text-3xl font-bold text-yellow-600"><?= number_format($totalSanctions, 0, ',', ' ') ?> FCFA</p>
-                </div>
 
-                <!-- Dons -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-gift text-purple-600 text-2xl"></i>
+                    <!-- Dons -->
+                    <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200">
+                                    <i class="fas fa-gift text-white text-2xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Dons</p>
+                            <p class="text-3xl font-extrabold text-purple-600"><?= number_format($totalDons, 0, ',', ' ') ?> FCFA</p>
                         </div>
                     </div>
-                    <p class="text-gray-500 text-sm font-medium mb-1">Total Dons</p>
-                    <p class="text-3xl font-bold text-purple-600"><?= number_format($totalDons, 0, ',', ' ') ?> FCFA</p>
-                </div>
 
-                <!-- Dépenses -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-shopping-cart text-red-600 text-2xl"></i>
+                    <!-- Dépenses -->
+                    <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-100 to-pink-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200">
+                                    <i class="fas fa-shopping-cart text-white text-2xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Total Dépenses</p>
+                            <p class="text-3xl font-extrabold text-red-600"><?= number_format($totalDepenses, 0, ',', ' ') ?> FCFA</p>
                         </div>
                     </div>
-                    <p class="text-gray-500 text-sm font-medium mb-1">Total Dépenses</p>
-                    <p class="text-3xl font-bold text-red-600"><?= number_format($totalDepenses, 0, ',', ' ') ?> FCFA</p>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
-                <!-- Section: Cotisations Impayées -->
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 class="text-xl font-bold text-gray-700 mb-6">
-                        <i class="fas fa-money-bill-wave mr-2 text-blue-600"></i>
-                        Cotisations à percevoir (<?= date('m/Y') ?>)
-                    </h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="text-gray-400 text-sm uppercase">
-                                    <th class="pb-3">Joueur</th>
-                                    <th class="pb-3 text-right">Montant</th>
-                                    <th class="pb-3 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                <?php foreach ($unpaid as $item): ?>
-                                    <tr>
-                                        <td class="py-4 font-medium"><?= $item['nom'] ?> <?= $item['prenom'] ?></td>
-                                        <td class="py-4 text-right"><?= number_format($item['montant'], 0, ',', ' ') ?> FCFA</td>
-                                        <td class="py-4 text-right">
-                                            <form action="/cotisation-payer" method="POST">
-                                                <input type="hidden" name="cotisation_id" value="<?= $item['id'] ?>">
-                                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                                                    <i class="fas fa-check mr-1"></i> Valider
-                                                </button>
-                                            </form>
-                                        </td>
+                    <!-- Section: Cotisations Impayées -->
+                    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+                        <h2 class="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                            <i class="fas fa-money-bill-wave text-blue-600"></i>
+                            Cotisations à percevoir (<?= date('m/Y') ?>)
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="text-slate-400 text-sm uppercase tracking-wider border-b-2 border-slate-100">
+                                        <th class="pb-4 font-bold">Joueur</th>
+                                        <th class="pb-4 text-right font-bold">Montant</th>
+                                        <th class="pb-4 text-right font-bold">Action</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <?php foreach ($unpaid as $item): ?>
+                                        <tr class="hover:bg-slate-50 transition-all duration-200">
+                                            <td class="py-5 font-semibold text-slate-800"><?= htmlspecialchars($item['nom']) ?> <?= htmlspecialchars($item['prenom']) ?></td>
+                                            <td class="py-5 text-right text-xl font-extrabold text-slate-700"><?= number_format($item['montant'], 0, ',', ' ') ?> FCFA</td>
+                                            <td class="py-5 text-right">
+                                                <form action="/cotisation-payer" method="POST">
+                                                    <input type="hidden" name="cotisation_id" value="<?= $item['id'] ?>">
+                                                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-lg shadow-blue-200">
+                                                        <i class="fas fa-check mr-2"></i> Valider
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination for Unpaid -->
+                        <?php if ($totalPagesUnpaid > 1): ?>
+                            <div class="flex items-center justify-center gap-3 mt-8">
+                                <?php if ($unpaidPage > 1): ?>
+                                    <a href="<?= buildPaginationUrl('unpaid_page', $unpaidPage - 1) ?>" class="flex items-center justify-center w-12 h-12 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php for ($i = 1; $i <= $totalPagesUnpaid; $i++): ?>
+                                    <a href="<?= buildPaginationUrl('unpaid_page', $i) ?>" class="flex items-center justify-center w-12 h-12 rounded-2xl transition-all font-bold <?= $i == $unpaidPage ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-200' : 'border border-slate-200 hover:bg-slate-50 text-slate-700' ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php endfor; ?>
+
+                                <?php if ($unpaidPage < $totalPagesUnpaid): ?>
+                                    <a href="<?= buildPaginationUrl('unpaid_page', $unpaidPage + 1) ?>" class="flex items-center justify-center w-12 h-12 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
-                    <!-- Pagination for Unpaid -->
-                    <?php if ($totalPagesUnpaid > 1): ?>
-                        <div class="flex items-center justify-center gap-2 mt-6">
-                            <?php if ($unpaidPage > 1): ?>
-                                <a href="<?= buildPaginationUrl('unpaid_page', $unpaidPage - 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            <?php endif; ?>
-
-                            <?php for ($i = 1; $i <= $totalPagesUnpaid; $i++): ?>
-                                <a href="<?= buildPaginationUrl('unpaid_page', $i) ?>" class="px-3 py-1 border rounded transition <?= $i == $unpaidPage ? 'bg-blue-500 text-white border-blue-500' : 'border-gray-300 hover:bg-gray-50' ?>">
-                                    <?= $i ?>
-                                </a>
-                            <?php endfor; ?>
-
-                            <?php if ($unpaidPage < $totalPagesUnpaid): ?>
-                                <a href="<?= buildPaginationUrl('unpaid_page', $unpaidPage + 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Section: Historique Caisse -->
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 class="text-xl font-bold text-gray-700 mb-6">
-                        <i class="fas fa-history mr-2 text-green-600"></i>
-                        Derniers Mouvements
-                    </h2>
-                    <div class="space-y-4">
-                        <?php foreach ($transactions as $t): ?>
-                            <div class="flex items-center justify-between p-4 rounded-xl <?= $t['type'] === 'entree' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200' ?>">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas text-2xl <?= $t['type'] === 'entree' ? 'fa-arrow-down text-green-600' : 'fa-arrow-up text-red-600' ?>"></i>
-                                    <div>
-                                        <p class="font-bold text-sm"><?= $t['libelle'] ?></p>
-                                        <div class="flex items-center gap-2 mt-1">
-                                            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold 
-                                                <?= $t['categorie'] === 'cotisation' ? 'bg-blue-200 text-blue-800' : 
-                                                ($t['categorie'] === 'sanction' ? 'bg-yellow-200 text-yellow-800' : 
-                                                ($t['categorie'] === 'don' ? 'bg-purple-200 text-purple-800' : 
-                                                ($t['categorie'] === 'depense' ? 'bg-red-200 text-red-800' : 'bg-gray-200 text-gray-800'))) ?>">
-                                                <?= ucfirst($t['categorie']) ?>
-                                            </span>
-                                            <p class="text-xs opacity-75">
-                                                <i class="far fa-calendar mr-1"></i>
-                                                <?= date('d/m/Y', strtotime($t['date_transaction'])) ?>
-                                            </p>
+                    <!-- Section: Historique Caisse -->
+                    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-8">
+                        <h2 class="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
+                            <i class="fas fa-history text-green-600"></i>
+                            Derniers Mouvements
+                        </h2>
+                        <div class="space-y-5">
+                            <?php foreach ($transactions as $t): ?>
+                                <div class="flex items-center justify-between p-5 rounded-2xl transition-all duration-200 hover:shadow-md <?= $t['type'] === 'entree' ? 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' : 'bg-gradient-to-r from-red-50 to-pink-50 text-red-700 border border-red-200' ?>">
+                                    <div class="flex items-center space-x-4">
+                                        <i class="fas text-3xl <?= $t['type'] === 'entree' ? 'fa-arrow-down text-green-600' : 'fa-arrow-up text-red-600' ?>"></i>
+                                        <div>
+                                            <p class="font-bold text-lg"><?= htmlspecialchars($t['libelle']) ?></p>
+                                            <div class="flex items-center gap-3 mt-2">
+                                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold 
+                                                <?= $t['categorie'] === 'cotisation' ? 'bg-blue-200 text-blue-800' : ($t['categorie'] === 'sanction' ? 'bg-orange-200 text-orange-800' : ($t['categorie'] === 'don' ? 'bg-purple-200 text-purple-800' : ($t['categorie'] === 'depense' ? 'bg-red-200 text-red-800' : 'bg-slate-200 text-slate-800'))) ?>">
+                                                    <?= ucfirst(htmlspecialchars($t['categorie'])) ?>
+                                                </span>
+                                                <p class="text-xs opacity-75 font-medium">
+                                                    <i class="far fa-calendar mr-1"></i>
+                                                    <?= date('d/m/Y', strtotime($t['date_transaction'])) ?>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
+                                    <p class="font-extrabold text-2xl"><?= $t['type'] === 'entree' ? '+' : '-' ?> <?= number_format($t['montant'], 0, ',', ' ') ?></p>
                                 </div>
-                                <p class="font-bold text-xl"><?= $t['type'] === 'entree' ? '+' : '-' ?> <?= number_format($t['montant'], 0, ',', ' ') ?></p>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <!-- Pagination for Transactions -->
+                        <?php if ($totalPagesTransactions > 1): ?>
+                            <div class="flex items-center justify-center gap-3 mt-8">
+                                <?php if ($transactionsPage > 1): ?>
+                                    <a href="<?= buildPaginationUrl('transactions_page', $transactionsPage - 1) ?>" class="flex items-center justify-center w-12 h-12 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php for ($i = 1; $i <= $totalPagesTransactions; $i++): ?>
+                                    <a href="<?= buildPaginationUrl('transactions_page', $i) ?>" class="flex items-center justify-center w-12 h-12 rounded-2xl transition-all font-bold <?= $i == $transactionsPage ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-200' : 'border border-slate-200 hover:bg-slate-50 text-slate-700' ?>">
+                                        <?= $i ?>
+                                    </a>
+                                <?php endfor; ?>
+
+                                <?php if ($transactionsPage < $totalPagesTransactions): ?>
+                                    <a href="<?= buildPaginationUrl('transactions_page', $transactionsPage + 1) ?>" class="flex items-center justify-center w-12 h-12 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
-                    <!-- Pagination for Transactions -->
-                    <?php if ($totalPagesTransactions > 1): ?>
-                        <div class="flex items-center justify-center gap-2 mt-6">
-                            <?php if ($transactionsPage > 1): ?>
-                                <a href="<?= buildPaginationUrl('transactions_page', $transactionsPage - 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            <?php endif; ?>
-
-                            <?php for ($i = 1; $i <= $totalPagesTransactions; $i++): ?>
-                                <a href="<?= buildPaginationUrl('transactions_page', $i) ?>" class="px-3 py-1 border rounded transition <?= $i == $transactionsPage ? 'bg-blue-500 text-white border-blue-500' : 'border-gray-300 hover:bg-gray-50' ?>">
-                                    <?= $i ?>
-                                </a>
-                            <?php endfor; ?>
-
-                            <?php if ($transactionsPage < $totalPagesTransactions): ?>
-                                <a href="<?= buildPaginationUrl('transactions_page', $transactionsPage + 1) ?>" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
                 </div>
-
             </div>
         </main>
     </div>
