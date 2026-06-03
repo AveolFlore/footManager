@@ -46,63 +46,86 @@ $pageTitle = "Gérer les convocations";
     <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .cyber-bg {
+            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            position: relative;
+        }
+        .cyber-bg::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(6, 182, 212, 0.04), rgba(0, 0, 0, 0), rgba(244, 63, 94, 0.04));
+            z-index: 99999;
+            opacity: 0.4;
+            pointer-events: none;
+            background-size: 100% 4px, 6px 100%;
+        }
+        .btn-glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-glow-cyan:hover {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+        }
+    </style>
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 to-slate-100">
+<body class="cyber-bg text-slate-100 min-h-screen font-sans antialiased">
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
 
     <div class="flex min-h-screen">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
-        <main class="flex-1 overflow-y-auto">
-            <div class="p-6 md:p-8 lg:p-10">
+        <main class="flex-1 overflow-y-auto bg-slate-950/40 backdrop-blur-sm">
+            <div class="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto">
 
-                <!-- Retour -->
                 <a href="/page-matchdetail?id=<?= $id ?>"
-                    class="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-8 font-semibold">
+                    class="inline-flex items-center gap-2 text-cyan-500/60 hover:text-cyan-400 mb-8 font-mono text-xs uppercase tracking-widest transition-colors">
                     <i class="fas fa-arrow-left"></i>
-                    Retour au match
+                    [ Retour au match ]
                 </a>
 
-                <!-- Message flash -->
                 <?php if (isset($_GET['msg'])): ?>
-                    <div class="mb-8 px-6 py-4 rounded-2xl <?= str_contains($_GET['msg'], 'Erreur') || str_contains($_GET['msg'], 'ne peut pas') ? 'bg-gradient-to-r from-red-50 to-pink-50 text-red-700 border border-red-200' : 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200' ?> font-semibold shadow-sm">
+                    <div class="mb-8 px-6 py-4 rounded-none font-mono text-sm uppercase tracking-wider <?php if(str_contains($_GET['msg'], 'Erreur') || str_contains($_GET['msg'], 'ne peut pas')): ?> bg-rose-950/40 border-l-4 border-rose-500 border-t border-b border-r border-rose-500/20 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.1)] <?php else: ?> bg-emerald-950/40 border-l-4 border-emerald-500 border-t border-b border-r border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] <?php endif; ?>">
                         <i class="fas fa-info-circle mr-3"></i>
-                        <?= htmlspecialchars($_GET['msg']) ?>
+                        SYSTEM_ALERT : <?= htmlspecialchars($_GET['msg']) ?>
                     </div>
                 <?php endif; ?>
 
-                <!-- Infos match -->
-                <div class="bg-white rounded-3xl border border-slate-100 p-8 mb-8 shadow-xl">
-                    <h1 class="text-3xl font-extrabold text-slate-800 mb-3 flex items-center gap-3">
-                        <i class="fas fa-users text-green-600"></i>
-                        Équipe A vs Équipe B
+                <div class="bg-slate-900/40 border border-slate-800/80 backdrop-blur-md p-8 mb-8 relative">
+                    <div class="absolute -top-[1px] -left-[1px] w-3 h-3 border-t-2 border-l-2 border-cyan-500"></div>
+                    <div class="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-cyan-500"></div>
+                    
+                    <h1 class="text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-cyan-400 flex items-center gap-4 mb-4">
+                        <i class="fas fa-users text-cyan-500 filter drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]"></i>
+                        SÉLECTION_MATRICE : BL-MATCH
                     </h1>
-                    <p class="text-lg text-slate-500">
-                        <i class="fas fa-calendar mr-2"></i>
-                        <?= date('d/m/Y H:i', strtotime($match['date'])) ?>
-                        <span class="mx-3 text-slate-300">•</span>
-                        <i class="fas fa-map-marker-alt mr-2"></i>
-                        <?= htmlspecialchars($match['lieu']) ?>
+                    <p class="text-sm font-mono text-slate-400 tracking-wide flex flex-wrap items-center gap-2">
+                        <span class="text-cyan-400"><i class="fas fa-calendar mr-2"></i><?= date('d/m/Y H:i', strtotime($match['date'])) ?></span>
+                        <span class="text-slate-700 font-bold px-2">//</span>
+                        <span class="text-slate-300"><i class="fas fa-map-marker-alt mr-2"></i><?= htmlspecialchars($match['lieu']) ?></span>
                     </p>
                 </div>
 
-                <!-- Suggestion auto -->
                 <?php if (!empty($suggestion)): ?>
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-3xl p-8 mb-8 shadow-lg shadow-blue-100">
-                        <p class="text-lg font-extrabold text-blue-700 mb-6 flex items-center gap-3">
-                            <i class="fas fa-star text-yellow-500 text-2xl"></i>
-                            Suggestion automatique — top <?= count($suggestion) ?> joueurs ce mois
+                    <div class="bg-gradient-to-br from-cyan-950/30 to-slate-950/50 border border-cyan-500/30 p-8 mb-8 relative overflow-hidden shadow-[inset_0_0_20px_rgba(6,182,212,0.1)]">
+                        <div class="absolute top-0 right-0 bg-cyan-500/10 text-cyan-400 font-mono text-[10px] uppercase tracking-widest px-3 py-1 border-b border-l border-cyan-500/30">
+                            BlueLock_Al_Engine_v4.0
+                        </div>
+                        <p class="text-xs font-mono font-bold text-cyan-400 mb-6 flex items-center gap-3 uppercase tracking-widest">
+                            <i class="fas fa-star text-amber-500 animate-pulse filter drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]"></i>
+                            SUGGESTION AUTOMATIQUE — TOP <?= count($suggestion) ?> ÉGOÏSTES DU MOIS
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <?php foreach ($suggestion as $s): ?>
-                                <div class="flex items-center justify-between bg-white rounded-2xl px-5 py-4 border border-blue-100 shadow-sm">
-                                    <span class="font-bold text-slate-800 text-lg">
+                                <div class="flex items-center justify-between bg-slate-950/60 rounded-none px-5 py-4 border border-slate-800 relative group hover:border-cyan-500/40 transition-colors">
+                                    <span class="font-mono text-sm font-bold text-slate-200 uppercase tracking-wide">
                                         <?= htmlspecialchars($s['nom']) ?> <?= htmlspecialchars($s['prenom']) ?>
                                     </span>
-                                    <span class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 px-4 py-2 rounded-full font-bold">
-                                        <i class="fas fa-trophy"></i>
-                                        <?= $s['score'] ?> pts
+                                    <span class="inline-flex items-center gap-2 bg-cyan-950/60 border border-cyan-500/40 text-cyan-400 px-3 py-1 font-mono text-xs font-bold">
+                                        <?= $s['score'] ?> PX
                                     </span>
                                 </div>
                             <?php endforeach; ?>
@@ -110,22 +133,25 @@ $pageTitle = "Gérer les convocations";
                     </div>
                 <?php endif; ?>
 
-                <!-- Formulaire convocations -->
-                <div class="bg-white rounded-3xl border border-slate-100 p-8 shadow-xl">
-                    <h2 class="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3">
-                        <i class="fas fa-edit text-green-600"></i>
-                        Sélectionner les joueurs
-                    </h2>
+                <div class="bg-slate-900/40 border border-slate-800/80 backdrop-blur-md p-8 relative">
+                    <div class="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-cyan-500/40"></div>
+                    <div class="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-cyan-500/40"></div>
 
-                    <!-- Compteurs -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div class="p-6 rounded-3xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-sm">
-                            <p class="text-sm font-bold text-blue-700 mb-2 uppercase tracking-wide">Équipe A</p>
-                            <p class="text-4xl font-extrabold" id="countA">0 / 10 joueurs</p>
+                    <h2 class="text-xl font-black uppercase tracking-wider text-slate-200 mb-8 flex items-center gap-3 font-mono">
+                        <i class="fas fa-crosshairs text-cyan-500"></i>
+                        INDEXATION_JOUEURS
+                    </h2> 
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 font-mono">
+                        <div class="p-6 bg-slate-950/80 border border-blue-500/20 relative shadow-[inner_0_0_15px_rgba(59,130,246,0.05)]">
+                            <div class="absolute top-0 right-0 w-1.5 h-1.5 bg-blue-500"></div>
+                            <p class="text-xs font-bold text-blue-400 mb-2 uppercase tracking-widest">UNITÉ COMPTE : ÉQUIPE A</p>
+                            <p class="text-3xl font-black text-white" id="countA">0 / 10</p>
                         </div>
-                        <div class="p-6 rounded-3xl border-2 border-red-200 bg-gradient-to-br from-red-50 to-pink-50 shadow-sm">
-                            <p class="text-sm font-bold text-red-700 mb-2 uppercase tracking-wide">Équipe B</p>
-                            <p class="text-4xl font-extrabold" id="countB">0 / 10 joueurs</p>
+                        <div class="p-6 bg-slate-950/80 border border-rose-500/20 relative shadow-[inner_0_0_15px_rgba(244,63,94,0.05)]">
+                            <div class="absolute top-0 right-0 w-1.5 h-1.5 bg-rose-500"></div>
+                            <p class="text-xs font-bold text-rose-400 mb-2 uppercase tracking-widest">UNITÉ COMPTE : ÉQUIPE B</p>
+                            <p class="text-3xl font-black text-white" id="countB">0 / 10</p>
                         </div>
                     </div>
 
@@ -133,15 +159,14 @@ $pageTitle = "Gérer les convocations";
                         <input type="hidden" name="match_id" value="<?= $id ?>">
 
                         <?php if (empty($joueurs)): ?>
-                            <div class="text-center py-16 text-slate-400">
-                                <i class="fas fa-user-slash text-7xl mb-6"></i>
-                                <p class="text-xl font-semibold">Aucun joueur disponible.</p>
+                            <div class="text-center py-16 text-slate-600 font-mono">
+                                <i class="fas fa-user-slash text-5xl mb-6 text-slate-800"></i>
+                                <p class="text-sm uppercase tracking-widest">Aucun sujet valide dans la base de données.</p>
                             </div>
                         <?php else: ?>
-                            <div class="space-y-4 mb-8" id="playersList">
+                            <div class="space-y-3 mb-8" id="playersList">
                                 <?php foreach ($joueurs as $joueur): ?>
                                     <?php
-                                    // Récupérer les données du joueur déjà convoqué si présent
                                     $convoqueData = null;
                                     foreach ($deja_convoques as $dc) {
                                         if ($dc['joueur_id'] == $joueur['id']) {
@@ -150,68 +175,68 @@ $pageTitle = "Gérer les convocations";
                                         }
                                     }
                                     ?>
-                                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 p-6 border-2 border-slate-100 rounded-3xl hover:bg-slate-50 transition-all shadow-sm" id="player-row-<?= $joueur['id'] ?>">
-                                        <!-- Checkbox sélection -->
-                                        <input type="checkbox"
-                                            name="joueurs[<?= $joueur['id'] ?>][selectionne]"
-                                            value="1"
-                                            class="w-6 h-6 accent-green-600 player-checkbox cursor-pointer"
-                                            data-player-id="<?= $joueur['id'] ?>"
-                                            <?= in_array($joueur['id'], $ids_convoques) ? 'checked' : '' ?>>
-
-                                        <!-- Nom + poste -->
-                                        <div class="flex-1">
-                                            <p class="text-lg font-bold text-slate-800">
-                                                <?= htmlspecialchars($joueur['nom']) ?>
-                                                <?= htmlspecialchars($joueur['prenom']) ?>
-                                            </p>
-                                            <p class="text-sm text-slate-500 font-semibold"><?= $joueur['poste'] ?></p>
+                                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-950/40 border border-slate-900 transition-all duration-200 group" id="player-row-<?= $joueur['id'] ?>">
+                                        
+                                        <div class="flex items-center h-full">
+                                            <input type="checkbox"
+                                                name="joueurs[<?= $joueur['id'] ?>][selectionne]"
+                                                value="1"
+                                                class="w-5 h-5 bg-slate-900 border-slate-800 text-cyan-500 focus:ring-0 focus:ring-offset-0 accent-cyan-500 player-checkbox cursor-pointer"
+                                                data-player-id="<?= $joueur['id'] ?>"
+                                                <?= in_array($joueur['id'], $ids_convoques) ? 'checked' : '' ?>>
                                         </div>
 
-                                        <div class="flex flex-wrap items-center gap-4">
-                                            <!-- Équipe A ou B -->
+                                        <div class="flex-1 font-mono">
+                                            <p class="text-base font-bold text-slate-200 uppercase tracking-wide group-hover:text-cyan-400 transition-colors">
+                                                <?= htmlspecialchars($joueur['nom']) ?> <?= htmlspecialchars($joueur['prenom']) ?>
+                                            </p>
+                                            <p class="text-xs text-slate-500 uppercase tracking-wider mt-0.5"><?= htmlspecialchars($joueur['poste']) ?></p>
+                                        </div>
+
+                                        <div class="flex flex-wrap items-center gap-4 font-mono w-full md:w-auto justify-between md:justify-end">
                                             <select name="joueurs[<?= $joueur['id'] ?>][equipe]"
-                                                class="text-base border-2 border-slate-200 rounded-2xl px-5 py-3 focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500 bg-white font-semibold team-select"
+                                                class="text-xs bg-slate-900 border border-slate-800 text-slate-300 px-4 py-2.5 outline-none focus:border-cyan-500 font-bold uppercase tracking-wider team-select"
                                                 data-player-id="<?= $joueur['id'] ?>">
-                                                <option value="A" <?= $convoqueData && $convoqueData['equipe_match'] === 'A' ? 'selected' : '' ?>>Équipe A</option>
-                                                <option value="B" <?= $convoqueData && $convoqueData['equipe_match'] === 'B' ? 'selected' : '' ?>>Équipe B</option>
+                                                <option value="A" <?= $convoqueData && $convoqueData['equipe_match'] === 'A' ? 'selected' : '' ?>>ÉCO_UNITÉ A</option>
+                                                <option value="B" <?= $convoqueData && $convoqueData['equipe_match'] === 'B' ? 'selected' : '' ?>>ÉCO_UNITÉ B</option>
                                             </select>
 
-                                            <!-- Capitaine -->
-                                            <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
+                                            <label class="flex items-center gap-2 text-xs font-bold text-slate-500 cursor-pointer select-none border border-slate-900 px-3 py-2 bg-slate-950/80 hover:border-slate-800 transition-colors">
                                                 <input type="checkbox"
                                                     name="joueurs[<?= $joueur['id'] ?>][capitaine]"
                                                     value="1"
-                                                    class="w-5 h-5 accent-green-600 captain-checkbox cursor-pointer"
+                                                    class="w-4 h-4 bg-slate-900 border-slate-800 accent-amber-500 captain-checkbox cursor-pointer"
                                                     data-player-id="<?= $joueur['id'] ?>"
                                                     data-team="<?= $convoqueData ? $convoqueData['equipe_match'] : 'A' ?>"
                                                     <?= $convoqueData && $convoqueData['est_capitaine'] ? 'checked' : '' ?>>
-                                                <i class="fas fa-crown text-yellow-600 mr-1"></i>
-                                                Capitaine
+                                                <i class="fas fa-crown text-slate-600 peer-checked:text-amber-500 transition-colors"></i>
+                                                <span class="uppercase tracking-widest text-[11px]">CAPITAINE</span>
                                             </label>
 
-                                            <!-- Numéro maillot -->
-                                            <input type="number"
-                                                name="joueurs[<?= $joueur['id'] ?>][maillot]"
-                                                value="<?= $convoqueData ? $convoqueData['numero_maillot'] : ($joueur['numero_maillot'] ?? '') ?>"
-                                                placeholder="N°"
-                                                min="1" max="99"
-                                                class="w-20 text-base border-2 border-slate-200 rounded-2xl px-5 py-3 text-center font-extrabold focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-500 bg-white">
+                                            <div class="relative flex items-center">
+                                                <span class="absolute left-3 text-[10px] text-slate-600 font-bold">N°</span>
+                                                <input type="number"
+                                                    name="joueurs[<?= $joueur['id'] ?>][maillot]"
+                                                    value="<?= $convoqueData ? $convoqueData['numero_maillot'] : ($joueur['numero_maillot'] ?? '') ?>"
+                                                    placeholder="--"
+                                                    min="1" max="99"
+                                                    class="w-16 bg-slate-900 border border-slate-800 text-cyan-400 text-xs py-2.5 pl-7 pr-2 text-center font-black outline-none focus:border-cyan-500">
+                                            </div>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
 
-                            <!-- Boutons -->
-                            <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex flex-col md:flex-row gap-4 font-mono text-xs uppercase tracking-widest font-black">
                                 <button type="submit" name="convocsave" value="Enregistrer"
-                                    class="flex-1 px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white text-lg font-extrabold rounded-2xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg shadow-green-200">
-                                    <i class="fas fa-check mr-2"></i>
-                                    Enregistrer et publier
+                                    class="flex-1 group relative px-8 py-4 bg-cyan-950/60 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black btn-glow-cyan text-center transition-all duration-300">
+                                    <span class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400 group-hover:border-black"></span>
+                                    <span class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-400 group-hover:border-black"></span>
+                                    <i class="fas fa-check mr-2"></i> Enregistrer & Publier
                                 </button>
                                 <a href="/page-matchdetail?id=<?= $id ?>"
-                                    class="flex-1 px-8 py-4 border-2 border-slate-200 text-slate-700 text-lg font-bold rounded-2xl hover:bg-slate-50 transition-all bg-white shadow-sm">
-                                    Annuler
+                                    class="flex-1 px-8 py-4 bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 text-center transition-all">
+                                    Avorter la sélection
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -225,12 +250,10 @@ $pageTitle = "Gérer les convocations";
     <script>
         const MAX_PLAYERS = 10;
 
-        // Fonction pour mettre à jour les compteurs et désactiver les checkboxes
         function updateCounts() {
             let countA = 0;
             let countB = 0;
 
-            // D'abord compter les joueurs sélectionnés
             document.querySelectorAll('.player-checkbox').forEach(checkbox => {
                 if (checkbox.checked) {
                     const playerId = checkbox.dataset.playerId;
@@ -243,43 +266,39 @@ $pageTitle = "Gérer les convocations";
                 }
             });
 
-            // Mettre à jour les textes et couleurs des compteurs
             const countAElement = document.getElementById('countA');
             const countBElement = document.getElementById('countB');
 
-            countAElement.textContent = `${countA} / ${MAX_PLAYERS} joueurs`;
-            countBElement.textContent = `${countB} / ${MAX_PLAYERS} joueurs`;
+            countAElement.textContent = `${countA} / ${MAX_PLAYERS} SÉLECTIONNÉS`;
+            countBElement.textContent = `${countB} / ${MAX_PLAYERS} SÉLECTIONNÉS`;
 
-            countAElement.className = countA >= MAX_PLAYERS ? 'text-4xl font-extrabold text-red-600' : 'text-4xl font-extrabold text-blue-700';
-            countBElement.className = countB >= MAX_PLAYERS ? 'text-4xl font-extrabold text-red-600' : 'text-4xl font-extrabold text-red-700';
+            // Style dynamique selon les seuils critiques
+            countAElement.className = countA >= MAX_PLAYERS ? 'text-3xl font-black text-rose-500 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'text-3xl font-black text-blue-400';
+            countBElement.className = countB >= MAX_PLAYERS ? 'text-3xl font-black text-rose-500 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'text-3xl font-black text-rose-400';
 
-            // Désactiver les checkboxes pour les équipes qui ont atteint la limite
             document.querySelectorAll('.player-checkbox').forEach(checkbox => {
                 const playerId = checkbox.dataset.playerId;
                 const teamSelect = document.querySelector(`.team-select[data-player-id="${playerId}"]`);
                 const row = document.getElementById(`player-row-${playerId}`);
 
-                // Si la checkbox n'est pas cochée, vérifier si l'équipe sélectionnée a atteint la limite
                 if (!checkbox.checked) {
                     if (teamSelect.value === 'A' && countA >= MAX_PLAYERS) {
                         checkbox.disabled = true;
-                        row.classList.add('opacity-50', 'cursor-not-allowed');
+                        row.classList.add('opacity-30', 'pointer-events-none');
                     } else if (teamSelect.value === 'B' && countB >= MAX_PLAYERS) {
                         checkbox.disabled = true;
-                        row.classList.add('opacity-50', 'cursor-not-allowed');
+                        row.classList.add('opacity-30', 'pointer-events-none');
                     } else {
                         checkbox.disabled = false;
-                        row.classList.remove('opacity-50', 'cursor-not-allowed');
+                        row.classList.remove('opacity-30', 'pointer-events-none');
                     }
                 } else {
-                    // Toujours activer les checkboxes cochées
                     checkbox.disabled = false;
-                    row.classList.remove('opacity-50', 'cursor-not-allowed');
+                    row.classList.remove('opacity-30', 'pointer-events-none');
                 }
             });
         }
 
-        // Mettre à jour la team du capitaine quand la team change
         document.querySelectorAll('.team-select').forEach(select => {
             select.addEventListener('change', function() {
                 const playerId = this.dataset.playerId;
@@ -291,12 +310,10 @@ $pageTitle = "Gérer les convocations";
             });
         });
 
-        // Gérer les clicks sur les checkboxes de capitaine
         document.querySelectorAll('.captain-checkbox').forEach(captainCheckbox => {
             captainCheckbox.addEventListener('change', function() {
                 if (this.checked) {
                     const team = this.dataset.team;
-                    // Désélectionner les autres capitaines de la même équipe
                     document.querySelectorAll(`.captain-checkbox[data-team="${team}"]`).forEach(otherCheckbox => {
                         if (otherCheckbox !== this) {
                             otherCheckbox.checked = false;
@@ -306,12 +323,11 @@ $pageTitle = "Gérer les convocations";
             });
         });
 
-        // Ajouter écouteurs sur les checkboxes de joueurs
         document.querySelectorAll('.player-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', updateCounts);
         });
 
-        // Appeler updateCounts au chargement initial
+        // Init
         updateCounts();
     </script>
 </body>
