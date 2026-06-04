@@ -41,46 +41,47 @@ $pageTitle = "Tableau de bord";
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> - FC Blue Lock</title>
-    <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
+    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
-        
+
         .cyber-bg {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
         }
-        
+
         .holo-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(34, 211, 238, 0.25);
             box-shadow: 0 0 35px rgba(34, 211, 238, 0.1);
         }
-        
+
         .neon-text {
             text-shadow: 0 0 10px rgb(34 211 238),
-                        0 0 20px rgb(34 211 238);
+                0 0 20px rgb(34 211 238);
         }
-        
+
         .stat-glow {
             transition: all 0.4s ease;
         }
-        
+
         .stat-glow:hover {
             transform: translateY(-4px);
             box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
         }
-        
+
         .scan-line {
             position: relative;
         }
-        
+
         .scan-line::after {
             content: '';
             position: absolute;
@@ -88,16 +89,22 @@ $pageTitle = "Tableau de bord";
             left: -100%;
             width: 40%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
             animation: scan 6s linear infinite;
         }
-        
+
         @keyframes scan {
-            0% { left: -100%; }
-            100% { left: 300%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 300%;
+            }
         }
     </style>
 </head>
+
 <body class="cyber-bg text-slate-200 min-h-screen font-sans">
 
     <div class="flex min-h-screen">
@@ -105,13 +112,13 @@ $pageTitle = "Tableau de bord";
 
         <main class="flex-1">
             <?php include __DIR__ . '/../../partials/header.php'; ?>
-            
+
             <div class="p-6 md:p-8 lg:p-10">
-                
+
                 <!-- HERO CYBER -->
                 <div class="mb-10 holo-card rounded-3xl p-8 md:p-12 relative overflow-hidden scan-line">
                     <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-transparent to-violet-500/10"></div>
-                    
+
                     <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center justify-between">
                         <div class="flex-1">
                             <h2 class="text-cyan-400 font-medium uppercase tracking-[4px] text-sm mb-2">SYSTÈME OPÉRATIONNEL</h2>
@@ -124,13 +131,13 @@ $pageTitle = "Tableau de bord";
                         </div>
 
                         <div class="flex flex-col gap-3 w-full md:w-auto">
-                            <a href="/page-matchcreate" 
-                               class="btn-glow flex items-center justify-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-cyan-500/50 transition-all">
+                            <a href="/page-matchcreate"
+                                class="btn-glow flex items-center justify-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-cyan-500/50 transition-all">
                                 <i class="fa-solid fa-plus"></i>
                                 PLANIFIER MATCH
                             </a>
-                            <a href="/page-convocation" 
-                               class="flex items-center justify-center gap-3 border border-slate-600 hover:border-cyan-400 text-slate-300 hover:text-cyan-400 font-bold px-8 py-4 rounded-2xl transition-all">
+                            <a href="/page-convocation"
+                                class="flex items-center justify-center gap-3 border border-slate-600 hover:border-cyan-400 text-slate-300 hover:text-cyan-400 font-bold px-8 py-4 rounded-2xl transition-all">
                                 <i class="fa-solid fa-clipboard-list"></i>
                                 CONVOCATION
                             </a>
@@ -195,10 +202,10 @@ $pageTitle = "Tableau de bord";
 
                 <!-- MAIN GRID -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    
+
                     <!-- LEFT + CENTER -->
                     <div class="lg:col-span-2 space-y-8">
-                        
+
                         <!-- Derniers Matchs -->
                         <div class="holo-card rounded-3xl overflow-hidden">
                             <div class="p-6 border-b border-slate-700 bg-gradient-to-r from-slate-900 to-transparent">
@@ -310,9 +317,15 @@ $pageTitle = "Tableau de bord";
                                 FOCUS DU JOUR
                             </h3>
                             <ul class="space-y-4 text-sm">
-                                <li class="flex items-center gap-3"><div class="w-2 h-2 bg-emerald-400 rounded-full"></div> Rassemblement 18:00</li>
-                                <li class="flex items-center gap-3"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Récupération active</li>
-                                <li class="flex items-center gap-3"><div class="w-2 h-2 bg-cyan-400 rounded-full"></div> Stratégie offensive</li>
+                                <li class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-emerald-400 rounded-full"></div> Rassemblement 18:00
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Récupération active
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-cyan-400 rounded-full"></div> Stratégie offensive
+                                </li>
                             </ul>
                         </div>
 
@@ -337,4 +350,5 @@ $pageTitle = "Tableau de bord";
         </main>
     </div>
 </body>
+
 </html>

@@ -10,6 +10,7 @@ use Models\Notifications\Notification;
 use Models\Activite_log\Activite;
 use Models\Utilisateur\User;
 use Models\MatchSeance;
+use Core\Paginator;
 use PDO;
 
 class PresenceController
@@ -43,17 +44,18 @@ class PresenceController
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
-        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-        $perPage = 10;
-        $offset = ($page - 1) * $perPage;
-
         $mois = isset($_GET['mois']) ? (int)$_GET['mois'] : date('m');
         $annee = isset($_GET['annee']) ? (int)$_GET['annee'] : date('Y');
 
-        $seances = $this->presenceModel->getAllSeancesWithPresence($perPage, $offset);
+        // Utiliser le Paginator
         $totalSeances = $this->presenceModel->countAllSeances();
-        $totalPages = ceil($totalSeances / $perPage);
+        $paginator = new Paginator($totalSeances, 10);
+        
+        $seances = $this->presenceModel->getAllSeancesWithPresence($paginator->getLimit(), $paginator->getOffset());
         $joueursStats = $this->presenceModel->getJoueursWithStats($mois, $annee);
+
+        // Exporter les variables pour la vue
+        extract($paginator->toArray());
 
         require_once __DIR__ . '/../../views/pages/presence/index.php';
     }

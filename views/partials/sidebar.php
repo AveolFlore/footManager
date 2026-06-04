@@ -94,17 +94,19 @@ $adminItems = [
 
     <!-- HEADER WITH BLUE LOCK LOGO -->
     <div class="px-7 py-8 border-b border-slate-800 flex-shrink-0">
-        <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-lg shadow-green-900/30 overflow-hidden">
-                <img src="/images/blue_lock_logo.png" alt="Blue Lock Logo" class="w-10 h-10 object-contain">
-            </div>
-            <div class="flex-1">
-                <h2 class="text-2xl font-extrabold tracking-wide">
-                    <span class="text-green-400">FC</span> Blue Lock
-                </h2>
-                <p class="text-xs text-slate-400 mt-1 font-medium uppercase tracking-widest">Management System</p>
-            </div>
-        </div>
+       <div class="flex items-center gap-4">
+    <img 
+        src="/assets/images/blue_lock_logo.png" 
+        alt="Blue Lock Logo" 
+        class="w-16 h-16 object-contain"
+    >
+
+    <div class="flex-1">
+        <h2 class="text-2xl font-extrabold tracking-wide">
+            <span class="text-cyan-400">FC</span> Blue Lock
+        </h2>
+    </div>
+</div>
     </div>
 
     <!-- MENU -->
@@ -117,9 +119,9 @@ $adminItems = [
             <a href="<?= $item['route'] ?>"
                 class="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group
                <?= isActive($item['route'], $currentPage)
-                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-900/30'
+                    ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-900/30'
                     : 'hover:bg-slate-800 text-slate-300 hover:text-white' ?>">
-                <span class="text-xl w-6 text-center transition-all <?= isActive($item['route'], $currentPage) ? 'text-white' : 'text-slate-400 group-hover:text-green-400' ?>">
+                <span class="text-xl w-6 text-center transition-all <?= isActive($item['route'], $currentPage) ? 'text-white' : 'text-slate-400 group-hover:text-cyan-400' ?>">
                     <i class="<?= $item['icon'] ?>"></i>
                 </span>
                 <span class="font-semibold"><?= $item['label'] ?></span>
@@ -135,9 +137,9 @@ $adminItems = [
                     <a href="<?= $item['route'] ?>"
                         class="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group
                        <?= isActive($item['route'], $currentPage)
-                            ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white shadow-lg shadow-orange-900/30'
+                            ? 'bg-gradient-to-r from-cyan-600 to-violet-600 text-white shadow-lg shadow-violet-900/30'
                             : 'hover:bg-slate-800 text-slate-300 hover:text-white' ?>">
-                        <span class="text-xl w-6 text-center transition-all <?= isActive($item['route'], $currentPage) ? 'text-white' : 'text-slate-400 group-hover:text-yellow-400' ?>">
+                        <span class="text-xl w-6 text-center transition-all <?= isActive($item['route'], $currentPage) ? 'text-white' : 'text-slate-400 group-hover:text-cyan-400' ?>">
                             <i class="<?= $item['icon'] ?>"></i>
                         </span>
                         <span class="font-semibold"><?= $item['label'] ?></span>
@@ -151,7 +153,7 @@ $adminItems = [
     <div class="px-5 py-6 border-t border-slate-800 flex-shrink-0">
         <div class="bg-slate-800/70 rounded-2xl p-5 mb-4 border border-slate-700">
             <div class="flex items-center gap-4 mb-3">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-xl font-extrabold shadow-lg shadow-green-900/30">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text-xl font-extrabold shadow-lg shadow-cyan-900/30">
                     <?= strtoupper(substr($_SESSION['user']['nom'], 0, 1) . substr($_SESSION['user']['prenom'], 0, 1)) ?>
                 </div>
                 <div class="flex-1">
@@ -167,7 +169,7 @@ $adminItems = [
             <div class="bg-slate-700/70 rounded-xl p-3">
                 <div class="flex items-center justify-between text-xs">
                     <span class="text-slate-400">Last login</span>
-                    <span class="text-green-400 font-semibold">Today</span>
+                    <span class="text-cyan-400 font-semibold">Today</span>
                 </div>
             </div>
         </div>

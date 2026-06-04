@@ -15,7 +15,7 @@ $msg = $_GET['msg'] ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FC Blue Lock - Inscription</title>
-    <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
+    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -167,76 +167,29 @@ $msg = $_GET['msg'] ?? null;
                     <i class="fas fa-futbol text-3xl text-slate-800"></i>
                 </div>
             </div>
-
-            <!-- Holographic scoreboard top-left -->
-            <div class="absolute top-20 left-20 w-48 glass-effect rounded-xl p-4 opacity-40">
-                <div class="text-green-400 text-xs uppercase tracking-widest mb-2 scoreboard-blink">Live Score</div>
-                <div class="flex items-center justify-between text-white font-bold">
-                    <div class="text-center">
-                        <div class="text-xs text-blue-300">Blue Lock</div>
-                        <div class="text-2xl">2</div>
-                    </div>
-                    <div class="text-yellow-400 text-lg">VS</div>
-                    <div class="text-center">
-                        <div class="text-xs text-purple-300">United</div>
-                        <div class="text-2xl">1</div>
-                    </div>
-                </div>
-                <div class="mt-2 text-xs text-slate-400 text-center scoreboard-blink">85'</div>
-            </div>
-
-            <!-- Holographic scoreboard bottom-right -->
-            <div class="absolute bottom-20 left-10 w-40 glass-effect rounded-xl p-4 opacity-30">
-                <div class="text-yellow-400 text-xs uppercase tracking-widest mb-2">Possession</div>
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex-1">
-                        <div class="h-1 bg-gradient-to-r from-green-500 to-green-300 rounded-full" style="width: 65%"></div>
-                        <div class="text-green-400 text-xs mt-1">65%</div>
-                    </div>
-                    <div class="flex-1 text-right">
-                        <div class="h-1 bg-gradient-to-r from-purple-300 to-purple-500 rounded-full ml-auto" style="width: 35%"></div>
-                        <div class="text-purple-400 text-xs mt-1">35%</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tactical diagram decoration -->
-            <div class="absolute bottom-10 right-10 w-64 h-64 opacity-20">
-                <div class="w-full h-full border-2 border-dashed tactical-border rounded-full flex items-center justify-center">
-                    <div class="w-1/2 h-1/2 border border-blue-500 rounded-full tactical-border"></div>
-                </div>
-                <div class="absolute top-1/2 left-0 w-4 h-4 bg-blue-500 rounded-full shadow-lg shadow-blue-500"></div>
-                <div class="absolute top-1/2 right-0 w-4 h-4 bg-green-500 rounded-full shadow-lg shadow-green-500"></div>
-            </div>
         </div>
     </div>
 
     <!-- Main register container -->
     <div class="relative z-10 min-h-screen flex items-center justify-center p-4 py-12">
-        <div class="w-full max-w-lg">
+        <div class="w-full max-w-6xl">
             <!-- Main card -->
-            <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden holographic-scan">
-                <!-- Header -->
-                <div class="relative p-8 bg-gradient-to-r from-blue-900/80 to-slate-900/80 border-b border-blue-500/30">
-                    <!-- Logo -->
-                    <div class="flex items-center justify-center gap-4 mb-4">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center energy-pulse">
-                            <i class="fas fa-shield-halved text-3xl text-white"></i>
+            <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden holographic-scan flex flex-col md:flex-row">
+                <!-- Left: Form -->
+                <div class="w-full md:w-1/2 p-8">
+                    <!-- Logo & Header -->
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center energy-pulse">
+                            <i class="fas fa-shield-halved text-2xl text-white"></i>
                         </div>
-                        <div class="text-center">
-                            <h1 class="text-2xl font-bold bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent">Blue Lock Japan</h1>
-                            <p class="text-blue-300 text-sm tracking-widest uppercase">Rejoignez l'élite</p>
+                        <div>
+                            <h1 class="text-xl font-bold bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent">Blue Lock Japan</h1>
+                            <p class="text-blue-300 text-xs tracking-widest uppercase">Rejoignez l'élite</p>
                         </div>
                     </div>
 
-                    <!-- Divider -->
-                    <div class="h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
-                </div>
-
-                <!-- Body -->
-                <div class="p-8">
-                    <h2 class="text-center text-2xl font-bold text-white mb-2">Inscription Joueur</h2>
-                    <p class="text-center text-slate-400 text-sm mb-8">Complétez votre profil pour rejoindre le club</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Inscription Joueur</h2>
+                    <p class="text-slate-400 text-sm mb-6">Complétez votre profil pour rejoindre le club</p>
 
                     <?php if ($msg): ?>
                         <div class="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm flex items-center gap-3">
@@ -323,13 +276,31 @@ $msg = $_GET['msg'] ?? null;
                             </div>
                         </div>
 
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
+                                    <i class="fas fa-tshirt"></i>
+                                </div>
+                                <input type="number" name="numero_maillot" placeholder="Numéro maillot"
+                                    class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow"
+                                    min="1" max="999">
+                            </div>
+
+                            <div class="relative">
+                                <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <input type="password" name="mot_de_passe" placeholder="Mot de passe" required minlength="6"
+                                    class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow">
+                            </div>
+                        </div>
+
                         <div class="relative">
                             <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
-                                <i class="fas fa-tshirt"></i>
+                                <i class="fas fa-lock-open"></i>
                             </div>
-                            <input type="number" name="numero_maillot" placeholder="Numéro maillot (optionnel)"
-                                class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow"
-                                min="1" max="999">
+                            <input type="password" name="confirm_mot_de_passe" placeholder="Confirmer mot de passe" required minlength="6"
+                                class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow">
                         </div>
 
                         <div class="p-4 bg-slate-800/50 border border-blue-500/30 rounded-xl">
@@ -341,39 +312,29 @@ $msg = $_GET['msg'] ?? null;
                                 class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:transition-all">
                         </div>
 
-                        <div class="relative">
-                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
-                                <i class="fas fa-lock"></i>
-                            </div>
-                            <input type="password" name="mot_de_passe" placeholder="Mot de passe" required minlength="6"
-                                class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow">
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
-                                <i class="fas fa-lock-open"></i>
-                            </div>
-                            <input type="password" name="confirm_mot_de_passe" placeholder="Confirmer mot de passe" required minlength="6"
-                                class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow">
-                        </div>
-
                         <button type="submit"
-                            class="w-full btn-glow text-white font-bold py-4 rounded-xl uppercase tracking-widest shadow-lg mt-4">
+                            class="w-full btn-glow text-white font-bold py-4 rounded-xl uppercase tracking-widest shadow-lg">
                             <i class="fas fa-user-plus mr-2"></i>
                             Rejoindre le Club
                         </button>
 
                     </form>
-                </div>
 
-                <!-- Footer -->
-                <div class="p-6 bg-slate-900/50 border-t border-blue-500/30">
-                    <div class="text-center">
+                    <div class="mt-6 text-center">
                         <p class="text-slate-400 text-sm mb-2">Déjà membre ?</p>
                         <a href="/page-login" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors text-sm">
                             <i class="fas fa-sign-in-alt"></i>
                             Se connecter à l'espace
                         </a>
+                    </div>
+                </div>
+
+                <!-- Right: GIF -->
+                <div class="w-full md:w-1/2 bg-gradient-to-br from-blue-900/80 to-slate-900/80 flex items-center justify-center p-8 border-t md:border-t-0 md:border-l border-blue-500/30">
+                    <div class="text-center">
+                        <img src="/assets/images/blue-lock-10.gif" alt="Blue Lock" class="w-full max-w-md rounded-2xl shadow-2xl mb-6">
+                        <h3 class="text-xl font-bold bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent mb-3">Devenir le meilleur</h3>
+                        <p class="text-slate-400 text-sm">Rejoignez l'élite du football et faites partie de l'aventure Blue Lock</p>
                     </div>
                 </div>
             </div>

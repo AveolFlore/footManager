@@ -10,83 +10,83 @@ class PageController
 
     public function homePage()
     {
-        require_once "../views/pages/default/home.php";
+        require_once __DIR__ . '/../views/pages/default/home.php';
     }
     public function redirectPage()
     {
-        require_once "../views/pages/default/redirect.php";
+        require_once __DIR__ . '/../views/pages/default/redirect.php';
     }
     public function teamPage()
     {
-        require_once "../views/pages/historique_equipe/index.php";
+        require_once __DIR__ . '/../views/pages/historique_equipe/index.php';
     }
     public function matchPage()
     {
-        require_once "../views/pages/match_seance/index.php";
+        require_once __DIR__ . '/../views/pages/match_seance/index.php';
     }
     public function traningPage()
     {
-        require_once "../views/pages/entrainement/index.php";
+        require_once __DIR__ . '/../views/pages/entrainement/index.php';
     }
     public function rulePage()
     {
-        require_once "../views/pages/reglement/index.php";
+        require_once __DIR__ . '/../views/pages/reglement/index.php';
     }
     public function cotisationPage()
     {
-        require_once "../views/pages/cotisation/index.php";
+        require_once __DIR__ . '/../views/pages/cotisation/index.php';
     }
     public function galeryPage()
     {
-        require_once "../views/pages/galerie/index.php";
+        require_once __DIR__ . '/../views/pages/galerie/index.php';
     }
     public function classementPage()
     {
-        require_once "../views/pages/classement/index.php";
+        require_once __DIR__ . '/../views/pages/classement/index.php';
     }
     public function adminCreateUserPage()
     {
         requireAdmin();
-        require_once "../views/pages/admin/create-user.php";
+        require_once __DIR__ . '/../views/pages/admin/create-user.php';
     }
     public function adminPage()
     {
         requireAdmin();
-        require_once "../views/pages/admin/index.php";
+        require_once __DIR__ . '/../views/pages/admin/index.php';
     }
     public function registerPage()
     {
-        require_once "../views/pages/auth/register.php";
+        require_once __DIR__ . '/../views/pages/auth/register.php';
     }
     public function loginPage()
     {
-        require_once "../views/pages/auth/login.php";
+        require_once __DIR__ . '/../views/pages/auth/login.php';
     }
     public function matchDetailPage()
     {
-        require_once "../views/pages/match_seance/detail.php";
+        require_once __DIR__ . '/../views/pages/match_seance/detail.php';
     }
     // redirection vers  la page de convocation
     public function convocationPage()
     {
-        require_once "../views/pages/convocation/index.php";
+        require_once __DIR__ . '/../views/pages/convocation/index.php';
     }
     // les functions pour afficher tous les vues du rubrique matchs
     public function matchCreatePage()
     {
-        require_once "../views/pages/match_seance/create.php";
+        require_once __DIR__ . '/../views/pages/match_seance/create.php';
     }
     public function matchEditPage()
     {
-        require_once "../views/pages/match_seance/edit.php";
+        require_once __DIR__ . '/../views/pages/match_seance/edit.php';
     }
     public function matchConvocationsPage()
     {
-        require_once "../views/pages/match_seance/convocations.php";
+        require_once __DIR__ . '/../views/pages/match_seance/convocations.php';
     }
     
     public function sanctionPage()
     {
-        require_once "../views/pages/sanction/index.php";
+        require_once __DIR__ . '/../views/pages/sanction/index.php';
     }
 }

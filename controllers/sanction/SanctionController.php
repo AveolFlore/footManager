@@ -8,6 +8,7 @@ use Models\Caisse\Caisse;
 use Models\Notifications\Notification;
 use Models\Activite_log\Activite;
 use Models\Utilisateur\User;
+use Core\Paginator;
 use PDO;
 
 class SanctionController
@@ -103,7 +104,13 @@ class SanctionController
     public function index()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        $sanctions = $this->sanctionModel->getAllPending();
+
+        $totalSanctions = $this->sanctionModel->countAllPending();
+        $paginator = new Paginator($totalSanctions, 5);
+        $sanctions = $this->sanctionModel->getAllPendingPaginated($paginator->getLimit(), $paginator->getOffset());
+
+        extract($paginator->toArray());
+
         require_once __DIR__ . '/../../views/pages/sanction/index.php';
     }
 }

@@ -35,7 +35,7 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> - FC Blue Lock</title>
-    <link rel="icon" type="image/png" href="/images/blue_lock_logo.png">
+    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -322,33 +322,7 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                         </table>
                     </div>
 
-                    <?php if ($totalPages > 1): ?>
-                        <div class="p-6 border-t border-slate-100">
-                            <nav class="flex items-center justify-center gap-3">
-                                <?php if ($page > 1): ?>
-                                    <a href="?page=<?= $page - 1 ?>&mois=<?= $mois ?>&annee=<?= $annee ?>"
-                                        class="flex items-center justify-center w-12 h-12 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                <?php endif; ?>
-
-                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                    <a href="?page=<?= $i ?>&mois=<?= $mois ?>&annee=<?= $annee ?>"
-                                        class="flex items-center justify-center w-12 h-12 rounded-2xl transition-all font-bold 
-                                        <?= $i == $page ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-200' : 'border border-slate-200 hover:bg-slate-50' ?>">
-                                        <?= $i ?>
-                                    </a>
-                                <?php endfor; ?>
-
-                                <?php if ($page < $totalPages): ?>
-                                    <a href="?page=<?= $page + 1 ?>&mois=<?= $mois ?>&annee=<?= $annee ?>"
-                                        class="flex items-center justify-center w-12 h-12 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                <?php endif; ?>
-                            </nav>
-                        </div>
-                    <?php endif; ?>
+                    <?php include __DIR__ . '/../../partials/pagination.php'; ?>
                 </div>
             </div>
         </main>

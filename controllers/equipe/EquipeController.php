@@ -38,7 +38,7 @@ class EquipeController
             $categorie = htmlspecialchars($_POST['categorie']);
 
             // 3. Appel au modèle pour enregistrer
-            if ($this->model->createEquipe($nom, $type, $categorie)) {
+            if ($this->equipeModel->createEquipe($nom, $type, $categorie)) {
                 header('Location: /liste-equipes?success=1'); // Redirection si succès
             } else {
                 echo "Erreur lors de la création.";
@@ -47,7 +47,7 @@ class EquipeController
     }
 
     //  affiche la page du formulaire
-    
+
     public function create()
     {
         // Sécurité : Vérifier si l'admin est connecté avant d'afficher
@@ -57,7 +57,7 @@ class EquipeController
         // }
 
         // Appel de la vue
-        require_once 'views/pages/admin/creer_equipe.php';
+        require_once __DIR__ . '/../../views/pages/admin/creer_equipe.php';
     }
     // Affiche la liste (Historique)
     public function teamPage()
@@ -81,26 +81,26 @@ class EquipeController
     }
 
     // Affiche le formulaire
-    
-  public function createEquipePage()
-{
-    if (session_status() === PHP_SESSION_NONE) session_start();
 
-    // Correction du chemin vers la session : $_SESSION['user']['role']
-    $userRole = $_SESSION['user']['role'] ?? null;
+    public function createEquipePage()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
-    if (!$userRole || $userRole !== 'president') {
-        header('Location: /page-login?msg=Acces_interdit_President_uniquement');
-        exit();
+        // Correction du chemin vers la session : $_SESSION['user']['role']
+        $userRole = $_SESSION['user']['role'] ?? null;
+
+        if (!$userRole || $userRole !== 'president') {
+            header('Location: /page-login?msg=Acces_interdit_President_uniquement');
+            exit();
+        }
+
+        require_once __DIR__ . '/../../views/pages/creation_equipe/creer_equipe.php';
     }
-    
-    require_once __DIR__ . '/../../views/pages/creation_equipe/creer_equipe.php';
-}
 
     // Traite l'enregistrement
     // Dans Controllers/Admin/AdminController.php
 
-  public function storeEquipe($data)
+    public function storeEquipe($data)
     {
         if (function_exists('\requireRole')) {
             \requireRole('president');
@@ -199,26 +199,31 @@ class EquipeController
     }
 
     // Affiche les détails d'une équipe
-    public function showDetails($id) {
-    if (!$id) {
-        header('Location: /admin-team');
-        exit;
-    }
+    public function showDetails($id)
+    {
+        if (!$id) {
+            header('Location: /admin-team');
+            exit;
+        }
 
-    //  On récupère les infos de l'équipe pour le titre de la page
-    $equipe = $this->equipeModel->findById($id);
+        //  On récupère les infos de l'équipe pour le titre de la page
+        $equipe = $this->equipeModel->findById($id);
+        if (!$equipe) {
+            header('Location: /admin-team?msg=equipe_non_trouvee');
+            exit;
+        }
 
-    // On récupère UNIQUEMENT les joueurs liés à cet ID d'équipe
-    $query = "SELECT nom, prenom, email, date_naissance, poste, pied_dominant 
+        // On récupère UNIQUEMENT les joueurs liés à cet ID d'équipe
+        $query = "SELECT nom, prenom, email, date_naissance, poste, pied_dominant 
               FROM users 
               WHERE equipe_id = :equipe_id 
               AND role = 'joueur'";
-              
-    $stmt = $this->pdo->prepare($query);
-    $stmt->execute(['equipe_id' => $id]);
-    $joueurs = $stmt->fetchAll();
 
-    // On charge la vue en lui passant les données
-    require_once __DIR__ . '/../../views/pages/historique_equipe/details_equipe.php';
-}
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['equipe_id' => $id]);
+        $joueurs = $stmt->fetchAll();
+
+        // On charge la vue en lui passant les données
+        require_once __DIR__ . '/../../views/pages/historique_equipe/details_equipe.php';
+    }
 }

@@ -59,4 +59,28 @@ class Sanction
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllPendingPaginated(int $limit, int $offset): array
+    {
+        $query = "SELECT s.*, u.nom, u.prenom, r.titre 
+                  FROM {$this->table} s
+                  JOIN users u ON s.joueur_id = u.id
+                  JOIN reglement r ON s.reglement_id = r.id
+                  WHERE s.statut = 'en_attente'
+                  ORDER BY s.date_sanction DESC
+                  LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countAllPending(): int
+    {
+        $query = "SELECT COUNT(*) AS total FROM {$this->table} s WHERE s.statut = 'en_attente'";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return (int)$stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
 }

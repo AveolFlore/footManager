@@ -8,34 +8,30 @@ use Controllers\Presence\PresenceController;
 use Controllers\Cotisation\CotisationController;
 use Controllers\Reglement\ReglementController;
 use Controllers\Performance\PerformanceController;
-use Controllers\Match_seance\Match_seanceController;
+use Controllers\MatchSeanceController;
 use Controllers\Galerie\GalerieController;
 use Controllers\Equipe\EquipeController;
-use Controllers\MatchSeanceController;
+// use Controllers\MatchSeanceController;
 use Controllers\ResultatMatchController;
 use Controllers\Sanction\SanctionController;
 
-// on recupère la route demandée par l'utilisateur
+// On réinitialise les variables pour le reste du routeur !
 $route = $_SERVER['REQUEST_URI'];
-
-// on traite la route pour enlever les paramètres de requête
 $route = explode('?', $route)[0];
-
-// supprimer les slashes de début
 if (strlen($route) > 1) {
     $route = substr($route, 1);
 }
-
-// Diviser la chaine par le tiret
 $part = explode('-', $route);
-
 $controllerName = $part[0] ?? '/';
-// Déterminer l'action par défaut selon le contrôleur
 if ($controllerName === 'presence' || $controllerName === 'sanction') {
     $action = $part[1] ?? 'index';
+} else if ($controllerName === 'admin' && count($part) > 2) {
+    // Pour les routes admin avec 3 parties (ex: admin-team-show)
+    $action = $part[1] . $part[2];
 } else {
     $action = $part[1] ?? 'home';
 }
+
 // instatiation du controller a nul ca peter chez moi sinon
 $controllerInstance = null;
 $id = $_GET['id'] ?? null;
@@ -59,7 +55,7 @@ if (isset($controllerName)) {
                 $controllerInstance = new AuthController();
                 break;
             case 'admin':
-                if (in_array($action, ['team', 'createequipe', 'storeequipe', 'teamedit', 'teamupdate', 'teamdelete', 'teamsearchajax'])) {
+                if (in_array($action, ['team', 'createequipe', 'storeequipe', 'teamedit', 'teamupdate', 'teamdelete', 'teamsearchajax', 'teamshow'])) {
                     $controllerInstance = new EquipeController();
                 } else {
                     $controllerInstance = new AdminController();
@@ -78,7 +74,7 @@ if (isset($controllerName)) {
                 $controllerInstance = new PerformanceController();
                 break;
             case 'match':
-                $controllerInstance = new Match_seanceController();
+                $controllerInstance = new MatchSeanceController();
                 break;
             case 'galerie':
                 $controllerInstance = new GalerieController();
@@ -125,9 +121,9 @@ if (isset($action) && $controllerInstance !== null) {
                 $controllerInstance->createEquipePage();
                 break;
             case 'details':
+            case 'teamshow':
                 $id = $_GET['id'] ?? null;
-                $controller = new EquipeController();
-                $controller->showDetails($id);
+                $controllerInstance->showDetails($id);
                 break;
             case 'storeequipe':
                 $controllerInstance->storeEquipe($_POST);
@@ -224,7 +220,7 @@ if (isset($action) && $controllerInstance !== null) {
                 $controllerInstance->enregistrerPerformances();
                 break;
             case 'creer':
-                $controllerInstance->creerMatch();
+                $controllerInstance->matchCreatePage();
                 break;
             case 'upload':
                 $controllerInstance->upload();
