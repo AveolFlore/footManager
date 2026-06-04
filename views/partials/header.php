@@ -29,21 +29,72 @@ if ($user_id) {
         background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
         position: relative;
     }
+
     .cyber-bg::before {
         content: " ";
         display: block;
         position: fixed;
-        top: 0; left: 0; bottom: 0; right: 0;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
         background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(6, 182, 212, 0.04), rgba(0, 0, 0, 0), rgba(168, 85, 247, 0.04));
         z-index: 99999;
         opacity: 0.25;
         pointer-events: none;
         background-size: 100% 4px, 6px 100%;
     }
+
+    /* Loader Blue Lock */
+    .bl-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        transition: opacity 0.5s ease-out;
+    }
+
+    .bl-loader.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .bl-loader img {
+        width: 200px;
+        height: 200px;
+        border-radius: 20px;
+        box-shadow: 0 0 40px rgba(34, 211, 238, 0.4);
+    }
 </style>
+<!-- Loader Blue Lock -->
+<div id="blLoader" class="bl-loader">
+    <img src="/assets/images/blue-lock-10.gif" alt="Loading Blue Lock">
+    <p class="mt-6 text-cyan-400 font-bold text-xl">Chargement en cours...</p>
+</div>
+<script>
+    // Cacher le loader après que la page soit chargée
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const loader = document.getElementById('blLoader');
+            if (loader) {
+                loader.classList.add('hidden');
+                setTimeout(function() {
+                    loader.remove();
+                }, 500);
+            }
+        }, 1000); // Attendre 1 seconde pour l'effet
+    });
+</script>
 <!-- HEADER -->
 <header class="w-full h-20 bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 flex items-center justify-between px-6 md:px-8 sticky top-0 z-30 shadow-2xl">
-    
+
     <!-- LEFT: Titre & Burger -->
     <div class="flex items-center gap-6">
         <!-- BURGER (mobile only) -->
@@ -189,53 +240,53 @@ if ($user_id) {
 
 <!-- SCRIPT MOBILE & NOTIFICATIONS & CONFIRM MODAL -->
 <script>
-let confirmCallback = null;
+    let confirmCallback = null;
 
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
 
-    sidebar.classList.toggle('-translate-x-full');
-    overlay.classList.toggle('hidden');
-}
-
-function toggleNotifications(event) {
-    event.stopPropagation();
-    const list = document.getElementById('notificationsList');
-    list.classList.toggle('hidden');
-}
-
-function openConfirmModal(title, message, callback) {
-    document.getElementById('confirmModalTitle').textContent = title;
-    document.getElementById('confirmModalMessage').textContent = message;
-    confirmCallback = callback;
-    document.getElementById('confirmModal').classList.remove('hidden');
-}
-
-function closeConfirmModal() {
-    document.getElementById('confirmModal').classList.add('hidden');
-    confirmCallback = null;
-}
-
-function executeConfirmAction() {
-    if (confirmCallback) {
-        confirmCallback();
-    }
-    closeConfirmModal();
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('notificationsDropdown');
-    const list = document.getElementById('notificationsList');
-    if (!dropdown.contains(event.target)) {
-        list.classList.add('hidden');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
     }
 
-    // Close confirm modal if clicking outside
-    const confirmModal = document.getElementById('confirmModal');
-    if (confirmModal && event.target === confirmModal) {
+    function toggleNotifications(event) {
+        event.stopPropagation();
+        const list = document.getElementById('notificationsList');
+        list.classList.toggle('hidden');
+    }
+
+    function openConfirmModal(title, message, callback) {
+        document.getElementById('confirmModalTitle').textContent = title;
+        document.getElementById('confirmModalMessage').textContent = message;
+        confirmCallback = callback;
+        document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        confirmCallback = null;
+    }
+
+    function executeConfirmAction() {
+        if (confirmCallback) {
+            confirmCallback();
+        }
         closeConfirmModal();
     }
-});
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('notificationsDropdown');
+        const list = document.getElementById('notificationsList');
+        if (!dropdown.contains(event.target)) {
+            list.classList.add('hidden');
+        }
+
+        // Close confirm modal if clicking outside
+        const confirmModal = document.getElementById('confirmModal');
+        if (confirmModal && event.target === confirmModal) {
+            closeConfirmModal();
+        }
+    });
 </script>
