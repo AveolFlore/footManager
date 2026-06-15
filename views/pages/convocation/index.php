@@ -18,9 +18,9 @@ $currentUserId = $_SESSION['user']['id'] ?? null;
 // =====================================================================
 // CONFIGURATION DE LA PAGINATION
 // =====================================================================
-$currentPage = $page;
+$currentPage = (int)$page;
 $playersToShow = $qualifiedPlayers;
-$offset = ($currentPage - 1) * $perPage;
+$offset = ($currentPage - 1) * (int)$perPage;
 
 if ($currentPage > $totalPages && $totalPages > 0) {
     $currentPage = $totalPages;
@@ -173,7 +173,7 @@ $pageTitle = "Convocations Matrix";
                         </p>
                     </div>
                     <div class="bg-slate-900/80 border border-slate-800 px-4 py-2 rounded-xl text-xs font-mono text-slate-400 flex items-center gap-3">
-                        <span class="text-cyber-blue font-bold text-base"><?= $totalPlayers ?></span> ÉGOÏSTES ENREGISTRÉS
+                        <span class="text-cyber-blue font-bold text-base"><?= (int)$totalPlayers ?></span> ÉGOÏSTES ENREGISTRÉS
                     </div>
                 </div>
 
@@ -240,12 +240,12 @@ $pageTitle = "Convocations Matrix";
                                             </div>
                                         </div>
                                         <div class="bg-slate-950 border border-slate-800 text-slate-400 px-3 py-1.5 rounded-xl text-xs font-mono text-right shrink-0">
-                                            <span class="text-white font-bold block text-sm"><?= $player['nb_convocations'] ?></span>
+                                            <span class="text-white font-bold block text-sm"><?= (int)$player['nb_convocations'] ?></span>
                                             <?= $player['nb_convocations'] > 1 ? 'MATCHS' : 'MATCH' ?>
                                         </div>
                                     </div>
 
-                                    <?php if ($isMe && $hasSummon): ?>
+                                    <?php if ($hasSummon): ?>
                                         <div class="p-4 bg-yellow-500/[0.03] border border-yellow-500/20 rounded-xl space-y-3">
                                             <p class="text-[10px] font-black font-mono text-yellow-500 uppercase tracking-widest flex items-center gap-2">
                                                 <i class="fas fa-radiation animate-spin text-xs"></i> // CRÉNEAU SÉCURISÉ LOG
@@ -286,7 +286,7 @@ $pageTitle = "Convocations Matrix";
                                             
                                             <div class="grid grid-cols-1 gap-2">
                                                 <div>
-                                                    <label class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">CIBLE DU MATCH</label>
+                                                    <label class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">// CIBLE DU MATCH</label>
                                                     <select name="match_id" required class="w-full bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg p-2 focus:border-cyber-blue outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" <?= $isFullySummoned ? 'disabled' : '' ?>>
                                                         <?php if (!$isFullySummoned): ?>
                                                             <?php foreach ($availableMatches as $match): ?>
@@ -301,10 +301,10 @@ $pageTitle = "Convocations Matrix";
                                                 </div>
 
                                                 <div>
-                                                    <label class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">ALLOCATION BLOC</label>
+                                                    <label class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-1">// ALLOCATION BLOC</label>
                                                     <select name="equipe" required class="w-full bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-lg p-2 focus:border-cyber-blue outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" <?= $isFullySummoned ? 'disabled' : '' ?>>
-                                                        <option value="A" <?= ($player['equipe'] == 1 || $player['equipe'] === 'A') ? 'selected' : '' ?>>Équipe A</option>
-                                                        <option value="B" <?= ($player['equipe'] == 2 || $player['equipe'] === 'B') ? 'selected' : '' ?>>Équipe B</option>
+                                                        <option value="1" <?= ($player['equipe'] == 1) ? 'selected' : '' ?>>Équipe 1</option>
+                                                        <option value="2" <?= ($player['equipe'] == 2) ? 'selected' : '' ?>>Équipe 2</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -312,7 +312,7 @@ $pageTitle = "Convocations Matrix";
                                             <button type="submit"
                                                 <?= $isFullySummoned ? 'disabled' : '' ?>
                                                 class="w-full py-2.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 <?= $isFullySummoned ? 'bg-slate-900 border border-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-900 hover:bg-cyber-blue border border-cyber-blue/40 hover:border-cyber-blue text-cyber-blue hover:text-slate-950 shadow-md hover:shadow-cyber-blue/20' ?>">
-                                                <i class="<?= $isFullySummoned ? 'fas fa-lock-open' : 'fas fa-crosshairs' ?> mr-1.5"></i>
+                                                <i class="<?= $isFullySummoned ? 'fas fa-lock' : 'fas fa-crosshairs' ?> mr-1.5"></i>
                                                 <?= $isFullySummoned ? 'Saturé' : 'Déployer' ?>
                                             </button>
                                         </form>
@@ -349,17 +349,17 @@ $pageTitle = "Convocations Matrix";
                                 </span>
                             <?php endif; ?>
 
-                            <?php foreach ($paginationRange as $page): ?>
-                                <?php if ($page === '...'): ?>
+                            <?php foreach ($paginationRange as $pageNumber): ?>
+                                <?php if ($pageNumber === '...'): ?>
                                     <span class="w-10 h-10 flex items-center justify-center text-slate-600 font-mono font-bold">...</span>
-                                <?php elseif ($page == $currentPage): ?>
+                                <?php elseif ($pageNumber == $currentPage): ?>
                                     <span class="w-10 h-10 flex items-center justify-center rounded-xl bg-cyber-blue text-slate-950 font-mono font-black border border-cyber-blue glow-blue">
-                                        <?= $page ?>
+                                        <?= $pageNumber ?>
                                     </span>
                                 <?php else: ?>
-                                    <a href="<?= buildPaginationLink($page) ?>"
+                                    <a href="<?= buildPaginationLink($pageNumber) ?>"
                                        class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 transition-all font-mono font-bold text-sm">
-                                        <?= $page ?>
+                                        <?= $pageNumber ?>
                                     </a>
                                 <?php endif; ?>
                             <?php endforeach; ?>
@@ -377,7 +377,7 @@ $pageTitle = "Convocations Matrix";
                         </nav>
 
                         <p class="text-center font-mono text-[11px] text-slate-500 tracking-wider">
-                            INDEXATION : ENREGISTREMENTS CORRÉLÉS DES ÉGOÏSTES DE <span class="text-slate-300"><?= $offset + 1 ?></span> À <span class="text-slate-300"><?= min($offset + $perPage, $totalPlayers) ?></span> // GLOBAL : <span class="text-cyber-blue"><?= $totalPlayers ?></span>
+                            INDEXATION : ENREGISTREMENTS CORRÉLÉS DES ÉGOÏSTES DE <span class="text-slate-300"><?= $offset + 1 ?></span> À <span class="text-slate-300"><?= min($offset + (int)$perPage, (int)$totalPlayers) ?></span> // GLOBAL : <span class="text-cyber-blue"><?= (int)$totalPlayers ?></span>
                         </p>
                     </div>
                 <?php endif; ?>
@@ -408,7 +408,6 @@ $pageTitle = "Convocations Matrix";
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('select[name="match_id"]').forEach(select => {
                 select.addEventListener('change', (e) => checkConvocation(e.target));
-                checkConvocation(select);
             });
         });
     </script>

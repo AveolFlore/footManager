@@ -40,88 +40,83 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 to-slate-100">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans antialiased">
     <div class="flex min-h-screen">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
         <main class="flex-1">
             <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-            <div class="p-6 md:p-8 lg:p-10">
+            
+            <div class="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-10">
+                
                 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'presences_enregistrees'): ?>
-                    <div class="mb-8 p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm">
+                    <div class="p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm transition-all animate-fade-in">
                         <i class="fas fa-check-circle text-2xl"></i>
-                        Présences enregistrées avec succès !
+                        <span class="font-medium">Présences enregistrées avec succès !</span>
                     </div>
                 <?php endif; ?>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-100 to-emerald-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Taux de présence</p>
-                                    <p class="text-4xl font-extrabold text-green-600"><?= $tauxPresence ?>%</p>
-                                </div>
-                                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-200">
-                                    <i class="fas fa-users text-white text-2xl"></i>
-                                </div>
+                        <div class="relative z-10 flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Taux de présence</p>
+                                <p class="text-4xl font-extrabold text-green-600"><?= $tauxPresence ?>%</p>
+                            </div>
+                            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-200">
+                                <i class="fas fa-users text-white text-2xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Présents</p>
-                                    <p class="text-4xl font-extrabold text-blue-600"><?= $totalPresents ?></p>
-                                </div>
-                                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
-                                    <i class="fas fa-check text-white text-2xl"></i>
-                                </div>
+                        <div class="relative z-10 flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Présents</p>
+                                <p class="text-4xl font-extrabold text-blue-600"><?= $totalPresents ?></p>
+                            </div>
+                            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
+                                <i class="fas fa-check text-white text-2xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-red-100 to-pink-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Absents</p>
-                                    <p class="text-4xl font-extrabold text-red-600"><?= $totalAbsents ?></p>
-                                </div>
-                                <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200">
-                                    <i class="fas fa-times text-white text-2xl"></i>
-                                </div>
+                        <div class="relative z-10 flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Absents</p>
+                                <p class="text-4xl font-extrabold text-red-600"><?= $totalAbsents ?></p>
+                            </div>
+                            <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-700 rounded-2xl flex items-center justify-center shadow-lg shadow-red-200">
+                                <i class="fas fa-times text-white text-2xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <div class="group relative overflow-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-6 hover:shadow-2xl transition-all duration-300">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-orange-100 to-yellow-100 rounded-bl-full opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Retards</p>
-                                    <p class="text-4xl font-extrabold text-orange-600"><?= $totalRetards ?></p>
-                                </div>
-                                <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200">
-                                    <i class="fas fa-clock text-white text-2xl"></i>
-                                </div>
+                        <div class="relative z-10 flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-1">Retards</p>
+                                <p class="text-4xl font-extrabold text-orange-600"><?= $totalRetards ?></p>
+                            </div>
+                            <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200">
+                                <i class="fas fa-clock text-white text-2xl"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 mb-10">
+                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6">
                     <form method="GET" action="/presence" class="flex flex-wrap gap-4 items-end">
                         <input type="hidden" name="page" value="1">
+                        
                         <div class="flex-1 min-w-[200px]">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mois</label>
-                            <select name="mois" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all">
+                            <select name="mois" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all cursor-pointer">
                                 <?php
                                 $mois_fr = [
                                     1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
@@ -138,7 +133,7 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
 
                         <div class="w-32">
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Année</label>
-                            <select name="annee" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all">
+                            <select name="annee" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all cursor-pointer">
                                 <?php for ($a = (int)date('Y'); $a >= (int)date('Y') - 2; $a--): ?>
                                     <option value="<?= $a ?>" <?= $annee == $a ? 'selected' : '' ?>>
                                         <?= $a ?>
@@ -147,13 +142,13 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                             </select>
                         </div>
 
-                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-200 font-bold">
-                            <i class="fas fa-filter mr-2"></i>Filtrer
+                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all shadow-lg hover:shadow-blue-300 shadow-blue-200 font-bold flex items-center gap-2 h-[48px]">
+                            <i class="fas fa-filter"></i>Filtrer
                         </button>
                     </form>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 mb-10 overflow-hidden">
+                <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
                     <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50">
                         <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-3">
                             <i class="fas fa-users text-green-600"></i>
@@ -162,8 +157,8 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-slate-50">
+                        <table class="w-full min-w-[800px]">
+                            <thead class="bg-slate-50 border-b border-slate-100">
                                 <tr>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Joueur</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Poste</th>
@@ -181,17 +176,15 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                                             ? round(($joueur['nb_presents'] / $joueur['total_seances']) * 100, 1)
                                             : 0;
                                     ?>
-                                        <tr class="hover:bg-slate-50 transition-all duration-200">
+                                        <tr class="hover:bg-slate-50/80 transition-all duration-200">
                                             <td class="px-6 py-4">
                                                 <div class="flex items-center">
-                                                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center text-white font-extrabold text-lg mr-4 shadow-sm">
+                                                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-700 rounded-xl flex items-center justify-center text-white font-extrabold text-sm mr-4 shadow-sm">
                                                         <?= htmlspecialchars($joueur['numero_maillot'] ?? '?') ?>
                                                     </div>
-                                                    <div>
-                                                        <p class="font-bold text-slate-800">
-                                                            <?= htmlspecialchars(($joueur['nom'] ?? '') . ' ' . ($joueur['prenom'] ?? '')) ?>
-                                                        </p>
-                                                    </div>
+                                                    <span class="font-bold text-slate-800">
+                                                        <?= htmlspecialchars(($joueur['nom'] ?? '') . ' ' . ($joueur['prenom'] ?? '')) ?>
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 text-slate-600 font-medium">
@@ -201,22 +194,22 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                                                 <?= (int)($joueur['total_seances'] ?? 0) ?>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold bg-green-100 text-green-700">
-                                                    <i class="fas fa-check mr-2"></i><?= (int)($joueur['nb_presents'] ?? 0) ?>
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-green-100 text-green-700">
+                                                    <i class="fas fa-check mr-1.5"></i><?= (int)($joueur['nb_presents'] ?? 0) ?>
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold bg-red-100 text-red-700">
-                                                    <i class="fas fa-times mr-2"></i><?= (int)($joueur['nb_absents'] ?? 0) ?>
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-red-100 text-red-700">
+                                                    <i class="fas fa-times mr-1.5"></i><?= (int)($joueur['nb_absents'] ?? 0) ?>
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold bg-orange-100 text-orange-700">
-                                                    <i class="fas fa-clock mr-2"></i><?= (int)($joueur['nb_retards'] ?? 0) ?>
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-orange-100 text-orange-700">
+                                                    <i class="fas fa-clock mr-1.5"></i><?= (int)($joueur['nb_retards'] ?? 0) ?>
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold 
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold 
                                                     <?= $tauxJoueur >= 80 ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700' : ($tauxJoueur >= 60 ? 'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-700' : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-700') ?>">
                                                     <?= $tauxJoueur ?>%
                                                 </span>
@@ -226,8 +219,8 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                                 <?php else: ?>
                                     <tr>
                                         <td colspan="7" class="px-6 py-16 text-center text-slate-500">
-                                            <i class="fas fa-inbox text-6xl text-slate-300 mb-4"></i>
-                                            <p class="text-lg font-medium">Aucune statistique disponible</p>
+                                            <i class="fas fa-inbox text-5xl text-slate-300 mb-4"></i>
+                                            <p class="text-base font-medium">Aucune statistique disponible</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -237,7 +230,7 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                 </div>
 
                 <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50 flex flex-wrap justify-between items-center gap-4">
+                    <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50">
                         <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-3">
                             <i class="fas fa-calendar text-green-600"></i>
                             Historique des séances
@@ -245,8 +238,8 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-slate-50">
+                        <table class="w-full min-w-[800px]">
+                            <thead class="bg-slate-50 border-b border-slate-100">
                                 <tr>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
@@ -259,10 +252,10 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                             <tbody class="divide-y divide-slate-100">
                                 <?php if (!empty($seances)): ?>
                                     <?php foreach ($seances as $seance): ?>
-                                        <tr class="hover:bg-slate-50 transition-all duration-200">
+                                        <tr class="hover:bg-slate-50/80 transition-all duration-200">
                                             <td class="px-6 py-4">
                                                 <div class="flex items-center">
-                                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-extrabold text-lg mr-4 shadow-sm">
+                                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-xl flex items-center justify-center text-white font-extrabold text-sm mr-4 shadow-sm">
                                                         <?= date('d', strtotime($seance['date'])) ?>
                                                     </div>
                                                     <div>
@@ -274,36 +267,36 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                                                             echo $jours[$dateObj->format('w')] . " " . $dateObj->format('d') . " " . $mois_list[(int)$dateObj->format('m')] . " " . $dateObj->format('Y');
                                                             ?>
                                                         </p>
-                                                        <p class="text-sm text-slate-500 font-medium">
+                                                        <p class="text-xs text-slate-500 font-medium mt-0.5">
                                                             <i class="far fa-clock mr-1"></i><?= date('H:i', strtotime($seance['date'])) ?>
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold 
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold 
                                                     <?= ($seance['type'] ?? '') === 'match' ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-700' : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700' ?>">
                                                     <?= ucfirst(htmlspecialchars($seance['type'] ?? 'entraînement')) ?>
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-slate-600 font-medium">
-                                                <i class="fas fa-map-marker-alt mr-2 text-slate-400"></i><?= htmlspecialchars($seance['lieu'] ?? '-') ?>
+                                                <i class="fas fa-map-marker-alt mr-1.5 text-slate-400"></i><?= htmlspecialchars($seance['lieu'] ?? '-') ?>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold bg-green-100 text-green-700">
-                                                    <i class="fas fa-check mr-2"></i><?= (int)($seance['nb_presents'] ?? 0) ?>
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-green-100 text-green-700">
+                                                    <i class="fas fa-check mr-1.5"></i><?= (int)($seance['nb_presents'] ?? 0) ?>
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold bg-red-100 text-red-700">
-                                                    <i class="fas fa-times mr-2"></i><?= (int)($seance['nb_absents'] ?? 0) ?>
+                                                <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-red-100 text-red-700">
+                                                    <i class="fas fa-times mr-1.5"></i><?= (int)($seance['nb_absents'] ?? 0) ?>
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 text-center">
                                                 <?php if ($roleUser !== 'joueur'): ?>
                                                     <a href="/presence-marquer?seance_id=<?= $seance['id'] ?>"
-                                                        class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl transition-all shadow-lg shadow-green-200 font-bold text-sm">
-                                                        <i class="fas fa-pencil-alt mr-2"></i>
+                                                       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl transition-all shadow-md hover:shadow-green-200 font-bold text-xs gap-1.5">
+                                                        <i class="fas fa-pencil-alt text-[10px]"></i>
                                                         <?= ($seance['total_presences'] ?? 0) > 0 ? 'Modifier' : 'Marquer' ?>
                                                     </a>
                                                 <?php endif; ?>
@@ -312,9 +305,9 @@ $tauxPresence = $totalSeancesJoueurs > 0 ? round(($totalPresents / $totalSeances
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="6" class="px-6 py-16 text-center text-slate-500">
-                                            <i class="fas fa-calendar-times text-6xl text-slate-300 mb-4"></i>
-                                            <p class="text-lg font-medium">Aucune séance disponible</p>
+                                        <td colspan="7" class="px-6 py-16 text-center text-slate-500">
+                                            <i class="fas fa-calendar-times text-5xl text-slate-300 mb-4"></i>
+                                            <p class="text-base font-medium">Aucune séance disponible</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

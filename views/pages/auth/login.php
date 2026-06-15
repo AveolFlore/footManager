@@ -11,218 +11,275 @@ $msg = $_GET['msg'] ?? null;
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FC Blue Lock - Connexion</title>
-    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/style.css">
     <style>
-        /* Custom keyframes */
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(-20px) rotate(5deg);
-            }
+        :root {
+            --blue-glow: #0052ff;
+            --blue-hover: #003ec2;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            
+            /* Glassmorphism Cristallin Épuré */
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --input-glass: rgba(255, 255, 255, 0.7);
         }
 
-        @keyframes energyPulse {
-
-            0%,
-            100% {
-                box-shadow: 0 0 20px rgba(59, 130, 246, 0.5),
-                    0 0 40px rgba(59, 130, 246, 0.3),
-                    0 0 60px rgba(59, 130, 246, 0.2);
-            }
-
-            50% {
-                box-shadow: 0 0 40px rgba(59, 130, 246, 0.7),
-                    0 0 80px rgba(59, 130, 246, 0.5),
-                    0 0 120px rgba(59, 130, 246, 0.3);
-            }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        @keyframes holographic {
-            0% {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateX(200%);
-                opacity: 0;
-            }
+        body {
+            /* Rendu net 4K sans étirement destructeur */
+            background: url('/assets/images/page_connect.jpg') no-repeat center center fixed;
+            background-size: cover;
+            
+            /* Force le rendu propre des pixels */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: quality;
+            
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
         }
 
-        .float-ball {
-            animation: float 6s ease-in-out infinite;
+        /* ------------------------------------
+           STRUCTURE DU MODAL CONTAINER
+           ------------------------------------ */
+        .modal-container {
+            width: 100%;
+            max-width: 1150px; 
+            min-height: 640px;
+            background: transparent; /* On laisse transparent pour ne pas interférer */
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 30px 100px rgba(0, 82, 255, 0.12);
+            z-index: 10;
         }
 
-        .energy-pulse {
-            animation: energyPulse 3s ease-in-out infinite;
+        /* 
+           PARTIE GAUCHE : FORMULAIRE
+           C'est ICI et UNIQUEMENT ICI qu'on applique le flou glassmorphism 
+        */
+        .modal-left {
+            flex: 40;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            
+            /* Le flou est isolé ici, il ne bavera plus sur le reste de l'écran */
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            
+            border-right: 1px solid var(--glass-border);
         }
 
-        .holographic-scan::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        .auth-header {
+            margin-bottom: 40px;
+        }
+
+        .auth-header h1 {
+            font-size: 36px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1.5px;
+            line-height: 1;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .auth-header h1 span {
+            color: var(--blue-glow);
+        }
+
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .msg {
+            background: rgba(239, 68, 68, 0.12);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            background: var(--input-glass);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            color: var(--text-dark);
+            padding: 16px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--blue-glow);
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 82, 255, 0.15);
+        }
+
+        input[type="submit"] {
+            background: var(--blue-glow);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 12px;
+            box-shadow: 0 6px 20px rgba(0, 82, 255, 0.25);
+        }
+
+        input[type="submit"]:hover {
+            background: var(--blue-hover);
+            transform: translateY(-1px);
+        }
+
+        .auth-footer {
+            margin-top: 40px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .auth-footer a {
+            color: var(--blue-glow);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* 
+           PARTIE DROITE : GIF (60%)
+           Aucun flou ici, rendu brut et propre pour le média
+        */
+        .modal-right {
+            flex: 60;
+            position: relative;
+            background: rgba(255, 255, 255, 0.15); /* Fond transparent pour lier avec la gauche */
+            overflow: hidden;
+        }
+
+        .modal-media {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
-            animation: holographic 3s linear infinite;
-            pointer-events: none;
+            object-fit: cover; 
+            position: absolute;
+            inset: 0;
         }
 
-        .glass-effect {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .btn-glow {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e3a8a);
-            background-size: 200% 200%;
-            transition: all 0.4s ease;
-        }
-
-        .btn-glow:hover {
-            background-position: 100% 100%;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6),
-                0 0 60px rgba(59, 130, 246, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .input-glow:focus {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4),
-                inset 0 0 10px rgba(59, 130, 246, 0.1);
+        /* Responsive */
+        @media (max-width: 850px) {
+            body { overflow-y: auto; }
+            .modal-container {
+                flex-direction: column;
+                max-width: 460px;
+                min-height: auto;
+            }
+            .modal-right { display: none; }
+            .modal-left {
+                flex: 1;
+                padding: 40px 24px;
+                border-right: none;
+            }
         }
     </style>
 </head>
+<body>
 
-<body class="min-h-screen overflow-y-auto">
-    <!-- Background with gradient & particles -->
-    <div class="fixed inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
-        <!-- Decorative background elements -->
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- Floating football 1 -->
-            <div class="absolute top-10 left-10 float-ball opacity-20" style="animation-delay: 0s;">
-                <div class="w-24 h-24 bg-gradient-to-br from-white to-gray-300 rounded-full shadow-2xl flex items-center justify-center energy-pulse">
-                    <i class="fas fa-futbol text-5xl text-slate-800"></i>
-                </div>
+    <!-- MODAL PRINCIPAL -->
+    <div class="modal-container">
+        
+        <!-- PARTIE GAUCHE (GLASSMORPHISM EMBEDDED) -->
+        <div class="modal-left">
+            <div class="auth-header">
+                <h1>FC <span>Blue Lock</span></h1>
+                <p>Système d'évaluation de l'égoïsme</p>
             </div>
+            
+            <div class="auth-body">
+                <?php if ($msg): ?>
+                    <div class="msg"><?= htmlspecialchars($msg) ?></div>
+                <?php endif; ?>
 
-            <!-- Floating football 2 -->
-            <div class="absolute bottom-20 right-20 float-ball opacity-20" style="animation-delay: 2s;">
-                <div class="w-20 h-20 bg-gradient-to-br from-white to-gray-300 rounded-full shadow-2xl flex items-center justify-center energy-pulse">
-                    <i class="fas fa-futbol text-4xl text-slate-800"></i>
+                <form action="auth-signin" method="POST">
+                    <div class="form-group">
+                        <label for="email">Identifiant Email</label>
+                        <input type="email" id="email" name="email" required placeholder="egoist@bluelock.jp">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mot_de_passe">Code d'accès</label>
+                        <input type="password" id="mot_de_passe" name="mot_de_passe" required placeholder="••••••••">
+                    </div>
+
+                    <input type="submit" value="Initialiser la connexion">
+                </form>
+
+                <div class="auth-footer">
+                    <p>Non enregistré dans le projet ? <a href="/page-register">Rejoindre la sélection</a></p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main login container -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center p-4 py-12">
-        <div class="w-full max-w-6xl">
-            <!-- Main card -->
-            <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden holographic-scan flex flex-col md:flex-row">
-                <!-- Left: Form -->
-                <div class="w-full md:w-1/2 p-8">
-                    <!-- Logo & Header -->
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center energy-pulse">
-                            <i class="fas fa-shield-halved text-2xl text-white"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-xl font-bold bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent">Blue Lock Japan</h1>
-                            <p class="text-blue-300 text-xs tracking-widest uppercase">Elite Football Management</p>
-                        </div>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-white mb-2">Accès Protégé</h2>
-                    <p class="text-slate-400 text-sm mb-6">Entrez vos identifiants pour accéder à la plateforme</p>
-
-                    <?php if ($msg): ?>
-                        <div class="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm flex items-center gap-3">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span><?= htmlspecialchars($msg) ?></span>
-                        </div>
-                    <?php endif; ?>
-
-                    <form action="auth-signin" method="POST" class="space-y-5">
-
-                        <!-- Email -->
-                        <div class="relative">
-                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
-                                <i class="fas fa-envelope text-lg"></i>
-                            </div>
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Email professionnel"
-                                required
-                                class="w-full pl-12 pr-4 py-4 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow">
-                        </div>
-
-                        <!-- Password -->
-                        <div class="relative">
-                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
-                                <i class="fas fa-lock text-lg"></i>
-                            </div>
-                            <input
-                                type="password"
-                                name="mot_de_passe"
-                                placeholder="Mot de passe sécurisé"
-                                required
-                                class="w-full pl-12 pr-4 py-4 bg-slate-800/50 border border-blue-500/30 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all duration-300 input-glow">
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button
-                            type="submit"
-                            class="w-full btn-glow text-white font-bold py-4 rounded-xl uppercase tracking-widest shadow-lg">
-                            <i class="fas fa-fingerprint mr-2"></i>
-                            Accéder à l'Espace
-                        </button>
-
-                    </form>
-
-                    <div class="mt-6 text-center">
-                        <p class="text-slate-400 text-sm mb-2">Pas encore membre ?</p>
-                        <a href="/page-register" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors text-sm">
-                            <i class="fas fa-user-plus"></i>
-                            Créer un compte professionnel
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Right: GIF -->
-                <div class="w-full md:w-1/2 bg-gradient-to-br from-blue-900/80 to-slate-900/80 flex items-center justify-center p-8 border-t md:border-t-0 md:border-l border-blue-500/30">
-                    <div class="text-center">
-                        <img src="/assets/images/blue-lock-10.gif" alt="Blue Lock" class="w-full max-w-md rounded-2xl shadow-2xl mb-6">
-                        <h3 class="text-xl font-bold bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent mb-3">Devenir le meilleur</h3>
-                        <p class="text-slate-400 text-sm">Connectez-vous et faites partie de l'aventure Blue Lock</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Copyright -->
-            <div class="text-center mt-8 text-slate-500 text-xs">
-                <p>&copy; 2026 Blue Lock Japan. Tous droits réservés. Système de gestion footballistique professionnel.</p>
-            </div>
+        <!-- PARTIE DROITE (GIF PROPRE ET DÉGAGE SANS CONFLIT DE FLOU) -->
+        <div class="modal-right">
+            <img class="modal-media" src="/assets/images/blue-lock-10.gif" alt="Egoist Dev Flow">
         </div>
     </div>
+
 </body>
-
 </html>

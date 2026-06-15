@@ -33,186 +33,333 @@ $pageTitle = "Classement des Joueurs";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> - FC Blue Lock</title>
     <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Style mémorisé - Blue Lock Holographic & Cyber Tech */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(3deg); }
+        /* Base standard */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            color: #222;
+        }
+        .subtitle {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        @keyframes energyPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-            50% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.6); }
+        /* Formulaire de filtre */
+        .filter-form {
+            display: flex;
+            gap: 10px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        .select-wrapper {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 0 10px;
+        }
+        .select-wrapper select {
+            border: none;
+            background: transparent;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+        }
+        .btn-filter {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .btn-filter:hover {
+            background-color: #218838;
         }
 
-        @keyframes holographic {
-            0% { transform: translateX(-100%); opacity: 0; }
-            50% { opacity: 0.3; }
-            100% { transform: translateX(200%); opacity: 0; }
+        /* Conteneur Tableau */
+        .panel {
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        tr:hover { background-color: #f1f3f5; }
 
-        .float-ball { animation: float 6s ease-in-out infinite; }
-        .energy-pulse { animation: energyPulse 3s ease-in-out infinite; }
+        /* Rangs (Médailles / Chiffres) */
+        .rank-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .rank-1 { background-color: #ffe8a1; color: #856404; border: 1px solid #ffd452; }
+        .rank-2 { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        .rank-3 { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .rank-default { font-weight: bold; color: #6c757d; padding-left: 10px; }
 
-        .holographic-scan::before {
-            content: '';
+        /* Cellule Joueur */
+        .player-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .avatar-wrapper {
+            position: relative;
+            width: 45px;
+            height: 45px;
+        }
+        .player-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-cover: cover;
+            border: 1px solid #dee2e6;
+            background-color: #e9ecef;
+        }
+        .crown-icon {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent);
-            animation: holographic 4s linear infinite;
-            pointer-events: none;
+            top: -5px;
+            right: -5px;
+            background: #ffc107;
+            font-size: 9px;
+            padding: 2px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+        }
+        .player-name {
+            margin: 0;
+            font-weight: bold;
+            color: #212529;
+        }
+        .player-status {
+            margin: 2px 0 0 0;
+            font-size: 11px;
+            color: #6c757d;
         }
 
-        .glass-effect {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+        /* Points & Ratio */
+        .points-badge {
+            background-color: #e2f0fe;
+            color: #004085;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #b8daff;
+        }
+        .ratio-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 150px;
+        }
+        .progress-bar-bg {
+            flex: 1;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+        }
+        .progress-bar-fill {
+            background-color: #007bff;
+            height: 100%;
+            border-radius: 10px;
+        }
+        .ratio-text {
+            font-size: 12px;
+            font-weight: bold;
+            color: #495057;
+            width: 35px;
+            text-align: right;
         }
 
-        .btn-glow-green {
-            background: linear-gradient(135deg, #16a34a, #15803d);
-            transition: all 0.4s ease;
+        /* Liste Vide */
+        .empty-row {
+            text-align: center;
+            padding: 50px !important;
+            color: #6c757d;
+            font-style: italic;
+            font-weight: bold;
         }
 
-        .btn-glow-green:hover {
-            box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .input-glow-dark:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        /* Responsive */
+        @media (max-width: 992px) {
+            .header-section { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .filter-form { width: 100%; flex-direction: column; }
+            .select-wrapper { width: 100%; }
+            .select-wrapper select { width: 100%; }
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-100 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 bg-fixed">
+<body>
 
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
     
-    <div class="flex min-h-screen">
+    <div style="display: flex; width: 100%;">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
         
-        <main class="flex-1 overflow-y-auto relative z-10">
-            <div class="p-6 md:p-8 lg:p-10">
+        <main>
+            <div class="header-section">
+                <div>
+                    <h1>Classement des Joueurs</h1>
+                    <p class="subtitle">Critères d'évaluation : But (3 pts) | Passe décisive (2 pts)</p>
+                </div>
                 
-                <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-8 gap-6 border-b border-blue-500/20 pb-6">
-                    <div>
-                        <h1 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-white to-blue-300 bg-clip-text text-transparent flex items-center gap-3">
-                            <i class="fas fa-trophy text-blue-400"></i>
-                            Classement des Joueurs
-                        </h1>
-                        <p class="text-blue-300/60 text-sm uppercase tracking-widest mt-2">Critères d'évaluation : But (3 pts) | Passe décisive (2 pts)</p>
+                <form action="/page-classement" method="GET" class="filter-form">
+                    <div class="select-wrapper">
+                        <select name="month">
+                            <?php foreach ($months as $mNum => $mName): ?>
+                                <option value="<?= $mNum ?>" <?= $month == $mNum ? 'selected' : '' ?>><?= $mName ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                    
-                    <form action="/page-classement" method="GET" class="flex flex-wrap items-center gap-4 bg-slate-950/50 p-3 rounded-2xl border border-blue-500/20 w-full xl:w-auto">
-                        <div class="flex items-center flex-1 sm:flex-none bg-slate-900/80 rounded-xl px-3 border border-blue-500/10 input-glow-dark">
-                            <i class="fas fa-calendar-alt text-blue-400 mr-2"></i>
-                            <select name="month" class="bg-transparent outline-none text-white font-bold text-sm py-3 pr-8 cursor-pointer appearance-none">
-                                <?php foreach ($months as $mNum => $mName): ?>
-                                    <option value="<?= $mNum ?>" <?= $month == $mNum ? 'selected' : '' ?> class="bg-slate-950"><?= $mName ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
 
-                        <div class="flex items-center flex-1 sm:flex-none bg-slate-900/80 rounded-xl px-3 border border-blue-500/10 input-glow-dark">
-                            <i class="fas fa-history text-blue-400 mr-2"></i>
-                            <select name="year" class="bg-transparent outline-none text-white font-bold text-sm py-3 pr-8 cursor-pointer appearance-none">
-                                <?php for($y = date('Y'); $y >= 2024; $y--): ?>
-                                    <option value="<?= $y ?>" <?= $year == $y ? 'selected' : '' ?> class="bg-slate-950"><?= $y ?></option>
-                                <?php endfor; ?>
-                            </select>
-                        </div>
+                    <div class="select-wrapper">
+                        <select name="year">
+                            <?php for($y = date('Y'); $y >= 2024; $y--): ?>
+                                <option value="<?= $y ?>" <?= $year == $y ? 'selected' : '' ?>><?= $y ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
 
-                        <button type="submit" class="w-full sm:w-auto btn-glow-green text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
-                            <i class="fas fa-filter"></i> Filtrer
-                        </button>
-                    </form>
-                </header>
+                    <button type="submit" class="btn-filter">Filtrer</button>
+                </form>
+            </div>
 
-                <div class="glass-effect rounded-3xl shadow-2xl overflow-hidden relative holographic-scan">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-blue-500/20 bg-slate-900/60 text-blue-300 uppercase tracking-widest text-xs font-black">
-                                    <th class="px-8 py-6">Rang</th>
-                                    <th class="px-8 py-6">Joueur</th>
-                                    <th class="px-8 py-6 text-center">Buts</th>
-                                    <th class="px-8 py-6 text-center">Passes</th>
-                                    <th class="px-8 py-6 text-center">Points</th>
-                                    <th class="px-8 py-6">Ratio Global</th>
+            <div class="panel">
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 70px;">Rang</th>
+                                <th>Joueur</th>
+                                <th style="text-align: center;">Buts</th>
+                                <th style="text-align: center;">Passes</th>
+                                <th style="text-align: center;">Points</th>
+                                <th>Ratio Global</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($ranking)): ?>
+                                <tr>
+                                    <td colspan="6" class="empty-row">
+                                        Aucune donnée de performance enregistrée pour cette phase.
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-blue-500/10 bg-slate-950/10">
-                                <?php if (empty($ranking)): ?>
+                            <?php else: ?>
+                                <?php foreach ($ranking as $index => $row): ?>
                                     <tr>
-                                        <td colspan="6" class="px-8 py-20 text-center text-blue-300/40 italic font-bold text-lg">
-                                            <i class="fas fa-inbox text-6xl mb-4 block text-blue-500/20"></i>
-                                            <p>Aucune donnée de performance enregistrée pour cette phase.</p>
+                                        <td>
+                                            <?php if ($index === 0): ?>
+                                                <span class="rank-badge rank-1">1</span>
+                                            <?php elseif ($index === 1): ?>
+                                                <span class="rank-badge rank-2">2</span>
+                                            <?php elseif ($index === 2): ?>
+                                                <span class="rank-badge rank-3">3</span>
+                                            <?php else: ?>
+                                                <span class="rank-default">#<?= $index + 1 ?></span>
+                                            <?php endif; ?>
+                                        </td>
+
+                                        <td>
+                                            <div class="player-cell">
+                                                <div class="avatar-wrapper">
+                                                    <img src="/<?= $row['photo_profil'] ?: 'assets/default-avatar.png' ?>" class="player-avatar" alt="Avatar">
+                                                    <?php if ($index === 0): ?>
+                                                        <span class="crown-icon">👑</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div>
+                                                    <p class="player-name"><?= htmlspecialchars($row['nom'] . ' ' . $row['prenom']) ?></p>
+                                                    <p class="player-status"><?= $month == date('m') ? 'Évaluation active' : 'Phase archivée' ?></p>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td style="text-align: center; font-weight: bold;"><?= $row['total_buts'] ?></td>
+                                        <td style="text-align: center; color: #495057;"><?= $row['total_passes'] ?></td>
+                                        
+                                        <td style="text-align: center;">
+                                            <span class="points-badge">
+                                                <?= $row['score'] ?> pts
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div class="ratio-container">
+                                                <?php 
+                                                $maxScore = $ranking[0]['score'] ?: 1;
+                                                $percent = ($row['score'] / $maxScore) * 100;
+                                                ?>
+                                                <div class="progress-bar-bg">
+                                                    <div class="progress-bar-fill" style="width: <?= $percent ?>%"></div>
+                                                </div>
+                                                <span class="ratio-text"><?= round($percent) ?>%</span>
+                                            </div>
                                         </td>
                                     </tr>
-                                <?php else: ?>
-                                    <?php foreach ($ranking as $index => $row): ?>
-                                        <tr class="hover:bg-blue-500/5 transition-all duration-200 group">
-                                            
-                                            <td class="px-8 py-6 whitespace-nowrap">
-                                                <?php if ($index === 0): ?>
-                                                    <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-600 text-slate-950 font-black text-md shadow-lg shadow-amber-500/20 border border-yellow-300">1</span>
-                                                <?php elseif ($index === 1): ?>
-                                                    <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-slate-300 to-slate-500 text-slate-950 font-black text-md shadow-lg shadow-slate-400/10 border border-slate-200">2</span>
-                                                <?php elseif ($index === 2): ?>
-                                                    <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-amber-700 text-slate-950 font-black text-md shadow-lg shadow-orange-500/10 border border-orange-300">3</span>
-                                                <?php else: ?>
-                                                    <span class="font-black text-slate-400 text-md pl-4">#<?= $index + 1 ?></span>
-                                                <?php endif; ?>
-                                            </td>
-
-                                            <td class="px-8 py-6 whitespace-nowrap">
-                                                <div class="flex items-center space-x-4">
-                                                    <div class="relative">
-                                                        <img src="/<?= $row['photo_profil'] ?: 'assets/default-avatar.png' ?>" class="w-14 h-14 rounded-2xl object-cover border border-blue-500/30 shadow-md bg-slate-900">
-                                                        <?php if ($index === 0): ?>
-                                                            <div class="absolute -top-1 -right-1 bg-amber-500 text-slate-950 w-5 h-5 rounded-full flex items-center justify-center border border-yellow-300 shadow"><i class="fas fa-crown text-[9px]"></i></div>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <div>
-                                                        <p class="font-black text-white text-md tracking-wide group-hover:text-blue-400 transition-colors"><?= htmlspecialchars($row['nom'] . ' ' . $row['prenom']) ?></p>
-                                                        <p class="text-[10px] text-blue-300/50 uppercase font-black tracking-wider mt-0.5"><?= $month == date('m') ? '🧬 Évaluation active' : '🗄️ Phase archivée' ?></p>
-                                                    </div>
-                                                </div>
-                                            </td>
-
-                                            <td class="px-8 py-6 text-center font-black text-white text-lg whitespace-nowrap"><?= $row['total_buts'] ?></td>
-                                            <td class="px-8 py-6 text-center font-black text-slate-300 text-lg whitespace-nowrap"><?= $row['total_passes'] ?></td>
-                                            
-                                            <td class="px-8 py-6 text-center whitespace-nowrap">
-                                                <span class="bg-blue-500/10 text-blue-400 border border-blue-500/30 px-4 py-1.5 rounded-lg font-black text-sm tracking-wide">
-                                                    <?= $row['score'] ?> <span class="text-[10px] uppercase opacity-70">pts</span>
-                                                </span>
-                                            </td>
-
-                                            <td class="px-8 py-6 min-w-[180px]">
-                                                <div class="flex items-center justify-between gap-3">
-                                                    <div class="flex-1 bg-slate-950 rounded-full h-2.5 shadow-inner border border-blue-500/5 overflow-hidden">
-                                                        <?php 
-                                                        $maxScore = $ranking[0]['score'] ?: 1;
-                                                        $percent = ($row['score'] / $maxScore) * 100;
-                                                        ?>
-                                                        <div class="bg-gradient-to-r from-blue-600 via-cyan-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: <?= $percent ?>%"></div>
-                                                    </div>
-                                                    <span class="text-xs font-bold text-slate-400 w-8 text-right"><?= round($percent) ?>%</span>
-                                                </div>
-                                            </td>
-
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
         </main>
     </div>

@@ -247,89 +247,91 @@ $pageTitle = "Gérer les convocations";
         </main>
     </div>
 
-    <script>
-        const MAX_PLAYERS = 10;
+  <script>
+    const MAX_PLAYERS = 10;
 
-        function updateCounts() {
-            let countA = 0;
-            let countB = 0;
+    function updateCounts() {
+        let countA = 0;
+        let countB = 0;
 
-            document.querySelectorAll('.player-checkbox').forEach(checkbox => {
-                if (checkbox.checked) {
-                    const playerId = checkbox.dataset.playerId;
-                    const teamSelect = document.querySelector(`.team-select[data-player-id="${playerId}"]`);
-                    if (teamSelect.value === 'A') {
-                        countA++;
-                    } else {
-                        countB++;
-                    }
-                }
-            });
-
-            const countAElement = document.getElementById('countA');
-            const countBElement = document.getElementById('countB');
-
-            countAElement.textContent = `${countA} / ${MAX_PLAYERS} SÉLECTIONNÉS`;
-            countBElement.textContent = `${countB} / ${MAX_PLAYERS} SÉLECTIONNÉS`;
-
-            // Style dynamique selon les seuils critiques
-            countAElement.className = countA >= MAX_PLAYERS ? 'text-3xl font-black text-rose-500 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'text-3xl font-black text-blue-400';
-            countBElement.className = countB >= MAX_PLAYERS ? 'text-3xl font-black text-rose-500 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'text-3xl font-black text-rose-400';
-
-            document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+        // Étape 1 : Calculer les totaux actuels des joueurs sélectionnés
+        document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+            if (checkbox.checked) {
                 const playerId = checkbox.dataset.playerId;
                 const teamSelect = document.querySelector(`.team-select[data-player-id="${playerId}"]`);
-                const row = document.getElementById(`player-row-${playerId}`);
+                if (teamSelect.value === 'A') {
+                    countA++;
+                } else {
+                    countB++;
+                }
+            }
+        });
 
-                if (!checkbox.checked) {
-                    if (teamSelect.value === 'A' && countA >= MAX_PLAYERS) {
-                        checkbox.disabled = true;
-                        row.classList.add('opacity-30', 'pointer-events-none');
-                    } else if (teamSelect.value === 'B' && countB >= MAX_PLAYERS) {
-                        checkbox.disabled = true;
-                        row.classList.add('opacity-30', 'pointer-events-none');
-                    } else {
-                        checkbox.disabled = false;
-                        row.classList.remove('opacity-30', 'pointer-events-none');
-                    }
+        const countAElement = document.getElementById('countA');
+        const countBElement = document.getElementById('countB');
+
+        countAElement.textContent = `${countA} / ${MAX_PLAYERS} SÉLECTIONNÉS`;
+        countBElement.textContent = `${countB} / ${MAX_PLAYERS} SÉLECTIONNÉS`;
+
+        // Style dynamique des compteurs selon les seuils critiques
+        countAElement.className = countA >= MAX_PLAYERS ? 'text-3xl font-black text-rose-500 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'text-3xl font-black text-blue-400';
+        countBElement.className = countB >= MAX_PLAYERS ? 'text-3xl font-black text-rose-500 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'text-3xl font-black text-rose-400';
+
+        // Étape 2 : Gérer l'état d'activation des éléments sans bloquer l'interface
+        document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+            const playerId = checkbox.dataset.playerId;
+            const teamSelect = document.querySelector(`.team-select[data-player-id="${playerId}"]`);
+            const row = document.getElementById(`player-row-${playerId}`);
+
+            if (!checkbox.checked) {
+                // Si l'équipe sélectionnée dans le dropdown est pleine, on désactive la checkbox
+                if ((teamSelect.value === 'A' && countA >= MAX_PLAYERS) || 
+                    (teamSelect.value === 'B' && countB >= MAX_PLAYERS)) {
+                    checkbox.disabled = true;
+                    row.classList.add('opacity-40'); // Réduction visuelle sans bloquer les pointer-events
                 } else {
                     checkbox.disabled = false;
-                    row.classList.remove('opacity-30', 'pointer-events-none');
+                    row.classList.remove('opacity-40');
                 }
-            });
-        }
-
-        document.querySelectorAll('.team-select').forEach(select => {
-            select.addEventListener('change', function() {
-                const playerId = this.dataset.playerId;
-                const captainCheckbox = document.querySelector(`.captain-checkbox[data-player-id="${playerId}"]`);
-                if (captainCheckbox) {
-                    captainCheckbox.dataset.team = this.value;
-                }
-                updateCounts();
-            });
+            } else {
+                // Toujours actif si déjà coché
+                checkbox.disabled = false;
+                row.classList.remove('opacity-40');
+            }
         });
+    }
 
-        document.querySelectorAll('.captain-checkbox').forEach(captainCheckbox => {
-            captainCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    const team = this.dataset.team;
-                    document.querySelectorAll(`.captain-checkbox[data-team="${team}"]`).forEach(otherCheckbox => {
-                        if (otherCheckbox !== this) {
-                            otherCheckbox.checked = false;
-                        }
-                    });
-                }
-            });
+    // Écouteur sur le changement d'équipe (permet de libérer/bloquer la checkbox liée)
+    document.querySelectorAll('.team-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const playerId = this.dataset.playerId;
+            const captainCheckbox = document.querySelector(`.captain-checkbox[data-player-id="${playerId}"]`);
+            if (captainCheckbox) {
+                captainCheckbox.dataset.team = this.value;
+            }
+            updateCounts();
         });
+    });
 
-        document.querySelectorAll('.player-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateCounts);
+    // Gestion exclusive du capitaine par équipe
+    document.querySelectorAll('.captain-checkbox').forEach(captainCheckbox => {
+        captainCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                const team = this.dataset.team;
+                document.querySelectorAll(`.captain-checkbox[data-team="${team}"]`).forEach(otherCheckbox => {
+                    if (otherCheckbox !== this) {
+                        otherCheckbox.checked = false;
+                    }
+                });
+            }
         });
+    });
 
-        // Init
-        updateCounts();
-    </script>
-</body>
+    // Écouteur sur le changement de sélection des joueurs
+    document.querySelectorAll('.player-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateCounts);
+    });
 
-</html>
+    // Initialisation au chargement de la page
+    updateCounts();
+</script>

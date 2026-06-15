@@ -13,7 +13,7 @@ $pageTitle = "Gestion des Sanctions";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans transition-colors duration-300">
     
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
     
@@ -63,7 +63,7 @@ $pageTitle = "Gestion des Sanctions";
                             <i class="fas fa-inbox text-6xl mb-4 text-slate-300"></i>
                             <p class="text-xl font-medium">Aucune sanction en attente pour le moment.</p>
                         </div>
-                    <?php else: ?>
+                    <?php  else: ?>
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-slate-50 border-b-2 border-slate-100">
@@ -128,5 +128,122 @@ $pageTitle = "Gestion des Sanctions";
         </main>
     </div>
 
+    <script>
+        function appliquerThemeGlobal() {
+            const isDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                surchargerStylesSanctions(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                surchargerStylesSanctions(false);
+            }
+        }
+
+        function surchargerStylesSanctions(active) {
+            const body = document.body;
+            const title = document.querySelector('h1');
+            const mainCard = document.querySelector('.bg-white');
+            const cardHeader = document.querySelector('.bg-gradient-to-r.from-white.to-slate-50');
+            const tableHeader = document.querySelector('.bg-slate-50');
+            const tableRows = document.querySelectorAll('tbody tr');
+            const textsSlate800 = document.querySelectorAll('.text-slate-800');
+            const textsSlate600 = document.querySelectorAll('.text-slate-600');
+            const emptyState = document.querySelector('.text-slate-500');
+
+            if (active) {
+                body.classList.remove('from-slate-50', 'to-slate-100');
+                body.classList.add('from-slate-900', 'to-slate-950', 'text-slate-100');
+
+                if (title) {
+                    title.classList.remove('text-slate-800');
+                    title.classList.add('text-slate-100');
+                }
+
+                if (mainCard) {
+                    mainCard.classList.remove('bg-white', 'border-slate-100');
+                    mainCard.classList.add('bg-slate-900/60', 'backdrop-blur-md', 'border-slate-800/80', 'shadow-black/50');
+                }
+
+                if (cardHeader) {
+                    cardHeader.classList.remove('from-white', 'to-slate-50');
+                    cardHeader.classList.add('from-slate-900/40', 'to-slate-900/80', 'border-slate-800');
+                }
+
+                if (tableHeader) {
+                    tableHeader.classList.remove('bg-slate-50', 'border-slate-100');
+                    tableHeader.classList.add('bg-slate-950/60', 'border-slate-800');
+                }
+
+                tableRows.forEach(row => {
+                    row.classList.remove('hover:bg-slate-50', 'divide-slate-100');
+                    row.classList.add('hover:bg-slate-850/30', 'border-slate-800/60');
+                });
+
+                textsSlate800.forEach(txt => {
+                    txt.classList.remove('text-slate-800');
+                    txt.classList.add('text-slate-200');
+                });
+
+                textsSlate600.forEach(txt => {
+                    txt.classList.remove('text-slate-600');
+                    txt.classList.add('text-slate-400');
+                });
+
+                if (emptyState) {
+                    emptyState.classList.remove('text-slate-500');
+                    emptyState.classList.add('text-slate-400');
+                    const subIcon = emptyState.querySelector('.text-slate-300');
+                    if (subIcon) {
+                        subIcon.classList.remove('text-slate-300');
+                        subIcon.classList.add('text-slate-700');
+                    }
+                }
+
+            } else {
+                body.classList.add('from-slate-50', 'to-slate-100');
+                body.classList.remove('from-slate-900', 'to-slate-950', 'text-slate-100');
+
+                if (title) {
+                    title.classList.add('text-slate-800');
+                    title.classList.remove('text-slate-100');
+                }
+
+                if (mainCard) {
+                    mainCard.classList.add('bg-white', 'border-slate-100');
+                    mainCard.classList.remove('bg-slate-900/60', 'backdrop-blur-md', 'border-slate-800/80', 'shadow-black/50');
+                }
+
+                if (cardHeader) {
+                    cardHeader.classList.add('from-white', 'to-slate-50');
+                    cardHeader.classList.remove('from-slate-900/40', 'to-slate-900/80', 'border-slate-800');
+                }
+
+                if (tableHeader) {
+                    tableHeader.classList.add('bg-slate-50', 'border-slate-100');
+                    tableHeader.classList.remove('bg-slate-950/60', 'border-slate-800');
+                }
+
+                tableRows.forEach(row => {
+                    row.classList.add('hover:bg-slate-50');
+                    row.classList.remove('hover:bg-slate-850/30', 'border-slate-800/60');
+                });
+
+                textsSlate800.forEach(txt => {
+                    txt.classList.add('text-slate-800');
+                    txt.classList.remove('text-slate-200');
+                });
+
+                textsSlate600.forEach(txt => {
+                    txt.classList.add('text-slate-600');
+                    txt.classList.remove('text-slate-400');
+                });
+            }
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', appliquerThemeGlobal);
+        appliquerThemeGlobal();
+    </script>
 </body>
 </html>

@@ -32,174 +32,149 @@ $pageTitle = "Matchs";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?> - FC Blue Lock</title>
-    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
+    <title><?= $pageTitle ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .cyber-bg {
-            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-            position: relative;
-        }
-        .cyber-bg::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(6, 182, 212, 0.04), rgba(0, 0, 0, 0), rgba(244, 63, 94, 0.04));
-            z-index: 99999;
-            opacity: 0.25;
-            pointer-events: none;
-            background-size: 100% 4px, 6px 100%;
-        }
-        .glow-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.2); }
-        .glow-orange { box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); }
-    </style>
 </head>
 
-<body class="cyber-bg text-slate-100 min-h-screen font-sans antialiased">
+<body class="bg-gray-100 text-gray-900 min-h-screen antialiased">
     <?php include_once __DIR__ . '/../../partials/header.php'; ?>
+    
     <div class="flex min-h-screen">
         <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
 
-        <main class="flex-1 overflow-y-auto bg-slate-950/40 backdrop-blur-sm">
-            <div class="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto">
-                
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4 border-b border-slate-800/60 pb-6">
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 flex items-center gap-4 font-mono">
-                            <i class="fas fa-futbol text-cyan-400 filter drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]"></i>
-                            Base_Matchs
-                        </h1>
-                        <p class="text-slate-500 mt-1 font-mono text-xs uppercase tracking-widest">// Index: <?= count($matchs) ?> entités chargées</p>
-                    </div>
-                    <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
-                        <a href="/page-matchcreate"
-                            class="flex items-center gap-3 bg-cyan-950/40 border border-cyan-500 text-cyan-400 px-6 py-3 font-mono text-xs uppercase tracking-widest font-bold hover:bg-cyan-500 hover:text-black transition-all glow-cyan relative overflow-hidden">
-                            <i class="fas fa-plus"></i>
-                            Initialiser_Match
-                        </a>
-                    <?php endif; ?>
+        <main class="flex-1 p-6 md:p-8 lg:p-10 max-w-7xl mx-auto">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-200 pb-6">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
+                        <i class="fas fa-futbol text-gray-600"></i>
+                        Liste des Matchs
+                    </h1>
+                    <p class="text-gray-500 mt-1 text-sm"><?= count($matchs) ?> matchs enregistrés</p>
                 </div>
+                <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
+                    <a href="/page-matchcreate"
+                        class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded font-medium hover:bg-blue-700 transition-colors shadow-sm text-sm">
+                        <i class="fas fa-plus"></i>
+                        Créer un match
+                    </a>
+                <?php endif; ?>
+            </div>
 
-                <div class="flex flex-wrap gap-3 mb-8 font-mono text-xs uppercase tracking-widest">
-                    <button onclick="filtrer('tous')"
-                        id="btn-tous"
-                        class="filtre-btn px-5 py-3 border border-cyan-500 bg-cyan-950/40 text-cyan-400 font-bold transition-all glow-cyan">
-                        [ Tous_Logs ]
-                    </button>
-                    <button onclick="filtrer('planifie')"
-                        id="btn-planifie"
-                        class="filtre-btn px-5 py-3 border border-slate-800 bg-slate-950/40 text-slate-400 font-bold hover:border-slate-700 hover:text-slate-200 transition-all">
-                        [ À_Venir ]
-                    </button>
-                    <button onclick="filtrer('termine')"
-                        id="btn-termine"
-                        class="filtre-btn px-5 py-3 border border-slate-800 bg-slate-950/40 text-slate-400 font-bold hover:border-slate-700 hover:text-slate-200 transition-all">
-                        [ Archives ]
-                    </button>
+            <div class="flex flex-wrap gap-2 mb-6 text-sm">
+                <button onclick="filtrer('tous')"
+                    id="btn-tous"
+                    class="filtre-btn px-4 py-2 rounded border border-blue-600 bg-blue-600 text-white font-medium transition-all shadow-sm">
+                    Tous les matchs
+                </button>
+                <button onclick="filtrer('planifie')"
+                    id="btn-planifie"
+                    class="filtre-btn px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-all shadow-sm">
+                    À venir
+                </button>
+                <button onclick="filtrer('termine')"
+                    id="btn-termine"
+                    class="filtre-btn px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-all shadow-sm">
+                    Terminés
+                </button>
+            </div>
+
+            <?php if (isset($_GET['msg'])): ?>
+                <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded shadow-sm flex items-center">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <?= htmlspecialchars($_GET['msg']) ?>
                 </div>
+            <?php endif; ?>
 
-                <?php if (isset($_GET['msg'])): ?>
-                    <div class="mb-8 px-6 py-4 bg-emerald-950/30 text-emerald-400 font-mono text-xs uppercase tracking-wider border border-emerald-500/30 relative">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
-                        <i class="fas fa-check-circle mr-3 text-emerald-500"></i>
-                        SYSTEM_SUCCESS // <?= htmlspecialchars($_GET['msg']) ?>
-                    </div>
-                <?php endif; ?>
+            <?php if (!empty($matchs_en_retard)): ?>
+                <div class="mb-6 p-4 bg-amber-100 border border-amber-400 text-amber-800 rounded shadow-sm flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-3 text-amber-600"></i>
+                    <span><strong>Attention :</strong> <?= count($matchs_en_retard) ?> match(s) en attente de clôture. Veuillez saisir les scores manquants.</span>
+                </div>
+            <?php endif; ?>
 
-                <?php if (!empty($matchs_en_retard)): ?>
-                    <div class="mb-8 px-6 py-4 bg-amber-950/30 text-amber-500 font-mono text-xs uppercase tracking-wider border border-amber-500/30 glow-orange relative">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
-                        <i class="fas fa-exclamation-triangle mr-3 text-amber-500"></i>
-                        ATTENTION_REQUIS // <?= count($matchs_en_retard) ?> session(s) en attente de clôture de score. Saisie impérative.
-                    </div>
-                <?php endif; ?>
+            <div id="liste-matchs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                <div id="liste-matchs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php foreach ($matchs as $match): ?>
 
-                    <?php foreach ($matchs as $match): ?>
+                    <?php
+                    $badge = match ($match['statut']) {
+                        'planifie', 'publie' => ['label' => 'À VENIR', 'class' => 'bg-blue-100 text-blue-800 border-blue-200'],
+                        'termine' => ['label' => 'TERMINÉ', 'class' => 'bg-gray-100 text-gray-800 border-gray-200'],
+                        default => ['label' => strtoupper($match['statut']), 'class' => 'bg-gray-50 text-gray-600 border-gray-200']
+                    };
 
-                        <?php
-                        $badge = match ($match['statut']) {
-                            'planifie', 'publie' => ['label' => 'RUNNING', 'class' => 'border-cyan-500/40 text-cyan-400 bg-cyan-950/20'],
-                            'termine' => ['label' => 'ARCHIVED', 'class' => 'border-slate-700 text-slate-400 bg-slate-900/40'],
-                            default => ['label' => strtoupper($match['statut']), 'class' => 'border-slate-800 text-slate-500 bg-slate-950']
-                        };
+                    $convoques = $convocationController->index((int)$match['id']);
+                    $nb_convoques = count($convoques);
 
-                        $convoques = $convocationController->index((int)$match['id']);
-                        $nb_convoques = count($convoques);
-
-                        $score = null;
-                        if ($match['statut'] === 'termine') {
-                            $resultat = $resultatController->index((int)$match['id']);
-                            if ($resultat) {
-                                $score = $resultat['buts_equipe_a'] . ' - ' . $resultat['buts_equipe_b'];
-                            }
+                    $score = null;
+                    if ($match['statut'] === 'termine') {
+                        $resultat = $resultatController->index((int)$match['id']);
+                        if ($resultat) {
+                            $score = $resultat['buts_equipe_a'] . ' - ' . $resultat['buts_equipe_b'];
                         }
-                        ?>
+                    }
+                    ?>
 
-                        <a href="/page-matchdetail?id=<?= $match['id'] ?>"
-                            class="match-card block bg-slate-900/30 border border-slate-800/80 p-6 hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all duration-300 relative group overflow-hidden"
-                            data-statut="<?= $match['statut'] ?>">
-                            
-                            <div class="absolute -top-[1px] -left-[1px] w-2 h-2 border-t border-l border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div class="absolute -bottom-[1px] -right-[1px] w-2 h-2 border-b border-r border-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <a href="/page-matchdetail?id=<?= $match['id'] ?>"
+                        class="match-card block bg-white border border-gray-200 p-5 rounded-lg shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200"
+                        data-statut="<?= $match['statut'] ?>">
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs px-2.5 py-0.5 border rounded-full font-semibold <?= $badge['class'] ?>">
+                                <?= $badge['label'] ?>
+                            </span>
+                            <?php if ($score): ?>
+                                <span class="text-xl font-bold text-gray-800 tracking-tight"><?= $score ?></span>
+                            <?php endif; ?>
+                        </div>
 
-                            <div class="flex justify-between items-center mb-5 font-mono">
-                                <span class="text-[10px] px-3 py-1 border font-bold uppercase tracking-widest <?= $badge['class'] ?>">
-                                    <?= $badge['label'] ?>
-                                </span>
-                                <?php if ($score): ?>
-                                    <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-400 tracking-tighter filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"><?= $score ?></span>
-                                <?php endif; ?>
+                        <h2 class="text-base font-bold text-gray-900 mb-4 truncate">
+                            Équipe A <span class="text-gray-400 font-normal text-sm">vs</span> Équipe B
+                        </h2>
+
+                        <div class="space-y-2 mb-4 text-sm text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar text-gray-400 w-4"></i>
+                                <span><?= date('d/m/Y', strtotime($match['date'])) ?></span>
                             </div>
-
-                            <h2 class="text-md font-bold uppercase tracking-wider text-slate-200 mb-5 font-mono truncate">
-                                Équipe A <span class="text-cyan-500/60 font-light text-xs">vs</span> Équipe B
-                            </h2>
-
-                            <div class="space-y-2.5 mb-5 font-mono text-xs tracking-wider text-slate-400">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-calendar text-cyan-500/70 w-4 text-center"></i>
-                                    <span><?= strtoupper(date('D d M Y', strtotime($match['date']))) ?></span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-clock text-cyan-500/70 w-4 text-center"></i>
-                                    <span><?= date('H:i', strtotime($match['date'])) ?> H</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-map-marker-alt text-cyan-500/70 w-4 text-center"></i>
-                                    <span class="truncate"><?= htmlspecialchars($match['lieu']) ?></span>
-                                </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-clock text-gray-400 w-4"></i>
+                                <span><?= date('H:i', strtotime($match['date'])) ?></span>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-map-marker-alt text-gray-400 w-4"></i>
+                                <span class="truncate"><?= htmlspecialchars($match['lieu']) ?></span>
+                            </div>
+                        </div>
 
-                            <div class="h-[1px] bg-gradient-to-r from-slate-800/20 via-slate-800 to-slate-800/20 mb-4"></div>
+                        <div class="border-t border-gray-100 pt-3 flex items-center justify-between text-xs text-gray-500">
+                            <span class="inline-flex items-center gap-1.5">
+                                <i class="fas fa-users text-gray-400"></i>
+                                Joueurs convoqués : <strong><?= $nb_convoques ?></strong>
+                            </span>
+                            <span class="text-blue-600 group-hover:underline">Détails <i class="fas fa-chevron-right text-[10px]"></i></span>
+                        </div>
 
-                            <p class="text-[11px] font-mono tracking-widest text-slate-500 uppercase group-hover:text-cyan-400/80 transition-colors">
-                                <i class="fas fa-users mr-2 text-slate-600 group-hover:text-cyan-500/60 transition-colors"></i>
-                                [ Unités_Convoquées: <?= $nb_convoques ?> ]
-                            </p>
+                    </a>
 
-                        </a>
-
-                    <?php endforeach; ?>
-
-                </div>
+                <?php endforeach; ?>
 
             </div>
+
         </main>
     </div>
 
     <script>
         function filtrer(statut) {
             document.querySelectorAll('.filtre-btn').forEach(btn => {
-                btn.className = "filtre-btn px-5 py-3 border border-slate-800 bg-slate-950/40 text-slate-400 font-bold hover:border-slate-700 hover:text-slate-200 transition-all";
+                btn.className = "filtre-btn px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-all shadow-sm";
             });
 
             const btnActif = document.getElementById('btn-' + statut);
             if (btnActif) {
-                btnActif.className = "filtre-btn px-5 py-3 border border-cyan-500 bg-cyan-950/40 text-cyan-400 font-bold transition-all glow-cyan";
+                btnActif.className = "filtre-btn px-4 py-2 rounded border border-blue-600 bg-blue-600 text-white font-medium transition-all shadow-sm";
             }
 
             document.querySelectorAll('.match-card').forEach(card => {
