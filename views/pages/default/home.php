@@ -45,158 +45,435 @@ $pageTitle = "Tableau de bord";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> - FC Blue Lock</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
+    <style>
+    :root {
+        --blue-glow: #0052ff;
+        --blue-hover: #003ec2;
+        --text-dark: #ffffff;
+        --text-muted: #cbd5e1;
+        --success-green: #10b981;
+        --purple-team: #7c3aed;
+        --danger-red: #ef4444;
+        --warning-gold: #f59e0b;
+        --cyan-neon: #38bdf8;
+        
+        --panel-glass: rgba(15, 23, 42, 0.75);
+        --card-glass: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.15);
+        --th-glass: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+        background: url('/assets/images/page_connect.jpg') no-repeat center center fixed;
+        background-size: cover;
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: quality;
+        color: var(--text-dark);
+        display: flex;
+        min-height: 100vh;
+    }
+
+    main {
+        flex: 1;
+        margin-left: 280px;
+        padding: 40px;
+        max-width: 1400px;
+        width: calc(100% - 280px);
+    }
+
+    /* En-tête */
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 24px;
+        margin-bottom: 32px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    h1 {
+        font-size: 32px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .subtitle {
+        margin-top: 4px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #60a5fa;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    /* Boutons */
+    .btn {
+        text-decoration: none;
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-create {
+        background-color: var(--success-green);
+        color: white;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+    }
+    .btn-create:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(5px);
+    }
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+    }
+
+    /* Grid des statistiques avec variations néon */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: var(--panel-glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 24px;
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+    }
+
+    /* Thématiques des cartes statistiques */
+    .card-players::before { background: var(--cyan-neon); }
+    .card-players p { color: var(--cyan-neon) !important; }
+
+    .card-teams::before { background: var(--purple-team); }
+    .card-teams p { color: var(--purple-team) !important; }
+
+    .card-matches::before { background: var(--success-green); }
+    .card-matches p { color: var(--success-green) !important; }
+
+    .card-presence::before { background: var(--warning-gold); }
+    .card-presence p { color: var(--warning-gold) !important; }
+
+    .stat-card h3 {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 10px;
+    }
+
+    .stat-card p {
+        font-size: 38px;
+        font-weight: 900;
+        letter-spacing: -1px;
+    }
+
+    /* Organisation Layout Multi-colonnes */
+    .dashboard-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 32px;
+        align-items: start;
+    }
+
+    .dashboard-main-col, .dashboard-side-col {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    /* Panneaux Glassmorphism */
+    .panel {
+        background: var(--panel-glass);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        padding: 30px;
+    }
+
+    .panel-title {
+        margin-top: 0;
+        margin-bottom: 24px;
+        font-size: 16px;
+        font-weight: 800;
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 12px;
+    }
+
+    /* Matchs liste dynamique */
+    .match-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .match-item {
+        padding: 18px;
+        background: linear-gradient(135deg, rgba(0, 82, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        border: 1px solid rgba(0, 82, 255, 0.15);
+        border-left: 5px solid var(--blue-glow);
+        border-radius: 16px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
     
-    <div class="flex min-h-screen">
-        <?php include __DIR__ . '/../../partials/sidebar.php'; ?>
+    .match-item:hover {
+        background: linear-gradient(135deg, rgba(0, 82, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-color: rgba(0, 82, 255, 0.3);
+        transform: scale(1.02);
+    }
 
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <?php include __DIR__ . '/../../partials/header.php'; ?>
+    .match-item strong {
+        display: block;
+        font-size: 16px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 6px;
+    }
+
+    .match-item span {
+        font-size: 13px;
+        font-weight: 600;
+        color: #93c5fd;
+    }
+
+    /* Tableaux */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 16px 20px;
+        text-align: left;
+        border-bottom: 1px solid var(--glass-border);
+        font-size: 14px;
+        color: #e2e8f0;
+    }
+
+    th {
+        background-color: var(--th-glass);
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    tr { transition: background-color 0.2s; }
+    tr:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+    .row-highlight {
+        background: rgba(0, 82, 255, 0.25) !important;
+        font-weight: 700;
+    }
+    .row-highlight td {
+        color: #ffffff !important;
+    }
+    .row-highlight td:nth-child(2) {
+        color: var(--cyan-neon) !important;
+    }
+
+    .caisse-amount {
+        font-size: 38px; 
+        font-weight: 900; 
+        letter-spacing: -1px;
+        color: var(--success-green);
+        margin-bottom: 16px;
+    }
+
+    .link-details {
+        color: var(--cyan-neon); 
+        text-decoration: none; 
+        font-weight: 700; 
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .link-details:hover {
+        color: #7dd3fc;
+        text-decoration: underline;
+    }
+
+    /* Responsive Layout */
+    @media (max-width: 1150px) {
+        .dashboard-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        main {
+            margin-left: 0;
+            width: 100%;
+            padding: 24px;
+        }
+        body { flex-direction: column; }
+    }
+
+    @media (max-width: 768px) {
+        .header-section { flex-direction: column; align-items: flex-start; gap: 16px; width: 100%; }
+        .header-section div:last-child { display: flex; flex-direction: column; width: 100%; gap: 10px; }
+        .btn { width: 100%; justify-content: center; }
+        th, td { padding: 12px 14px; font-size: 13px; }
+    }
+</style>
+</head>
+<body>
+    <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
+
+    <main>
+        <div class="header-section">
+            <div>
+                <h1>Tableau de bord</h1>
+                <p class="subtitle">Bonjour, <?= htmlspecialchars($_SESSION['user']['prenom']) ?></p>
+            </div>
+            <div>
+                <a href="/page-matchcreate" class="btn btn-create">Planifier Match</a>
+                <a href="/page-convocation" class="btn btn-secondary">Convocation</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card card-players">
+                <h3>Joueurs actifs</h3>
+                <p><?= $totalJoueurs ?></p>
+            </div>
+            <div class="stat-card card-teams">
+                <h3>Équipes</h3>
+                <p><?= $totalEquipes ?></p>
+            </div>
+            <div class="stat-card card-matches">
+                <h3>Matchs</h3>
+                <p><?= $totalMatchs ?></p>
+            </div>
+            <div class="stat-card card-presence">
+                <h3>Taux présence</h3>
+                <p><?= $tauxPresence ?>%</p>
+            </div>
+        </div>
+
+        <div class="dashboard-layout">
             
-            <main class="flex-1 bg-slate-50 p-6 overflow-y-auto">
-                <div class="max-w-7xl mx-auto space-y-6">
-                    
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900">Bonjour, <?= htmlspecialchars($_SESSION['user']['prenom']) ?> 👋</h2>
-                            <p class="text-sm text-slate-500">Ravi de vous revoir sur le tableau de bord.</p>
-                        </div>
-                        <div class="flex items-center gap-3 w-full sm:w-auto">
-                            <a href="/page-matchcreate" class="flex-1 sm:flex-none text-center px-4 py-2 text-sm font-medium bg-slate-900 hover:bg-slate-800 text-white rounded-lg shadow-sm transition-colors">
-                                <i class="fas fa-calendar-plus mr-2 text-xs"></i>Planifier Match
-                            </a>
-                            <a href="/page-convocation" class="flex-1 sm:flex-none text-center px-4 py-2 text-sm font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg shadow-sm transition-colors">
-                                <i class="fas fa-bullhorn mr-2 text-xs"></i>Convocation
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                            <div class="flex items-center justify-between text-slate-400 mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider">Joueurs actifs</span>
-                                <i class="fas fa-users text-sm"></i>
-                            </div>
-                            <p class="text-2xl font-bold text-slate-900"><?= $totalJoueurs ?></p>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                            <div class="flex items-center justify-between text-slate-400 mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider">Équipes</span>
-                                <i class="fas fa-shield-alt text-sm"></i>
-                            </div>
-                            <p class="text-2xl font-bold text-slate-900"><?= $totalEquipes ?></p>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                            <div class="flex items-center justify-between text-slate-400 mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider">Matchs</span>
-                                <i class="fas fa-running text-sm"></i>
-                            </div>
-                            <p class="text-2xl font-bold text-slate-900"><?= $totalMatchs ?></p>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm">
-                            <div class="flex items-center justify-between text-slate-400 mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider">Taux présence</span>
-                                <i class="fas fa-check-double text-sm"></i>
-                            </div>
-                            <p class="text-2xl font-bold text-slate-900"><?= $tauxPresence ?>%</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                        
-                        <div class="lg:col-span-2 space-y-6">
-                            
-                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-                                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                    <i class="fas fa-history text-slate-400"></i> Derniers matchs
-                                </h3>
-                                <?php if (empty($recentMatches)): ?>
-                                    <p class="text-sm text-slate-400 italic py-4 text-center">Aucun match récent disponible.</p>
-                                <?php else: ?>
-                                    <div class="divide-y divide-slate-100">
-                                        <?php foreach ($recentMatches as $match): ?>
-                                            <div class="py-3 first:pt-0 last:pb-0 flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-sm">
-                                                <div>
-                                                    <span class="font-semibold text-slate-900 block"><?= htmlspecialchars($match['titre'] ?? 'Match') ?></span>
-                                                    <span class="text-slate-400 text-xs flex items-center gap-2 mt-0.5">
-                                                        <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($match['lieu'] ?? 'Lieu inconnu') ?>
-                                                    </span>
-                                                </div>
-                                                <div class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded w-fit self-start sm:self-center">
-                                                    <?= date('d/m/Y H:i', strtotime($match['date'])) ?>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-                                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                    <i class="fas fa-trophy text-slate-400"></i> Classement Général
-                                </h3>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-left text-sm border-collapse">
-                                        <thead>
-                                            <tr class="border-b border-slate-200 text-xs font-bold text-slate-400 uppercase">
-                                                <th class="pb-2 w-10">#</th>
-                                                <th class="pb-2">Club</th>
-                                                <th class="pb-2 text-center w-12">M</th>
-                                                <th class="pb-2 text-center w-12">V</th>
-                                                <th class="pb-2 text-center w-12">N</th>
-                                                <th class="pb-2 text-center w-12">D</th>
-                                                <th class="pb-2 text-right w-16">Pts</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-100">
-                                            <?php foreach ($classement as $equipe): ?>
-                                                <tr class="<?= $equipe['club'] === 'FC Blue Lock' ? 'bg-slate-50/80 font-semibold' : '' ?>">
-                                                    <td class="py-3 text-slate-500"><?= $equipe['position'] ?></td>
-                                                    <td class="py-3 text-slate-900 flex items-center gap-2">
-                                                        <?php if ($equipe['club'] === 'FC Blue Lock'): ?>
-                                                            <span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
-                                                        <?php endif; ?>
-                                                        <?= $equipe['club'] ?>
-                                                    </td>
-                                                    <td class="py-3 text-center text-slate-600"><?= $equipe['matches'] ?></td>
-                                                    <td class="py-3 text-center text-emerald-600"><?= $equipe['wins'] ?></td>
-                                                    <td class="py-3 text-center text-slate-500"><?= $equipe['draws'] ?></td>
-                                                    <td class="py-3 text-center text-red-500"><?= $equipe['losses'] ?></td>
-                                                    <td class="py-3 text-right text-slate-950 font-bold"><?= $equipe['points'] ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-6">
-                            <?php if (in_array($_SESSION['user']['role'], ['president', 'censeur', 'organisateur'])): ?>
-                                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 border-l-4 border-l-emerald-500">
-                                    <div class="flex items-center justify-between text-slate-400 mb-3">
-                                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Solde caisse</h3>
-                                        <i class="fas fa-wallet text-emerald-500 text-sm"></i>
-                                    </div>
-                                    <p class="text-2xl font-bold text-slate-900 mb-4"><?= number_format($solde ?? 0, 0, ',', ' ') ?> <span class="text-sm font-normal text-slate-500">FCFA</span></p>
-                                    <a href="/page-finance" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-                                        Voir les détails comptables <i class="fas fa-arrow-right text-[10px]"></i>
-                                    </a>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
+            <div class="dashboard-main-col">
+                <div class="panel">
+                    <h2 class="panel-title">Classement général</h2>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Club</th>
+                                    <th>M</th>
+                                    <th>V</th>
+                                    <th>N</th>
+                                    <th>D</th>
+                                    <th>Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($classement as $equipe): ?>
+                                    <tr class="<?= $equipe['club'] === 'FC Blue Lock' ? 'row-highlight' : '' ?>">
+                                        <td><?= $equipe['position'] ?></td>
+                                        <td><?= htmlspecialchars($equipe['club']) ?></td>
+                                        <td><?= $equipe['matches'] ?></td>
+                                        <td><?= $equipe['wins'] ?></td>
+                                        <td><?= $equipe['draws'] ?></td>
+                                        <td><?= $equipe['losses'] ?></td>
+                                        <td><?= $equipe['points'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
+            </div>
 
+            <div class="dashboard-side-col">
+                <div class="panel">
+                    <h2 class="panel-title">Derniers matchs</h2>
+                    <?php if (empty($recentMatches)): ?>
+                        <p style="color: var(--text-muted); font-size: 14px; font-weight: 500;">Aucun match récent</p>
+                    <?php else: ?>
+                        <ul class="match-list">
+                            <?php foreach ($recentMatches as $match): ?>
+                                <li class="match-item">
+                                    <strong><?= htmlspecialchars($match['titre'] ?? 'Match') ?></strong>
+                                    <span><?= date('d/m/Y H:i', strtotime($match['date'])) ?></span><br>
+                                    <span style="font-size: 12px; opacity: 0.7; color: #ffffff; margin-top: 4px; display: inline-block;">
+                                        <?= htmlspecialchars($match['lieu'] ?? 'Lieu inconnu') ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (in_array($_SESSION['user']['role'], ['president', 'censeur', 'organisateur'])): ?>
+                    <div class="panel">
+                        <h2 class="panel-title">Solde caisse</h2>
+                        <p class="caisse-amount"><?= number_format($solde ?? 0, 0, ',', ' ') ?> <span style="font-size: 18px; font-weight:700; color: #ffffff;">FCFA</span></p>
+                        <a href="/page-finance" class="link-details">
+                            Voir les détails financiers
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+        </div>
+    </main>
 </body>
 </html>
