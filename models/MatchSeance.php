@@ -54,7 +54,7 @@ class MatchSeance
         try {
             $sql = "SELECT ms.*, u.nom AS createur_nom
                     FROM " . $this->table . " ms
-                    JOIN users u ON u.id = ms.createur_id
+                    LEFT JOIN users u ON u.id = ms.createur_id
                     ORDER BY ms.date DESC";
 
             $result = $this->conn->query($sql);

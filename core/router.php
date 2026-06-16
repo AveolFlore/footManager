@@ -32,6 +32,8 @@ if ($controllerName === 'presence' || $controllerName === 'sanction') {
     $action = $part[1] ?? 'home';
 }
 
+
+
 // instatiation du controller a nul ca peter chez moi sinon
 $controllerInstance = null;
 $id = $_GET['id'] ?? null;
