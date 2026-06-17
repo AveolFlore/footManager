@@ -25,13 +25,17 @@ function buildPaginationLink($pageNum) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background: url('/assets/images/Rivals.jpg') no-repeat center center fixed !important;
+            /* Linear gradient sombre + image Rivals.jpg */
+            background: linear-gradient(rgba(2, 6, 23, 0.7), rgba(2, 6, 23, 0.8)), 
+                        url('/assets/images/Rivals.jpg') no-repeat center center fixed !important;
             background-size: cover !important;
         }
         .glass-panel {
-            background: rgba(2, 6, 23, 0.75);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
         .cyber-grid {
             background-image: linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
@@ -48,7 +52,7 @@ function buildPaginationLink($pageNum) {
             <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
                 
                 <?php if (isset($_GET['msg'])): ?>
-                    <div class="p-4 rounded-xl glass-panel border border-slate-700 flex items-center gap-4 text-sm">
+                    <div class="p-4 rounded-xl glass-panel border border-cyan-500/30 flex items-center gap-4 text-sm">
                         <i class="fas fa-terminal text-cyan-400"></i>
                         <span><?= htmlspecialchars($_GET['msg']) ?></span>
                     </div>
@@ -57,7 +61,7 @@ function buildPaginationLink($pageNum) {
                 <div class="glass-panel p-8 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
                         <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Sélection Égoïste</h2>
-                        <p class="text-slate-400 text-sm mt-1">Gérez les déploiements tactiques sur le terrain.</p>
+                        <p class="text-slate-300 text-sm mt-1">Gérez les déploiements tactiques sur le terrain.</p>
                     </div>
                     <div class="bg-black/40 px-6 py-3 rounded-xl border border-slate-800 font-mono text-cyan-400">
                         <?= (int)$totalPlayers ?> PLAYERS
@@ -72,13 +76,13 @@ function buildPaginationLink($pageNum) {
                         <div class="glass-panel border border-slate-700 rounded-2xl p-6 transition-all hover:border-cyan-500/50">
                             <div class="flex justify-between items-start mb-4">
                                 <h3 class="text-xl font-black text-white"><?= htmlspecialchars($player['nom']) ?></h3>
-                                <span class="text-xs font-mono text-slate-500">RATING: <strong class="text-cyan-400"><?= number_format($player['score'], 1) ?></strong></span>
+                                <span class="text-xs font-mono text-slate-300">RATING: <strong class="text-cyan-400"><?= number_format($player['score'], 1) ?></strong></span>
                             </div>
                             
                             <?php if ($roleUser !== 'joueur'): ?>
                                 <form action="/Convocation-invoke" method="POST" class="space-y-3">
                                     <input type="hidden" name="joueur_id" value="<?= $player['id'] ?>">
-                                    <select name="match_id" class="w-full bg-slate-950 border border-slate-800 text-sm rounded-lg p-2.5 outline-none focus:border-cyan-500">
+                                    <select name="match_id" class="w-full bg-slate-950/50 border border-slate-700 text-white text-sm rounded-lg p-2.5 outline-none focus:border-cyan-500">
                                         <?php foreach ($matches as $match): ?>
                                             <option value="<?= $match['id'] ?>"><?= date('d/m', strtotime($match['date'])) ?> - <?= htmlspecialchars($match['lieu']) ?></option>
                                         <?php endforeach; ?>
@@ -106,4 +110,4 @@ function buildPaginationLink($pageNum) {
         </main>
     </div>
 </body>
-</html>
+</html> 
