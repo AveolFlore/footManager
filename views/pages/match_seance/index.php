@@ -65,7 +65,7 @@ $pageTitle = "Matchs";
                         </h1>
                         <p class="text-sm text-slate-200 mt-1"><?= count($matchs) ?> matchs enregistrés</p>
                     </div>
-                    <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur'])): ?>
+                    <?php if (in_array($_SESSION['user']['role'], ['president', 'organisateur', 'admin'])): ?>
                         <a href="/page-matchcreate" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition shadow-md">
                             <i class="fas fa-plus mr-2"></i>Créer un match
                         </a>

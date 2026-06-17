@@ -377,7 +377,7 @@ $pageTitle = "Tableau de bord";
                 <p class="subtitle">Bonjour, <?= htmlspecialchars($_SESSION['user']['prenom']) ?></p>
             </div>
             <div>
-                <a href="/page-matchcreate" class="btn btn-create">Planifier Match</a>
+                <a href="/page-match" class="btn btn-create">Planifier Match</a>
                 <a href="/page-convocation" class="btn btn-secondary">Convocation</a>
             </div>
         </div>
