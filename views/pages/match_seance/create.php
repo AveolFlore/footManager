@@ -16,75 +16,96 @@ $pageTitle = "Créer un match";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?></title>
+    <title><?= $pageTitle ?> - FC Blue Lock</title>
+    <link rel="icon" type="image/png" href="/assets/images/blue_lock_logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('/assets/images/impact.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 text-gray-900 min-h-screen">
+<body class="text-white min-h-screen font-sans antialiased">
     <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
     <div class="pt-20 min-h-screen">
-        <main class="p-6 max-w-2xl mx-auto">
+        <main class="p-6 md:p-8 lg:p-10 max-w-2xl mx-auto">
             
             <div class="mb-6">
-                <a href="/page-match" class="text-blue-600 hover:underline text-sm">
-                    &larr; Retour aux matchs
+                <a href="/page-match" class="text-blue-400 hover:text-blue-300 text-sm inline-flex items-center gap-2 transition-colors">
+                    <i class="fas fa-arrow-left"></i> Retour aux matchs
                 </a>
             </div>
 
             <?php if (isset($_GET['msg'])): ?>
-                <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                    <strong>Erreur :</strong> <?= htmlspecialchars($_GET['msg']) ?>
+                <div class="mb-6 p-4 bg-red-900/50 border border-red-500 text-white rounded-xl flex items-center gap-3">
+                    <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+                    <div>
+                        <strong class="font-semibold">Erreur :</strong>
+                        <span><?= htmlspecialchars($_GET['msg']) ?></span>
+                    </div>
                 </div>
             <?php endif; ?>
 
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h1 class="text-2xl font-bold mb-6 text-gray-800">
+            <div class="glass-panel p-6 md:p-8 rounded-2xl">
+                <h1 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <i class="fas fa-plus-circle text-blue-400 text-3xl"></i>
                     Créer une nouvelle séance
                 </h1>
 
-                <form action="/matchSeance-create" method="POST" class="space-y-4">
+                <form action="/matchSeance-create" method="POST" class="space-y-5">
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Type de séance
+                        <label class="block text-sm font-semibold text-white mb-2">
+                            <i class="fas fa-tasks mr-2 text-blue-400"></i>Type de séance
                         </label>
-                        <select name="type" class="w-full bg-white border border-gray-300 rounded p-2 focus:ring-1 focus:ring-blue-500 outline-none">
-                            <option value="match">Match</option>
-                            <option value="entr">Entraînement</option>
+                        <select name="type" class="w-full bg-white/10 border border-white/20 text-white rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none backdrop-blur-sm transition-all">
+                            <option value="match" class="bg-slate-800">Match</option>
+                            <option value="entr" class="bg-slate-800">Entraînement</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Date et heure
+                        <label class="block text-sm font-semibold text-white mb-2">
+                            <i class="fas fa-calendar-alt mr-2 text-blue-400"></i>Date et heure
                         </label>
                         <input type="datetime-local" name="date" id="match-date" required
-                            class="w-full bg-white border border-gray-300 rounded p-2 focus:ring-1 focus:ring-blue-500 outline-none">
+                            class="w-full bg-white/10 border border-white/20 text-white rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none backdrop-blur-sm transition-all">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Lieu
+                        <label class="block text-sm font-semibold text-white mb-2">
+                            <i class="fas fa-map-marker-alt mr-2 text-blue-400"></i>Lieu
                         </label>
                         <input type="text" name="lieu" required placeholder="Ex : Stade Municipal"
-                            class="w-full bg-white border border-gray-300 rounded p-2 focus:ring-1 focus:ring-blue-500 outline-none">
+                            class="w-full bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none backdrop-blur-sm transition-all">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Description / Informations complémentaires
+                        <label class="block text-sm font-semibold text-white mb-2">
+                            <i class="fas fa-align-left mr-2 text-blue-400"></i>Description / Informations complémentaires
                         </label>
                         <textarea name="description" rows="4" placeholder="Ajouter des détails sur la séance..."
-                            class="w-full bg-white border border-gray-300 rounded p-2 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
+                            class="w-full bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none backdrop-blur-sm transition-all resize-none"></textarea>
                     </div>
 
-                    <div class="flex gap-4 pt-2">
+                    <div class="flex flex-col sm:flex-row gap-4 pt-2">
                         <button type="submit" name="add_match" value="Créer"
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded transition-colors">
-                            Créer la séance
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg hover:shadow-xl inline-flex items-center justify-center gap-2">
+                            <i class="fas fa-check-circle"></i> Créer la séance
                         </button>
                         <a href="/page-match"
-                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded text-center transition-colors">
+                            class="flex-1 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-xl transition-all text-center border border-white/20">
                             Annuler
                         </a>
                     </div>

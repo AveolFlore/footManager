@@ -39,6 +39,19 @@ class Convocation
     public function create(array $data)
     {
         try {
+            // Vérifier d'abord si la convocation existe déjà
+            $checkStmt = $this->conn->prepare("SELECT COUNT(*) FROM " . $this->table . " WHERE match_id = :match_id AND joueur_id = :joueur_id");
+            $checkStmt->execute([
+                ':match_id' => $data['match_id'],
+                ':joueur_id' => $data['joueur_id']
+            ]);
+            
+            if ($checkStmt->fetchColumn() > 0) {
+                // Convocation existe déjà, on peut mettre à jour ou retourner une erreur
+                // Pour ce cas, on va retourner false pour indiquer que ce n'est pas une nouvelle création
+                return false;
+            }
+
             $this->match_id      = $data['match_id'];
             $this->joueur_id     = $data['joueur_id'];
             $this->equipe_match  = $data['equipe_match'];
@@ -48,9 +61,7 @@ class Convocation
             $sql = "INSERT INTO " . $this->table . "
                         (match_id, joueur_id, equipe_match, est_capitaine, numero_maillot)
                     VALUES
-                        (:match_id, :joueur_id, :equipe_match, :est_capitaine, :numero_maillot)
-                    ON DUPLICATE KEY UPDATE
-                        equipe_match = VALUES(equipe_match)";
+                        (:match_id, :joueur_id, :equipe_match, :est_capitaine, :numero_maillot)";
 
             $stmt = $this->conn->prepare($sql);
 
@@ -62,7 +73,12 @@ class Convocation
                 ':numero_maillot' => $this->numero_maillot
             ]);
         } catch (\PDOException $e) {
+            // Si c'est une erreur de contrainte unique (duplicata)
+            if ($e->getCode() == 23000) {
+                return false;
+            }
             echo 'Erreur lors de la convocation : ' . $e->getMessage();
+            return false;
         }
     }
 
@@ -295,16 +311,19 @@ class Convocation
         // Logique de chevauchement :
         // (Start_Nouveau < End_Existant) AND (End_Nouveau > Start_Existant)
         // On utilise DATE_ADD pour simuler une durée de 2 heures.
+        // IMPORTANT : On exclut le match actuel lui-même !
         $query = "SELECT COUNT(*) 
                   FROM convocation c
                   JOIN match_seance ms ON c.match_id = ms.id
                   WHERE c.joueur_id = :joueur_id
+                    AND ms.id != :current_match_id
                     AND :new_start < DATE_ADD(ms.date, INTERVAL 2 HOUR)
                     AND DATE_ADD(:new_start_alt, INTERVAL 2 HOUR) > ms.date";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute([
             ':joueur_id' => $joueur_id,
+            ':current_match_id' => $match_id,
             ':new_start' => $newMatch['date'],
             ':new_start_alt' => $newMatch['date']
         ]);
@@ -372,6 +391,20 @@ class Convocation
         } catch (\PDOException $e) {
             echo 'Erreur lors de la suggestion : ' . $e->getMessage();
         }
+    }
+
+    /**
+     * Vérifie si un joueur est déjà convoqué pour un match spécifique
+     */
+    public function isAlreadyConvoked(int $match_id, int $joueur_id): bool
+    {
+        $checkStmt = $this->conn->prepare("SELECT COUNT(*) FROM " . $this->table . " WHERE match_id = :match_id AND joueur_id = :joueur_id");
+        $checkStmt->execute([
+            ':match_id' => $match_id,
+            ':joueur_id' => $joueur_id
+        ]);
+        
+        return $checkStmt->fetchColumn() > 0;
     }
 
     // DELETE — retirer un joueur d'un match

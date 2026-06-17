@@ -33,6 +33,51 @@ $joueurs = $pdo->query(
      ORDER BY nom"
 )->fetchAll(PDO::FETCH_ASSOC);
 
+// Récupérer TOUTES les convocations pour vérifier les chevauchements
+$allConvocations = $convocationController->getConvocationsMap();
+
+// Récupérer TOUS les matchs pour afficher les infos
+$allMatches = $pdo->query("SELECT id, date, lieu FROM match_seance ORDER BY date DESC")->fetchAll(PDO::FETCH_ASSOC);
+$matchesById = [];
+foreach ($allMatches as $m) {
+    $matchesById[$m['id']] = $m;
+}
+
+// Pour chaque joueur, déterminer s'il a des convocations qui se chevauchent
+$playersWithOverlap = [];
+$currentMatchDate = strtotime($match['date']);
+$currentMatchEnd = $currentMatchDate + (2 * 60 * 60); // +2h
+
+foreach ($joueurs as $joueur) {
+    $playerId = $joueur['id'];
+    $hasOverlap = false;
+    $overlappingMatches = [];
+    
+    if (isset($allConvocations[$playerId])) {
+        foreach ($allConvocations[$playerId] as $summonedMatchId) {
+            if ($summonedMatchId == $id) continue; // skip le match actuel
+            
+            if (isset($matchesById[$summonedMatchId])) {
+                $summonedMatch = $matchesById[$summonedMatchId];
+                $summonedDate = strtotime($summonedMatch['date']);
+                $summonedEnd = $summonedDate + (2 * 60 * 60);
+                
+                // Vérifier le chevauchement
+                if (($currentMatchDate < $summonedEnd) && ($currentMatchEnd > $summonedDate)) {
+                    $hasOverlap = true;
+                    $overlappingMatches[] = $summonedMatch;
+                }
+            }
+        }
+    }
+    
+    $playersWithOverlap[$playerId] = [
+        'has_overlap' => $hasOverlap,
+        'matches' => $overlappingMatches,
+        'all_summoned_matches' => $allConvocations[$playerId] ?? []
+    ];
+}
+
 $pageTitle = "Gérer les convocations";
 ?>
 
@@ -69,6 +114,26 @@ $pageTitle = "Gérer les convocations";
         .btn-glow-cyan:hover {
             box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
         }
+        .warning-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .summoned-badge {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .overlap-row {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
     </style>
 </head>
 
@@ -85,24 +150,33 @@ $pageTitle = "Gérer les convocations";
                 </a>
 
                 <?php if (isset($_GET['msg'])): ?>
-                    <div class="mb-8 px-6 py-4 rounded-none font-mono text-sm uppercase tracking-wider <?php if(str_contains($_GET['msg'], 'Erreur') || str_contains($_GET['msg'], 'ne peut pas')): ?> bg-rose-950/40 border-l-4 border-rose-500 border-t border-b border-r border-rose-500/20 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.1)] <?php else: ?> bg-emerald-950/40 border-l-4 border-emerald-500 border-t border-b border-r border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] <?php endif; ?>">
+                    <div class="mb-8 px-6 py-4 rounded-none font-mono text-sm uppercase tracking-wider border-l-4 border-t border-b border-r
+                        <?php if (str_contains($_GET['msg'], 'Erreur') || str_contains($_GET['msg'], 'ne peut pas') || str_contains($_GET['msg'], 'chevauche')): ?>
+                            bg-red-950/40 border-red-500 border-red-500/20 text-red-400 shadow-[0_0_15px_rgba(244,63,94,0.1)]
+                        <?php else: ?>
+                            bg-emerald-950/40 border-emerald-500 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]
+                        <?php endif; ?>">
                         <i class="fas fa-info-circle mr-3"></i>
                         SYSTEM_ALERT : <?= htmlspecialchars($_GET['msg']) ?>
                     </div>
                 <?php endif; ?>
 
-                <div class="bg-slate-900/40 border border-slate-800/80 backdrop-blur-md p-8 mb-8 relative">
+                <div class="bg-slate-900/40 border border-slate-700/80 backdrop-blur-md p-8 mb-8 relative">
                     <div class="absolute -top-[1px] -left-[1px] w-3 h-3 border-t-2 border-l-2 border-cyan-500"></div>
                     <div class="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-cyan-500"></div>
                     
                     <h1 class="text-3xl font-black uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-cyan-400 flex items-center gap-4 mb-4">
                         <i class="fas fa-users text-cyan-500 filter drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]"></i>
-                        SÉLECTION_MATRICE : BL-MATCH
+                        SÉLECTION_MATRIX : BL-MATCH
                     </h1>
                     <p class="text-sm font-mono text-slate-400 tracking-wide flex flex-wrap items-center gap-2">
                         <span class="text-cyan-400"><i class="fas fa-calendar mr-2"></i><?= date('d/m/Y H:i', strtotime($match['date'])) ?></span>
                         <span class="text-slate-700 font-bold px-2">//</span>
                         <span class="text-slate-300"><i class="fas fa-map-marker-alt mr-2"></i><?= htmlspecialchars($match['lieu']) ?></span>
+                    </p>
+                    <p class="text-xs text-slate-500 mt-3 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-amber-400"></i>
+                        Les joueurs avec un badge ⚠️ sont déjà convoqués pour un match qui se chevauche dans le temps.
                     </p>
                 </div>
 
@@ -113,7 +187,7 @@ $pageTitle = "Gérer les convocations";
                         </div>
                         <p class="text-xs font-mono font-bold text-cyan-400 mb-6 flex items-center gap-3 uppercase tracking-widest">
                             <i class="fas fa-star text-amber-500 animate-pulse filter drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]"></i>
-                            SUGGESTION AUTOMATIQUE — TOP <?= count($suggestion) ?> ÉGOÏSTES DU MOIS
+                            SUGGESTION_AUTOMATIQUE — TOP <?= count($suggestion) ?> ÉGOÏSTES_DU_MOIS
                         </p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <?php foreach ($suggestion as $s): ?>
@@ -130,7 +204,7 @@ $pageTitle = "Gérer les convocations";
                     </div>
                 <?php endif; ?>
 
-                <div class="bg-slate-900/40 border border-slate-800/80 backdrop-blur-md p-8 relative">
+                <div class="bg-slate-900/40 border border-slate-700/80 backdrop-blur-md p-8 relative">
                     <div class="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-cyan-500/40"></div>
                     <div class="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-cyan-500/40"></div>
 
@@ -142,12 +216,12 @@ $pageTitle = "Gérer les convocations";
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 font-mono">
                         <div class="p-6 bg-slate-950/80 border border-blue-500/20 relative shadow-[inner_0_0_15px_rgba(59,130,246,0.05)]">
                             <div class="absolute top-0 right-0 w-1.5 h-1.5 bg-blue-500"></div>
-                            <p class="text-xs font-bold text-blue-400 mb-2 uppercase tracking-widest">UNITÉ COMPTE : ÉQUIPE A</p>
+                            <p class="text-xs font-bold text-blue-400 mb-2 uppercase tracking-widest">UNITÉ_COMPTE : ÉQUIPE_A</p>
                             <p class="text-3xl font-black text-white" id="countA">0 / 10</p>
                         </div>
                         <div class="p-6 bg-slate-950/80 border border-rose-500/20 relative shadow-[inner_0_0_15px_rgba(244,63,94,0.05)]">
                             <div class="absolute top-0 right-0 w-1.5 h-1.5 bg-rose-500"></div>
-                            <p class="text-xs font-bold text-rose-400 mb-2 uppercase tracking-widest">UNITÉ COMPTE : ÉQUIPE B</p>
+                            <p class="text-xs font-bold text-rose-400 mb-2 uppercase tracking-widest">UNITÉ_COMPTE : ÉQUIPE_B</p>
                             <p class="text-3xl font-black text-white" id="countB">0 / 10</p>
                         </div>
                     </div>
@@ -158,12 +232,11 @@ $pageTitle = "Gérer les convocations";
                         <?php if (empty($joueurs)): ?>
                             <div class="text-center py-16 text-slate-600 font-mono">
                                 <i class="fas fa-user-slash text-5xl mb-6 text-slate-800"></i>
-                                <p class="text-sm uppercase tracking-widest">Aucun sujet valide dans la base de données.</p>
+                                <p class="text-sm uppercase tracking-widest">Aucun_sujet_valide_dans_la_base_de_données.</p>
                             </div>
                         <?php else: ?>
                             <div class="space-y-3 mb-8" id="playersList">
-                                <?php foreach ($joueurs as $joueur): ?>
-                                    <?php
+                                <?php foreach ($joueurs as $joueur): 
                                     $convoqueData = null;
                                     foreach ($deja_convoques as $dc) {
                                         if ($dc['joueur_id'] == $joueur['id']) {
@@ -171,8 +244,13 @@ $pageTitle = "Gérer les convocations";
                                             break;
                                         }
                                     }
-                                    ?>
-                                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-950/40 border border-slate-900 transition-all duration-200 group" id="player-row-<?= $joueur['id'] ?>">
+                                    $playerInfo = $playersWithOverlap[$joueur['id']];
+                                    $hasOverlap = $playerInfo['has_overlap'];
+                                    $isSummoned = in_array($joueur['id'], $ids_convoques);
+                                ?>
+                                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 p-5 bg-slate-950/40 border border-slate-900 transition-all duration-200 group
+                                        <?= $hasOverlap && !$isSummoned ? 'overlap-row border-amber-500/30' : '' ?>" 
+                                        id="player-row-<?= $joueur['id'] ?>">
                                         
                                         <div class="flex items-center h-full">
                                             <input type="checkbox"
@@ -184,18 +262,49 @@ $pageTitle = "Gérer les convocations";
                                         </div>
 
                                         <div class="flex-1 font-mono">
-                                            <p class="text-base font-bold text-slate-200 uppercase tracking-wide group-hover:text-cyan-400 transition-colors">
-                                                <?= htmlspecialchars($joueur['nom']) ?> <?= htmlspecialchars($joueur['prenom']) ?>
-                                            </p>
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <p class="text-base font-bold text-slate-200 uppercase tracking-wide group-hover:text-cyan-400 transition-colors">
+                                                    <?= htmlspecialchars($joueur['nom']) ?> <?= htmlspecialchars($joueur['prenom']) ?>
+                                                </p>
+                                                <?php if ($hasOverlap && !$isSummoned): ?>
+                                                    <span class="warning-badge flex items-center gap-1">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        Chevauchement
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
                                             <p class="text-xs text-slate-500 uppercase tracking-wider mt-0.5"><?= htmlspecialchars($joueur['poste']) ?></p>
+                                            
+                                            <?php if (!empty($playerInfo['all_summoned_matches'])): ?>
+                                                <div class="mt-2 flex flex-wrap gap-1">
+                                                    <?php foreach ($playerInfo['all_summoned_matches'] as $smId): 
+                                                        if (isset($matchesById[$smId]) && $smId != $id): 
+                                                            $sm = $matchesById[$smId];
+                                                            $isOverlapping = false;
+                                                            foreach ($playerInfo['matches'] as $om) {
+                                                                if ($om['id'] == $smId) {
+                                                                    $isOverlapping = true;
+                                                                    break;
+                                                                }
+                                                            }
+                                                        ?>
+                                                        <span class="text-[10px] px-2 py-0.5 rounded-full border
+                                                            <?= $isOverlapping ? 'bg-amber-950/50 text-amber-400 border-amber-500/30' : 'bg-emerald-950/50 text-emerald-400 border-emerald-500/30' ?>">
+                                                            <i class="fas fa-calendar mr-1"></i>
+                                                            <?= date('d/m H:i', strtotime($sm['date'])) ?> - <?= htmlspecialchars(substr($sm['lieu'], 0, 15)) ?>
+                                                            <?= $isOverlapping ? ' ⚠️' : '' ?>
+                                                        </span>
+                                                    <?php endif; endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
 
                                         <div class="flex flex-wrap items-center gap-4 font-mono w-full md:w-auto justify-between md:justify-end">
                                             <select name="joueurs[<?= $joueur['id'] ?>][equipe]"
                                                 class="text-xs bg-slate-900 border border-slate-800 text-slate-300 px-4 py-2.5 outline-none focus:border-cyan-500 font-bold uppercase tracking-wider team-select"
                                                 data-player-id="<?= $joueur['id'] ?>">
-                                                <option value="A" <?= $convoqueData && $convoqueData['equipe_match'] === 'A' ? 'selected' : '' ?>>ÉCO_UNITÉ A</option>
-                                                <option value="B" <?= $convoqueData && $convoqueData['equipe_match'] === 'B' ? 'selected' : '' ?>>ÉCO_UNITÉ B</option>
+                                                <option value="A" <?= $convoqueData && $convoqueData['equipe_match'] === 'A' ? 'selected' : '' ?>>ÉCO_UNITÉ_A</option>
+                                                <option value="B" <?= $convoqueData && $convoqueData['equipe_match'] === 'B' ? 'selected' : '' ?>>ÉCO_UNITÉ_B</option>
                                             </select>
 
                                             <label class="flex items-center gap-2 text-xs font-bold text-slate-500 cursor-pointer select-none border border-slate-900 px-3 py-2 bg-slate-950/80 hover:border-slate-800 transition-colors">
@@ -229,11 +338,11 @@ $pageTitle = "Gérer les convocations";
                                     class="flex-1 group relative px-8 py-4 bg-cyan-950/60 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black btn-glow-cyan text-center transition-all duration-300">
                                     <span class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400 group-hover:border-black"></span>
                                     <span class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-400 group-hover:border-black"></span>
-                                    <i class="fas fa-check mr-2"></i> Enregistrer & Publier
+                                    <i class="fas fa-check mr-2"></i> Enregistrer_&_Publier
                                 </button>
                                 <a href="/page-matchdetail?id=<?= $id ?>"
                                     class="flex-1 px-8 py-4 bg-slate-950 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600 text-center transition-all">
-                                    Avorter la sélection
+                                    Avorter_la_sélection
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -332,3 +441,5 @@ $pageTitle = "Gérer les convocations";
     // Initialisation au chargement de la page
     updateCounts();
 </script>
+</body>
+</html>

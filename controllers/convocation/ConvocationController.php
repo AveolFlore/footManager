@@ -81,26 +81,32 @@ class ConvocationController
                 $joueur_id = $_POST['joueur_id'] ?? null;
                 $equipe_val = $_POST['equipe'] ?? null;
 
+                // Debug
+                error_log("invokePlayer called: match_id=$match_id, joueur_id=$joueur_id, equipe_val=$equipe_val");
+
                 if ($match_id && $joueur_id && $equipe_val) {
-                    $checkStmt = $this->pdo->prepare("SELECT COUNT(*) FROM convocation WHERE match_id = :m_id AND joueur_id = :j_id");
-                    $checkStmt->execute([':m_id' => $match_id, ':j_id' => $joueur_id]);
-                    if ($checkStmt->fetchColumn() > 0) {
+                    // Vérifier si le joueur est déjà convoqué pour ce match
+                    if ($this->convocationModel->isAlreadyConvoked((int)$match_id, (int)$joueur_id)) {
+                        error_log("Player already summoned");
                         header("Location: /Convocation-convocation?msg=already_summoned");
                         exit;
                     }
 
                     if ($this->convocationModel->hasOverlap((int)$joueur_id, (int)$match_id)) {
+                        error_log("Schedule overlap");
                         header("Location: /Convocation-convocation?msg=overlap");
                         exit;
                     }
 
                     $equipeEnum = EquipeType::from($equipe_val);
 
-                    $this->convocationModel->addConvocation(
+                    $result = $this->convocationModel->addConvocation(
                         $match_id,
                         $joueur_id,
                         $equipeEnum
                     );
+
+                    error_log("addConvocation result: " . ($result ? 'true' : 'false'));
                 }
 
                 header("Location: /Convocation-convocation?msg=success");
@@ -108,10 +114,13 @@ class ConvocationController
             }
         } catch (\ValueError $e) {
             echo "Équipe invalide : " . $e->getMessage();
+            error_log("ValueError: " . $e->getMessage());
         } catch (\PDOException $e) {
             echo "Erreur base de données : " . $e->getMessage();
+            error_log("PDOException: " . $e->getMessage());
         } catch (\Exception $e) {
             echo "Erreur générale : " . $e->getMessage();
+            error_log("Exception: " . $e->getMessage());
         }
     }
 
@@ -176,8 +185,21 @@ class ConvocationController
                     exit;
                 }
 
-                // Ajouter les convocations
+                // Vérifier les doublons et chevauchements avant d'ajouter
                 foreach ($joueursAVerifier as $j) {
+                    // Vérification 1 : Déjà convoqué pour ce match ?
+                    $checkStmt = $this->pdo->prepare("SELECT COUNT(*) FROM convocation WHERE match_id = :m_id AND joueur_id = :j_id");
+                    $checkStmt->execute([':m_id' => $match_id, ':j_id' => $j['joueur_id']]);
+                    if ($checkStmt->fetchColumn() > 0) {
+                        continue; // Normalement impossible avec la logique du formulaire, mais sécurité supplémentaire
+                    }
+
+                    // Vérification 2 : Convoqué pour un match qui se chevauche ?
+                    if ($this->convocationModel->hasOverlap((int)$j['joueur_id'], $match_id)) {
+                        header('Location: /page-matchconvocations?id=' . $match_id . '&msg=' . urlencode("Un joueur est déjà convoqué pour un match qui se chevauche dans le temps !"));
+                        exit;
+                    }
+
                     $this->convocationModel->create([
                         'match_id'       => $match_id,
                         'joueur_id'      => (int) $j['joueur_id'],
