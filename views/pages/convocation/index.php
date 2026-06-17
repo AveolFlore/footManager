@@ -42,12 +42,9 @@ function buildPaginationLink($pageNum) {
 </head>
 
 <body class="text-slate-100 cyber-grid min-h-screen font-sans">
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-        <main class="flex-1 min-w-0 overflow-x-hidden">
-            <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-            
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
+        <main class="min-w-0 overflow-x-hidden">
             <div class="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
                 
                 <?php if (isset($_GET['msg'])): ?>

@@ -73,12 +73,9 @@ $pageTitle = "Gérer les convocations";
 </head>
 
 <body class="cyber-bg text-slate-100 min-h-screen font-sans antialiased">
-    <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-        <main class="flex-1 overflow-y-auto bg-slate-950/40 backdrop-blur-sm">
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
+        <main class="overflow-y-auto bg-slate-950/40 backdrop-blur-sm">
             <div class="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto">
 
                 <a href="/page-matchdetail?id=<?= $id ?>"

@@ -77,16 +77,15 @@ $pageTitle = "Tableau de bord";
         image-rendering: -webkit-optimize-contrast;
         image-rendering: quality;
         color: var(--text-dark);
-        display: flex;
         min-height: 100vh;
+        padding-top: 80px;
     }
 
     main {
-        flex: 1;
-        margin-left: 280px;
         padding: 40px;
         max-width: 1400px;
-        width: calc(100% - 280px);
+        margin: 0 auto;
+        width: 100%;
     }
 
     /* En-tête */
@@ -356,11 +355,8 @@ $pageTitle = "Tableau de bord";
 
     @media (max-width: 1024px) {
         main {
-            margin-left: 0;
-            width: 100%;
             padding: 24px;
         }
-        body { flex-direction: column; }
     }
 
     @media (max-width: 768px) {
@@ -372,7 +368,7 @@ $pageTitle = "Tableau de bord";
 </style>
 </head>
 <body>
-    <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
 
     <main>
         <div class="header-section">

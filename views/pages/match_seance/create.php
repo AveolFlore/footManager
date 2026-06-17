@@ -21,12 +21,9 @@ $pageTitle = "Créer un match";
 </head>
 
 <body class="bg-gray-100 text-gray-900 min-h-screen">
-    <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-        <main class="flex-1 p-6 max-w-2xl mx-auto">
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
+        <main class="p-6 max-w-2xl mx-auto">
             
             <div class="mb-6">
                 <a href="/page-match" class="text-blue-600 hover:underline text-sm">

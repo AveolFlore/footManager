@@ -32,12 +32,10 @@ $pageTitle = "Gestion des Équipes";
 </head>
 
 <body class="text-slate-800 min-h-screen font-sans antialiased">
-    <?php include_once __DIR__ . '/../../partials/header.php'; ?>
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
 
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-        <main class="flex-1 overflow-y-auto p-6 md:p-10">
+    <div class="pt-20 min-h-screen">
+        <main class="overflow-y-auto p-6 md:p-10">
             <div class="max-w-7xl mx-auto space-y-6">
 
                 <div class="glass-panel p-6 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

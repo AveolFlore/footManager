@@ -169,11 +169,10 @@ $pageTitle = "Modifier Utilisateur";
 </head>
 
 <body>
-
-    <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-    <main>
-        <div class="container">
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
+        <main>
+            <div class="container">
 
             <div class="header">
                 <div>

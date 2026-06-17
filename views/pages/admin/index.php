@@ -59,11 +59,9 @@ $pageTitle = "Administration";
     </style>
 </head>
 <body>
-
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-        <main class="flex-1 p-8">
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
+        <main class="p-8">
             <div class="flex justify-between items-center mb-8">
                 <div>
                     <h1 class="text-3xl font-bold text-slate-900">Administration</h1>

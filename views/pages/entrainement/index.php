@@ -28,13 +28,9 @@ $pageTitle = "Entraînements";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen font-sans">
-
-    <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-    
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
-        <main class="flex-1 bg-slate-50 overflow-y-auto">
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
+        <main class="bg-slate-50 overflow-y-auto">
             <div class="p-6 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-6">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 border border-slate-200 rounded-xl shadow-sm">

@@ -49,10 +49,7 @@ $menuItems = [
         'label' => 'Finances',
         'route' => '/page-finance'
     ],
-    [
-        'label' => 'Règlements',
-        'route' => '/page-rule'
-    ],
+
     [
         'label' => 'Galerie',
         'route' => '/page-galery'

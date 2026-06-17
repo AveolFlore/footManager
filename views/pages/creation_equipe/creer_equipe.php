@@ -16,11 +16,8 @@ $pageTitle = isset($equipe) ? "Modifier l'Équipe" : "Créer l'Équipe";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen font-sans">
-    <?php include_once __DIR__ . '/../../partials/header.php'; ?>
-    
-    <div class="flex min-h-screen">
-        <?php include_once __DIR__ . '/../../partials/sidebar.php'; ?>
-
+    <?php include_once __DIR__ . '/../../partials/floating-nav.php'; ?>
+    <div class="pt-20 min-h-screen">
         <div class="flex-1 flex flex-col overflow-hidden">
             <main class="flex-1 bg-slate-50 p-6 md:p-8 overflow-y-auto">
                 
